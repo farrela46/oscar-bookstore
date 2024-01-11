@@ -2,15 +2,66 @@
     <div class="dashboard-admin">
         <Navbar />
         <div class="container-fluid px-4 py-4">
+            <div class="card-list">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="cardstat blue">
+                            <div class="title">all projects</div>
+                            <i class="zmdi zmdi-upload"></i>
+                            <div class="value">89</div>
+                            <div class="stat"><b>13</b>% increase</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="cardstat green">
+                            <div class="title">team members</div>
+                            <i class="zmdi zmdi-upload"></i>
+                            <div class="value">5,990</div>
+                            <div class="stat"><b>4</b>% increase</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="cardstat orange">
+                            <div class="title">total budget</div>
+                            <i class="zmdi zmdi-download"></i>
+                            <div class="value">$80,990</div>
+                            <div class="stat"><b>13</b>% decrease</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="cardstat red">
+                            <div class="title">new customers</div>
+                            <i class="zmdi zmdi-download"></i>
+                            <div class="value">3</div>
+                            <div class="stat"><b>13</b>% decrease</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-6">
                     <div class="card shadow">
-                        <!-- <Bar :data="chartData" /> -->
+                        <div class="card-header bg-white">
+                            <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="wrapper">
+                                <Bar :data="chartData" :style="myStyles" :options="{ responsive: true ,maintainAspectRatio: false }" />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="card shadow">
-                        <!-- <line-chart :chart-data="datacollection"></line-chart> -->
+                        <div class="card-header bg-white">
+                            <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="wrapper">
+
+                                <Line :data="lineData" :style="myStyles" :options="{ responsive: true ,maintainAspectRatio: false }" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -19,79 +70,124 @@
 </template>
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
-// import { Bar } from 'vue-chartjs'
-// import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-// ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+import { Bar } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineElement, PointElement } from 'chart.js'
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, LineElement, PointElement)
 
 export default {
     name: 'AdminDashboard',
     components: {
         Navbar,
-        // Bar,
+        Bar,
+        Line
     },
     data() {
         return {
             chartData: {
-                labels: ['January', 'February', 'March'],
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
                 datasets: [
                     {
                         label: 'Data One',
                         backgroundColor: '#f87979',
-                        data: [40, 20, 12]
+                        data: [40, 20, 12, 21, 22, 23, 31, 42, 53, 43, 76, 82],
                     }
                 ]
             },
-            datacollection: {
-                labels: ["week 1", "week 2", "week 3", "week 4", "week 5", "week 6", "week 7", "week 8", "week 9", "week 10"],
+            lineData: {
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
                 datasets: [
                     {
-                        data: [86, 114, 106, 106, 107, 111, 133, 221, 783, 2478],
-                        label: "Africa",
-                        borderColor: "#3e95cd",
-                        fill: false
-                    },
-                    {
-                        data: [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267],
-                        label: "Asia",
-                        borderColor: "#8e5ea2",
-                        fill: false
-                    },
-                    {
-                        data: [168, 170, 178, 190, 203, 276, 408, 547, 675, 734],
-                        label: "Europe",
-                        borderColor: "#3cba9f",
-                        fill: false
-                    },
-                    {
-                        data: [40, 20, 10, 16, 24, 38, 74, 167, 508, 784],
-                        label: "Latin America",
-                        borderColor: "#e8c3b9",
-                        fill: false
-                    },
-                    {
-                        data: [6, 3, 2, 2, 7, 26, 82, 172, 312, 433],
-                        label: "North America",
-                        borderColor: "#c45850",
-                        fill: false
+                        label: 'Data One',
+                        backgroundColor: '#f87979',
+                        data: [40, 20, 12, 21, 22, 23, 31, 42, 53, 43, 76, 82],
                     }
                 ]
+            },
+        };
+
+    },
+    mounted() {
+    },
+    methods: {
+
+    },
+    computed: {
+        myStyles() {
+            return {
+                height: `${100}vh`,
+                position: 'relative'
             }
-    };
-
-},
-mounted() {
-},
-methods: {
-
-}
+        }
+    }
 }
 </script>
 <style scoped>
+.wrapper {
+    height: 400px !important;
+}
 .dashboard-admin {
     min-height: 100vh;
 
     background: url("../../../src/assets/LandingPage/Background.png");
     background-position: center;
     background-size: cover;
+}
+
+.card-list {
+    /* @include clear(); */
+    width: 100%;
+}
+
+.cardstat {
+    border-radius: 8px;
+    color: white;
+    padding: 10px;
+    position: relative;
+
+    .zmdi {
+        color: white;
+        font-size: 28px;
+        opacity: 0.3;
+        position: absolute;
+        right: 13px;
+        top: 13px;
+    }
+
+    .stat {
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 8px;
+        margin-top: 25px;
+        padding: 10px 10px 0;
+        text-transform: uppercase;
+    }
+
+    .title {
+        display: inline-block;
+        font-size: 8px;
+        padding: 10px 10px 0;
+        text-transform: uppercase;
+    }
+
+    .value {
+        font-size: 28px;
+        padding: 0 10px;
+    }
+
+    &.blue {
+        background-color: #2298F1;
+    }
+
+    &.green {
+        background-color: #66B92E;
+    }
+
+    &.orange {
+        background-color: #DA932C;
+    }
+
+    &.red {
+        background-color: #D65B4A;
+    }
 }
 </style>

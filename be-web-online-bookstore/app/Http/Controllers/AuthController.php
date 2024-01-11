@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -46,6 +45,13 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Successfully logged out!'
+        ], 200);
+    }
+
+    function getUser(Request $request)
+    {
+        return response()->json([
+            'user' => auth()->user()
         ], 200);
     }
 

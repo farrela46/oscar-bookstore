@@ -185,16 +185,13 @@ export default {
                 console.log(response.data);
 
                 // Extract role from the response data
-                const { role, access_token } = response.data.user;
+                const { role } = response.data.user;
 
-                // Assuming role is either 'ADMIN' or 'USER'
                 if (role === 'ADMIN') {
-                    // Set the access token to local storage or session storage for future API calls
-                    localStorage.setItem('access_token', access_token);
+                    localStorage.setItem('access_token', response.data.access_token);
                     this.$router.push('/admin/dashboard');
                 } else if (role === 'USER') {
-                    // Set the access token to local storage or session storage for future API calls
-                    localStorage.setItem('access_token', access_token);
+                    localStorage.setItem('access_token', response.data.access_token);
                     this.$router.push('/dashboard');
                 }
             } catch (error) {
