@@ -143,6 +143,27 @@ export default {
                 }
             });
         });
+
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+            axios.get(BASE_URL + '/user', {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem('access_token')
+                }
+            })
+                .then(response => {
+                    const { role } = response.data.user;
+                    if (role === 'ADMIN') {
+                        this.$router.push('/admin/dashboard');
+                    } else if (role === 'USER') {
+                        this.$router.push('/dashboard');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    // Handle error if necessary
+                });
+        }
     },
 
     methods: {
@@ -205,35 +226,35 @@ export default {
             }
         },
         async onRegist() {
-                try {
-                    const response = await axios.post('http://127.0.0.1:8000/api/register', {
-                        name: this.registerName,
-                        email: this.registerEmail,
-                        password: this.registerPassword
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/api/register', {
+                    name: this.registerName,
+                    email: this.registerEmail,
+                    password: this.registerPassword
+                });
+
+                console.log(response.data);
+                this.$router.push('/login');
+                // Reload the page after redirection
+                window.location.reload();
+            } catch (error) {
+                console.error(error);
+
+                if (error.response && error.response.data.message) {
+                    const errorMessage = error.response.data.message;
+                    // Display notification with red color
+                    this.$notify({
+                        type: 'error',
+                        title: 'Error',
+                        text: errorMessage,
+                        color: 'red'
                     });
-
-                    console.log(response.data);
-                    this.$router.push('/login');
-                    // Reload the page after redirection
-                    window.location.reload();
-                } catch (error) {
-                    console.error(error);
-
-                    if (error.response && error.response.data.message) {
-                        const errorMessage = error.response.data.message;
-                        // Display notification with red color
-                        this.$notify({
-                            type: 'error',
-                            title: 'Error',
-                            text: errorMessage,
-                            color: 'red'
-                        });
-                    }
                 }
             }
-
         }
+
     }
+}
 </script>
 <style scoped>
 .login-section {

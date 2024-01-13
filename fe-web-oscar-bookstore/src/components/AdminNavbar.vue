@@ -3,8 +3,9 @@
         <div class="container-fluid">
             <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
                 <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
-                <a href="/admin/dashboard">Home</a>
-                <a href="#">Katalog</a>
+                <a href="/admin/dashboard"><ion-icon color="light" name="home"></ion-icon>&nbsp;Home</a>
+                <a href="/admin/daftarbuku"><ion-icon color="light" name="library"></ion-icon>
+                    &nbsp;Daftar Buku</a>
             </div>
             <div class="button-side" :class="{ pushMainContent: isActive }">
                 <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
@@ -14,7 +15,7 @@
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                             aria-expanded="false" aria-label="Toggle navigation">
-                            <font-awesome-icon icon="fa-solid fa-user" />
+                            <ion-icon name="person"></ion-icon>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <div class="div">
@@ -24,11 +25,11 @@
                                             {{ username }}
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" href="#"><font-awesome-icon
-                                                        icon="fa-solid fa-user" />&nbsp;Profile</a></li>
+                                            <li><a class="dropdown-item" href="#"><ion-icon
+                                                        name="person"></ion-icon>&nbsp;Profile</a></li>
                                             <li><a class="dropdown-item" @click="onLogout()"
-                                                    style="cursor: pointer;"><font-awesome-icon
-                                                        icon="fa-solid fa-right-from-bracket" />&nbsp;Logout</a></li>
+                                                    style="cursor: pointer;"><ion-icon
+                                                        name="log-out"></ion-icon>&nbsp;Logout</a></li>
                                         </ul>
                                     </li>
                                 </ul>
@@ -43,8 +44,8 @@
   
     
 <script>
-// import { EventBus } from '@/plugins/event-bus.js';
 import axios from 'axios';
+const BASE_URL = import.meta.env.VITE_BASE_URL_API
 export default {
     name: 'AdminNavbar',
     data() {
@@ -55,7 +56,7 @@ export default {
     },
     async mounted() {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/api/user', {
+            const response = await axios.get(BASE_URL + '/user', {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }
@@ -77,21 +78,34 @@ export default {
         }
     },
     methods: {
+        // onLogout() {
+
+        //     this.$router.push('/login')
+        // },
         onLogout() {
-
-            this.$router.push('/login')
-        },
-
+            axios.post(BASE_URL + '/logout', {}, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem('access_token'),
+                }
+            })
+                .then(response => {
+                    localStorage.removeItem('access_token');
+                    this.$router.push('/login');
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
     },
 };
 
 </script>
     
 <style scoped>
-
 .bgnav {
     background: url("../../../src/assets/Navbar/blue_wave.jpg");
 }
+
 .navbar {
     padding-left: 15px;
 }

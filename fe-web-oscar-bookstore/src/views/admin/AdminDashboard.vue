@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                     <div class="card shadow">
                         <div class="card-header bg-white">
                             <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                     <div class="card shadow">
                         <div class="card-header bg-white">
                             <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
