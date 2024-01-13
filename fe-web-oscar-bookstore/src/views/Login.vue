@@ -102,8 +102,8 @@
 </template>
 <script>
 import Navbar from '@/components/LoginNavbar.vue';
-
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_BASE_URL_API
 export default {
     name: 'LoginPage',
     components: {
@@ -169,15 +169,10 @@ export default {
             }
         },
 
-        //Interaction
-        // onSubmit() {
-        //     // this will be called only after form is valid. You can do api call here to login
-
-        // },
 
         async onSubmit() {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/login', {
+                const response = await axios.post(BASE_URL + '/login', {
                     email: this.loginEmail,
                     password: this.loginPassword
                 });

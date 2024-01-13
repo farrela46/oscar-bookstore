@@ -8,7 +8,7 @@
                         <div class="cardstat blue">
                             <div class="title">all projects</div>
                             <i class="zmdi zmdi-upload"></i>
-                            <div class="value">89</div>
+                            <div cl ass="value">89</div>
                             <div class="stat"><b>13</b>% increase</div>
                         </div>
                     </div>

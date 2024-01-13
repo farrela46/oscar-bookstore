@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:farrel": "vite --mode farrel",
     "build": "vite build",
     "preview": "vite preview"
   },
