@@ -40,26 +40,28 @@
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card shadow">
+                    <div class="card border-0 shadow">
                         <div class="card-header bg-white">
                             <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
                         </div>
                         <div class="card-body">
                             <div class="wrapper">
-                                <Bar :data="chartData" :style="myStyles" :options="{ responsive: true ,maintainAspectRatio: false }" />
+                                <Bar :data="chartData" :style="myStyles"
+                                    :options="options" />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card shadow">
+                    <div class="card border-0 shadow">
                         <div class="card-header bg-white">
                             <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
                         </div>
                         <div class="card-body">
                             <div class="wrapper">
 
-                                <Line :data="lineData" :style="myStyles" :options="{ responsive: true ,maintainAspectRatio: false }" />
+                                <Line :data="lineData" :style="myStyles"
+                                    :options="{ responsive: true, maintainAspectRatio: false }" />
                             </div>
                         </div>
                     </div>
@@ -92,7 +94,18 @@ export default {
                         backgroundColor: '#f87979',
                         data: [40, 20, 12, 21, 22, 23, 31, 42, 53, 43, 76, 82],
                     }
-                ]
+                ],
+                options: {
+                    scales: {
+                        yAxes: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 100,
+                        },
+                        responsive: true, 
+                        maintainAspectRatio: false
+                    },
+                },
             },
             lineData: {
                 labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
@@ -126,6 +139,7 @@ export default {
 .wrapper {
     height: 400px !important;
 }
+
 .dashboard-admin {
     min-height: 100vh;
 
@@ -189,5 +203,4 @@ export default {
     &.red {
         background-color: #D65B4A;
     }
-}
-</style>
+}</style>

@@ -6,6 +6,8 @@
                 <a href="/admin/dashboard"><ion-icon color="light" name="home"></ion-icon>&nbsp;Home</a>
                 <a href="/admin/daftarbuku"><ion-icon color="light" name="library"></ion-icon>
                     &nbsp;Daftar Buku</a>
+                    <a href="/admin/kelolapelanggan"><ion-icon color="light" name="person"></ion-icon>
+                    &nbsp;Kelola Pelangan</a>
             </div>
             <div class="button-side" :class="{ pushMainContent: isActive }">
                 <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
@@ -78,10 +80,6 @@ export default {
         }
     },
     methods: {
-        // onLogout() {
-
-        //     this.$router.push('/login')
-        // },
         onLogout() {
             axios.post(BASE_URL + '/logout', {}, {
                 headers: {
@@ -103,7 +101,7 @@ export default {
     
 <style scoped>
 .bgnav {
-    background: url("../../../src/assets/Navbar/blue_wave.jpg");
+    background: url("../../../src/assets/Navbar/blue_ocean.png");
 }
 
 .navbar {
