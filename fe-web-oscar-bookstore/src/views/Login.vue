@@ -227,7 +227,7 @@ export default {
         },
         async onRegist() {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/register', {
+                const response = await axios.post(BASE_URL + '/register', {
                     name: this.registerName,
                     email: this.registerEmail,
                     password: this.registerPassword
