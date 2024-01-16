@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AddressesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,4 +27,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getUser', [UsersController::class, 'getAllUsers']);
     Route::delete('/deleteUser/{id}', [UsersController::class, 'deleteUser']);
+});
+
+Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
+    Route::post('/store', [AddressesController::class, 'store']);
+    Route::get('/get', [AddressesController::class, 'getAddress']);
+    Route::get('/getbyid/{id}', [AddressesController::class, 'getById']);
+    Route::put('/update/{id}', [AddressesController::class, 'update']);
+    Route::delete('/delete/{id}', [AddressesController::class, 'delete']);
 });

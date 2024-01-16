@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
+// User
+import UserDashboard from '../views/user/UserDashboard.vue'
+
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import DaftarBuku from '../views/admin/DaftarBuku.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
@@ -21,6 +24,14 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
+    // User
+    {
+      path: '/dashboard',
+      name: 'User Dashboard',
+      component: UserDashboard,  
+    },
+
+    // Admin
     {
       path: '/login',
       name: 'login',
@@ -41,6 +52,8 @@ const router = createRouter({
       name: 'Kelola Pelanggan',
       component: KelolaPelanggan,  
     },
+
+
   ]
 })
 
