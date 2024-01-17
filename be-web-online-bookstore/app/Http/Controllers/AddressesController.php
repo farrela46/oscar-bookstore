@@ -59,7 +59,6 @@ class AddressesController extends Controller
         return response()->json(['message' => 'Address not found'], 404);
     }
 
-    // Access form data using $request->input()
     $address->update([
         'jalan' => $request->input('jalan'),
         'kelurahan' => $request->input('kelurahan'),
