@@ -16,7 +16,7 @@ class Address extends Model
         'kecamatan',
         'kota',
         'kode_pos',
-        'email'
+        'user_id'
     ];
 
     public function user()

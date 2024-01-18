@@ -3,7 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import Login from '../views/Login.vue'
 // User
 import UserDashboard from '../views/user/UserDashboard.vue'
+import UserProfile from '../views/user/Profile.vue'
 
+// Admin
 import AdminDashboard from '../views/admin/AdminDashboard.vue'
 import DaftarBuku from '../views/admin/DaftarBuku.vue'
 import KelolaPelanggan from '../views/admin/KelolaPelanggan.vue'
@@ -26,9 +28,14 @@ const router = createRouter({
     },
     // User
     {
+      path: '/profile/:id',
+      name: 'User Profile',
+      component: UserProfile,
+    },
+    {
       path: '/dashboard',
       name: 'User Dashboard',
-      component: UserDashboard,  
+      component: UserDashboard,
     },
 
     // Admin
@@ -40,17 +47,17 @@ const router = createRouter({
     {
       path: '/admin/dashboard',
       name: 'Admin Dashboard',
-      component: AdminDashboard,  
+      component: AdminDashboard,
     },
     {
       path: '/admin/daftarbuku',
       name: 'Daftar Buku',
-      component: DaftarBuku,  
+      component: DaftarBuku,
     },
     {
       path: '/admin/kelolapelanggan',
       name: 'Kelola Pelanggan',
-      component: KelolaPelanggan,  
+      component: KelolaPelanggan,
     },
 
 

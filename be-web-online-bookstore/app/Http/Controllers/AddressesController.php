@@ -15,7 +15,7 @@ class AddressesController extends Controller
             'kecamatan' => $request->input('kecamatan'),
             'kota' => $request->input('kota'),
             'kode_pos' => $request->input('kode_pos'),
-            'email' => $request->user()->email
+            'user_id' => $request->user()->id
         ]);
 
         if ($created) {
@@ -31,7 +31,7 @@ class AddressesController extends Controller
 
     public function getAddress(Request $request)
     {
-        $address = Address::where('email', $request->user()->email)->get();
+        $address = Address::all();
 
         if (!$address) {
             return response()->json(['error' => 'Address not found'], 404);
@@ -42,7 +42,8 @@ class AddressesController extends Controller
 
     public function getById(Request $request, $id)
     {
-        $address = Address::find($id);
+        
+        $address = Address::where('user_id', $id)->get();
 
         if (!$address) {
             return response()->json(['error' => 'Address not found'], 404);

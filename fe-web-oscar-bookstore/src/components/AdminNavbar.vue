@@ -6,7 +6,7 @@
                 <a href="/admin/dashboard"><ion-icon color="light" name="home"></ion-icon>&nbsp;Home</a>
                 <a href="/admin/daftarbuku"><ion-icon color="light" name="library"></ion-icon>
                     &nbsp;Daftar Buku</a>
-                    <a href="/admin/kelolapelanggan"><ion-icon color="light" name="person"></ion-icon>
+                <a href="/admin/kelolapelanggan"><ion-icon color="light" name="person"></ion-icon>
                     &nbsp;Kelola Pelangan</a>
             </div>
             <div class="button-side" :class="{ pushMainContent: isActive }">
@@ -27,8 +27,9 @@
                                             {{ username }}
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" href="#"><ion-icon
-                                                        name="person"></ion-icon>&nbsp;Profile</a></li>
+                                            <li><a class="dropdown-item" @click="profile"><ion-icon
+                                                        name="person"></ion-icon>&nbsp;Profile</a>
+                                            </li>
                                             <li><a class="dropdown-item" @click="onLogout()"
                                                     style="cursor: pointer;"><ion-icon
                                                         name="log-out"></ion-icon>&nbsp;Logout</a></li>
@@ -53,7 +54,8 @@ export default {
     data() {
         return {
             isActive: false,
-            username: ''
+            username: '',
+            id: ''
         };
     },
     async mounted() {
@@ -63,6 +65,7 @@ export default {
                     Authorization: "Bearer " + localStorage.getItem('access_token')
                 }
             });
+            this.id = response.data.user.id
             this.username = response.data.user.name
         } catch (error) {
             console.error(error);
@@ -80,6 +83,10 @@ export default {
         }
     },
     methods: {
+        profile() {
+            const id = this.id
+            this.$router.push({ path: `/profile/${id}` })
+        },
         onLogout() {
             axios.post(BASE_URL + '/logout', {}, {
                 headers: {

@@ -75,7 +75,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
   
@@ -115,7 +114,7 @@ export default {
   },
   mounted() {
     this.retrieveUser();
-    this.closeModal();
+    // this.closeModal();
     // this.addUser();
     // this.deleteUser();
     $('#datatable-programs').DataTable({
