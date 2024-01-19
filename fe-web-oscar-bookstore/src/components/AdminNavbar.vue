@@ -1,45 +1,47 @@
 <template>
-    <div class="div">
-        <div class="container-fluid">
+    <div class="transition-content" :class="{ pushMainContent: isActive }">
+        <div>
             <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
                 <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
-                <a href="/admin/dashboard"><ion-icon color="light" name="home"></ion-icon>&nbsp;Home</a>
-                <a href="/admin/daftarbuku"><ion-icon color="light" name="library"></ion-icon>
-                    &nbsp;Daftar Buku</a>
-                <a href="/admin/kelolapelanggan"><ion-icon color="light" name="person"></ion-icon>
-                    &nbsp;Kelola Pelangan</a>
+                <a href="/admin/dashboard">Home</a>
+                <a href="/admin/daftarbuku">Daftar Buku</a>
+                <a href="/admin/kelolapelanggan">Kelola Pelangan</a>
             </div>
-            <div class="button-side" :class="{ pushMainContent: isActive }">
-                <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
-                    <span style="font-size: 25px; cursor: pointer;" @click="isActive = !isActive">&#9776;</span>
-                    <a class="navbar-brand" href="/" style="margin-left: 15px;">Toko Buku Oscar</a>
-                    <div class="ms-auto mx-2">
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                            <ion-icon name="person"></ion-icon>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="div">
-                                <ul class="navbar-nav mb-2 mb-lg-0">
-                                    <li class="nav-item dropdown">
-                                        <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                            {{ username }}
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" @click="profile"><ion-icon
-                                                        name="person"></ion-icon>&nbsp;Profile</a>
-                                            </li>
-                                            <li><a class="dropdown-item" @click="onLogout()"
-                                                    style="cursor: pointer;"><ion-icon
-                                                        name="log-out"></ion-icon>&nbsp;Logout</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
+            <div class="content">
+                <div class="button-side">
+                    <nav class="navbar navbar-expand-lg navbar-light white bgnav shadow-sm rounded">
+                        <span style="font-size: 25px; cursor: pointer;" @click="isActive = !isActive">&#9776;</span>
+                        <a class="navbar-brand" href="/" style="margin-left: 15px;">Toko Buku Oscar</a>
+                        <div class="ms-auto mx-2">
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                                <ion-icon name="person"></ion-icon>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <div class="div">
+                                    <ul class="navbar-nav mb-2 mb-lg-0">
+                                        <li class="nav-item dropdown">
+                                            <button class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                {{ username }}
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" @click="profile"><ion-icon
+                                                            name="person"></ion-icon>&nbsp;Profile</a>
+                                                </li>
+                                                <li><a class="dropdown-item" @click="onLogout()"
+                                                        style="cursor: pointer;"><ion-icon
+                                                            name="log-out"></ion-icon>&nbsp;Logout</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </nav>
+                    </nav>
+                </div>
+                <slot></slot>
             </div>
         </div>
     </div>
@@ -125,20 +127,30 @@ export default {
     position: fixed;
     z-index: 1;
     top: 0;
-    left: 0;
+    left: -250px;
     background-color: #111;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
-    width: 0
+    width: 250px;
 }
 
 .openNavClass {
-    width: 250px;
+    left: 0;
+}
+
+.transition-content {
+    transition: margin-left .5s;
 }
 
 .pushMainContent {
     margin-left: 250px;
+}
+
+@media screen and (max-width: 768px) {
+    .pushMainContent {
+        margin-left: 0;
+    }
 }
 
 .sidenav a {
@@ -163,7 +175,6 @@ export default {
 }
 
 .button-side {
-    transition: margin-left .5s;
     padding: 16px;
 
 }
@@ -193,6 +204,14 @@ export default {
     .sidenav a {
         font-size: 18px;
     }
+}
+
+.content {
+    min-height: 100vh;
+
+    background: url("../../../src/assets/LandingPage/Background.png");
+    background-position: center;
+    background-size: cover;
 }
 </style>
     

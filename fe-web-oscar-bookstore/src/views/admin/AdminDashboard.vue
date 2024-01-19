@@ -1,74 +1,74 @@
 <template>
-    <div class="dashboard-admin">
-        <Navbar />
-        <div class="container-fluid px-4 py-4">
-            <div class="card-list">
-                <div class="row">
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                        <div class="cardstat blue">
-                            <div class="title">all projects</div>
-                            <i class="zmdi zmdi-upload"></i>
-                            <div cl ass="value">89</div>
-                            <div class="stat"><b>13</b>% increase</div>
+    <Navbar>
+        <div>
+            <div class="container-fluid px-4 py-4">
+                <div class="card-list">
+                    <div class="row">
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                            <div class="cardstat blue">
+                                <div class="title">all projects</div>
+                                <i class="zmdi zmdi-upload"></i>
+                                <div cl ass="value">89</div>
+                                <div class="stat"><b>13</b>% increase</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                        <div class="cardstat green">
-                            <div class="title">team members</div>
-                            <i class="zmdi zmdi-upload"></i>
-                            <div class="value">5,990</div>
-                            <div class="stat"><b>4</b>% increase</div>
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                            <div class="cardstat green">
+                                <div class="title">team members</div>
+                                <i class="zmdi zmdi-upload"></i>
+                                <div class="value">5,990</div>
+                                <div class="stat"><b>4</b>% increase</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                        <div class="cardstat orange">
-                            <div class="title">total budget</div>
-                            <i class="zmdi zmdi-download"></i>
-                            <div class="value">$80,990</div>
-                            <div class="stat"><b>13</b>% decrease</div>
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                            <div class="cardstat orange">
+                                <div class="title">total budget</div>
+                                <i class="zmdi zmdi-download"></i>
+                                <div class="value">$80,990</div>
+                                <div class="stat"><b>13</b>% decrease</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                        <div class="cardstat red">
-                            <div class="title">new customers</div>
-                            <i class="zmdi zmdi-download"></i>
-                            <div class="value">3</div>
-                            <div class="stat"><b>13</b>% decrease</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card border-0 shadow">
-                        <div class="card-header bg-white">
-                            <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="wrapper">
-                                <Bar :data="chartData" :style="myStyles"
-                                    :options="options" />
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+                            <div class="cardstat red">
+                                <div class="title">new customers</div>
+                                <i class="zmdi zmdi-download"></i>
+                                <div class="value">3</div>
+                                <div class="stat"><b>13</b>% decrease</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="card border-0 shadow">
-                        <div class="card-header bg-white">
-                            <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title">Grafik Penjualan (Bulan)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="wrapper">
+                                    <Bar :data="chartData" :style="myStyles" :options="options" />
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="wrapper">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title">Grafik Pemasukan (Bulan)</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="wrapper">
 
-                                <Line :data="lineData" :style="myStyles"
-                                    :options="{ responsive: true, maintainAspectRatio: false }" />
+                                    <Line :data="lineData" :style="myStyles"
+                                        :options="{ responsive: true, maintainAspectRatio: false }" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </Navbar>
 </template>
 <script>
 import Navbar from '@/components/AdminNavbar.vue';
@@ -102,7 +102,7 @@ export default {
                             min: 0,
                             max: 100,
                         },
-                        responsive: true, 
+                        responsive: true,
                         maintainAspectRatio: false
                     },
                 },
@@ -203,4 +203,5 @@ export default {
     &.red {
         background-color: #D65B4A;
     }
-}</style>
+}
+</style>
