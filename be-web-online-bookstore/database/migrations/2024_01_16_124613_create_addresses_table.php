@@ -13,11 +13,14 @@ return new class extends Migration {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users'); 
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->string('nama_penerima');
+            $table->string('no_telp_penerima');
             $table->string('jalan');
             $table->string('kelurahan');
             $table->string('kecamatan');
             $table->string('kota');
+            $table->string('provinsi');
             $table->string('kode_pos');
             $table->timestamps();
         });

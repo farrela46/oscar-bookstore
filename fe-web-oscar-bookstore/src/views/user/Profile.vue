@@ -1,8 +1,8 @@
 <!-- Catalogue.vue -->
 <template>
+  <Navbar>
   <div class="dashboard-admin">
-    <Navbar />
-    <div class="container-fluid px-4 py-4">
+    <div class="container-fluid px-4 py-2">
       <div class="row">
         <div class="col-md-12">
           <div class="card mb-4 border-0 px-2 " style="text-align: end;">
@@ -113,6 +113,7 @@
       </div>
     </div>
   </div>
+  </Navbar>
 </template>
   
 <script>
