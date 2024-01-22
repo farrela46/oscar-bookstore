@@ -130,6 +130,13 @@ export default {
       document.getElementById('closeModal').click();
     },
 
+    clearForm() {
+      this.namaCustomer = '';
+      this.emailCustomer = '';
+      this.passwordCustomer = '';
+    },
+
+
     // Method
     async addUser() {
       try {
@@ -140,6 +147,7 @@ export default {
         });
         this.closeModal(),
         this.$refs.datatablesComp.retrieveUser();
+        this.clearForm();
           console.log(response.data);
       } catch (error) {
         console.error(error);

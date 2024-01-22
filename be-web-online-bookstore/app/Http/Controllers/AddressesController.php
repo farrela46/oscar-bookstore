@@ -10,10 +10,13 @@ class AddressesController extends Controller
     public function store(Request $request)
     {
         $created = Address::create([
+            'nama_penerima' => $request->input('nama_penerima'),
+            'no_telp_penerima' => $request->input('no_telp_penerima'),
             'jalan' => $request->input('jalan'),
             'kelurahan' => $request->input('kelurahan'),
             'kecamatan' => $request->input('kecamatan'),
             'kota' => $request->input('kota'),
+            'provinsi' => $request->input('provinsi'),
             'kode_pos' => $request->input('kode_pos'),
             'user_id' => $request->user()->id
         ]);

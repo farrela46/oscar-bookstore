@@ -17,6 +17,7 @@ class Address extends Model
         'kecamatan',
         'kecamatan',
         'kota',
+        'provinsi',
         'kode_pos',
         'user_id'
     ];

@@ -1,11 +1,20 @@
 <template>
     <div class="transition-content" :class="{ pushMainContent: isActive }">
         <div>
-            <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
-                <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
-                <a href="/admin/dashboard">Home</a>
-                <a href="/admin/daftarbuku">Daftar Buku</a>
-                <a href="/admin/kelolapelanggan">Kelola Pelangan</a>
+            <div v-if="Role === 'ADMIN'">
+                <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
+                    <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
+                    <a href="/admin/dashboard">Home</a>
+                    <a href="/admin/daftarbuku">Daftar Buku</a>
+                    <a href="/admin/kelolapelanggan">Kelola Pelanggan</a>
+                </div>
+            </div>
+
+            <div v-else>
+                <div id="mySidenav" class="sidenav shadow" :class="{ openNavClass: isActive }">
+                    <a class="closebtn" @click="isActive = !isActive" style="cursor: pointer;">&times;</a>
+                    <a href="/dashboard">Home</a>
+                </div>
             </div>
             <div class="content">
                 <div class="button-side">
@@ -57,7 +66,8 @@ export default {
         return {
             isActive: false,
             username: '',
-            id: ''
+            id: '',
+            Role: null
         };
     },
     async mounted() {
@@ -69,6 +79,7 @@ export default {
             });
             this.id = response.data.user.id
             this.username = response.data.user.name
+            this.Role = response.data.user.role;
         } catch (error) {
             console.error(error);
 
