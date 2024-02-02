@@ -16,7 +16,8 @@ class Buku extends Model
         'pengarang',
         'penerbit',
         'tahun_terbit',
-        'foto'
+        'foto',
+        'stok',
     ];
 
   

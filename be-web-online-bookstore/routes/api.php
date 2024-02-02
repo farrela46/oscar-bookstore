@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BukusController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AddressesController;
 /*
@@ -35,4 +36,12 @@ Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
     Route::get('/getbyid/{id}', [AddressesController::class, 'getById']);
     Route::put('/update/{id}', [AddressesController::class, 'update']);
     Route::delete('/delete/{id}', [AddressesController::class, 'delete']);
+});
+
+Route::prefix('/buku')->middleware('auth:sanctum')->group(function () {
+    Route::post('/add', [BukusController::class, 'add']);
+    Route::get('/get', [BukusController::class, 'getBuku']);
+    Route::get('/getbyid/{id}', [AddressesController::class, 'getById']);
+    Route::put('/update/{id}', [AddressesController::class, 'update']);
+    Route::delete('/delete/{id}', [BukusController::class, 'delete']);
 });

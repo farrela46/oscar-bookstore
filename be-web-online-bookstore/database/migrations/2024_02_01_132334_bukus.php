@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('pengarang');
             $table->string('penerbit');
             $table->string('tahun_terbit');
-            $table->string('foto');
+            $table->string('foto')->nullable();
+            $table->string('stok');
             $table->timestamps();
         });
     }
