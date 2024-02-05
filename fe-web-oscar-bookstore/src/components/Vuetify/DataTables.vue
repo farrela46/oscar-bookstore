@@ -11,28 +11,22 @@
         </v-card-title>
 
         <v-divider></v-divider>
-        <v-data-table v-model:search="search" :items="getitems">
+        <v-data-table v-model:search="search" :items="getitems" item-key="id">
+            <template v-slot:item.id="{ item }">
+                <div class="text-start bold">
+                    {{ item.id }}
+                </div>
+            </template>
             <template v-slot:item.no="{ item }">
                 <div class="text-start">
                     {{ item.no }}
                 </div>
             </template>
-            <!-- <template v-slot:header.stock>
-                <div class="text-end">Status</div>
-            </template> -->
-
-            <!-- <template v-slot:item.stock="{ item }">
-                <div class="text-end">
-                    <v-chip :color="item.stock ? 'green' : 'red'" :text="item.stock ? 'Active' : 'Inactive'"
-                        class="text-uppercase" label size="small"></v-chip>
-                </div>
-            </template> -->
-
             <template v-slot:item.actions="{ item }">
-                <v-icon size="small" class="me-2" @click="editItem(item)">
+                <!-- <v-icon size="large" class="me-2" data-bs-toggle="modal" data-bs-target="#editModal">
                     mdi-pencil
-                </v-icon>
-                <v-icon size="small" @click="deleteItem(item)">
+                </v-icon> -->
+                <v-icon size="large" @click="deleteUser(item)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -52,23 +46,10 @@ export default {
     data() {
         return {
             search: '',
-            items: [
-                {
-                    no: '',
-                    nama: 'Nebula GTX 3080',
-                    email: '',
-                    no_telp: '',
-                    actions: '',
-                },
-                {
-                    no: '',
-                    name: 'Galaxy RTX 3080',
-                    email: '',
-                    no_telp: '',
-                    actions: '',
-                },
-
-            ],
+            items: [],
+            items_edit: [],
+           
+            showModal: false,
         }
     },
     computed: {
@@ -81,6 +62,7 @@ export default {
     },
     mounted() {
         this.retrieveUser();
+
     },
     methods: {
         async retrieveUser() {
@@ -91,6 +73,7 @@ export default {
                     }
                 });
                 this.items = response.data.map((item, index) => ({
+                    id: item.id,
                     no: index + 1,
                     nama: item.name,
                     email: item.email,
@@ -101,6 +84,38 @@ export default {
                 console.error(error);
             }
         },
+        async deleteUser(item) {
+            try {
+                const id = item.id
+                const response = await axios.delete(BASE_URL + '/deleteUser/' + id, {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+                    },
+                });
+                console.log(item.no)
+                this.$notify({
+                    type: 'success',
+                    title: 'Success',
+                    text: 'Akun berhasil dihapus',
+                    color: 'green'
+                });
+                this.retrieveUser();
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        showModal(id_user) {
+            $('#editModal').modal('show');
+            // let obj = this.items.find(o => o.item.id === id_user);
+            // this.items_edit = obj;
+            // this.showModal = true;
+        },
+
+        // Method to hide the modal
+        hideTheModal() {
+            this.showModal = false;
+        },
+
     }
 }
 </script>

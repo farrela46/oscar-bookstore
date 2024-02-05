@@ -45,7 +45,7 @@ class AddressesController extends Controller
 
     public function getById(Request $request, $id)
     {
-        
+
         $address = Address::where('user_id', $id)->get();
 
         if (!$address) {
@@ -56,23 +56,23 @@ class AddressesController extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    $address = Address::find($id);
+    {
+        $address = Address::find($id);
 
-    if (!$address) {
-        return response()->json(['message' => 'Address not found'], 404);
+        if (!$address) {
+            return response()->json(['message' => 'Address not found'], 404);
+        }
+
+        $address->update([
+            'jalan' => $request->input('jalan'),
+            'kelurahan' => $request->input('kelurahan'),
+            'kecamatan' => $request->input('kecamatan'),
+            'kota' => $request->input('kota'),
+            'kode_pos' => $request->input('kode_pos'),
+        ]);
+
+        return response()->json(['message' => 'Successfully updated Address'], 200);
     }
-
-    $address->update([
-        'jalan' => $request->input('jalan'),
-        'kelurahan' => $request->input('kelurahan'),
-        'kecamatan' => $request->input('kecamatan'),
-        'kota' => $request->input('kota'),
-        'kode_pos' => $request->input('kode_pos'),
-    ]);
-
-    return response()->json(['message' => 'Successfully updated Address'], 200);
-}
     public function delete($id)
     {
         $address = Address::where('id', $id)->first();

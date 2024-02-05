@@ -16,7 +16,7 @@
         </div>
         <div class="row">
           <div class="col-3">
-            <div class="card px-4 border-0">
+            <div class="card px-8 pb-4 border-0">
               <div class="row">
                 <h4 class="mt-4">User Profile</h4>
                 <div class="inputbox">

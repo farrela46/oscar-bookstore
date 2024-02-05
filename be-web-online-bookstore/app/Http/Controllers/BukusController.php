@@ -11,7 +11,6 @@ class BukusController extends Controller
 {
     public function add(Request $request)
     {
-        // Validate the request
         $request->validate([
             'foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'no_isbn' => 'required',
@@ -23,14 +22,12 @@ class BukusController extends Controller
             'stok' => 'required',
         ]);
 
-        // Handle file upload
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             // $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
             $fileName = time() . '_' . Str::of($file->getClientOriginalName())->slug('-') . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('public/buku_photos', $fileName);
 
-            // Save the file path to the database
             $created = Buku::create([
                 'no_isbn' => $request->input('no_isbn'),
                 'judul' => $request->input('judul'),
@@ -58,6 +55,52 @@ class BukusController extends Controller
         ], 400);
     }
 
+    public function update(Request $request, $id)
+    {
+        $buku = Buku::find($id);
+
+        if (!$buku) {
+            return response()->json(['message' => 'Buku tidak ditemukan'], 404);
+        }
+
+        $request->validate([
+            'foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'no_isbn' => 'required',
+            'judul' => 'required',
+            'desc' => 'required',
+            'pengarang' => 'required',
+            'penerbit' => 'required',
+            'tahun_terbit' => 'required',
+            'stok' => 'required',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            if (Storage::exists($buku->foto)) {
+                Storage::delete($buku->foto);
+            }
+
+            $file = $request->file('foto');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('public/buku_photos', $fileName);
+
+            $buku->update([
+                'foto' => $filePath,
+            ]);
+        }
+
+        $buku->update([
+            'no_isbn' => $request->input('no_isbn'),
+            'judul' => $request->input('judul'),
+            'desc' => $request->input('desc'),
+            'pengarang' => $request->input('pengarang'),
+            'penerbit' => $request->input('penerbit'),
+            'tahun_terbit' => $request->input('tahun_terbit'),
+            'stok' => $request->input('stok'),
+        ]);
+
+        return response()->json(['message' => 'Successfully updated Buku'], 200);
+    }
+
     public function getBuku(Request $request)
     {
         $buku = Buku::all();
@@ -83,21 +126,32 @@ class BukusController extends Controller
         return response()->json($bukuData);
     }
 
+    public function getDetailBuku(Request $request, $id)
+    {
+
+        $buku = Buku::where('id', $id)->get();
+
+        if (!$id) {
+            return response()->json(['error' => 'Buku tidak ditemukan'], 404);
+        }
+
+        return response()->json($buku);
+    }
     public function delete($id)
     {
         $buku = Buku::find($id);
-    
+
         if (!$buku) {
             return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
         }
-    
+
         // Delete the associated file
         if (Storage::exists($buku->foto)) {
             Storage::delete($buku->foto);
         }
-    
+
         $buku->delete();
-    
+
         return response()->json(['success' => true, 'message' => 'Buku deleted successfully'], 200);
     }
 }

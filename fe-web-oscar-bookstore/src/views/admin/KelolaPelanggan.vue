@@ -75,7 +75,7 @@
             </div>
             <div class="modal-footer">
               <button-custom type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button-custom>
-              <button-custom class="btn btn-primary" type="submit" @click="addUser">Add Customer</button-custom>
+              <button-custom class="btn btn-info" type="submit" @click="addUser">Add Customer</button-custom>
             </div>
           </div>
         </div>
@@ -146,6 +146,12 @@ export default {
           password: this.passwordCustomer
         });
         this.closeModal(),
+        this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: response.data.message,
+            color: 'green'
+          });
         this.$refs.datatablesComp.retrieveUser();
         this.clearForm();
           console.log(response.data);

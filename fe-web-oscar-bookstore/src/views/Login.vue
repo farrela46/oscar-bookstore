@@ -198,9 +198,14 @@ export default {
                     password: this.loginPassword
                 });
 
+                this.$notify({
+                    type: 'success',
+                    title: 'Success',
+                    text: response.data.message,
+                    color: 'green'
+                });
                 console.log(response.data);
 
-                // Extract role from the response data
                 const { role } = response.data.user;
 
                 if (role === 'ADMIN') {
@@ -210,6 +215,8 @@ export default {
                     localStorage.setItem('access_token', response.data.access_token);
                     this.$router.push('/dashboard');
                 }
+
+
             } catch (error) {
                 console.error(error);
 
