@@ -18,6 +18,7 @@ class Buku extends Model
         'tahun_terbit',
         'foto',
         'stok',
+        'harga'
     ];
 
   

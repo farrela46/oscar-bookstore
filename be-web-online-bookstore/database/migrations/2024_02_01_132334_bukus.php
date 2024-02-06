@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('tahun_terbit');
             $table->string('foto')->nullable();
             $table->string('stok');
+            $table->string('harga');
             $table->timestamps();
         });
     }

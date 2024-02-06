@@ -100,9 +100,9 @@ export default {
   },
   data() {
     return {
-      users: [
-        { id: '', name: '', email: '' },
-      ],
+      // users: [
+      //   { id: '', name: '', email: '' },
+      // ],
       // Modal Add Customer
       namaCustomer: '',
       emailCustomer: '',
@@ -119,7 +119,7 @@ export default {
     },
   },
   mounted() {
-    this.retrieveUser();
+    // this.retrieveUser();
     // this.closeModal();
     // this.addUser();
     // this.deleteUser();
@@ -170,30 +170,30 @@ export default {
         }
       }
     },
-    async retrieveUser() {
-      try {
-        const response = await axios.get(BASE_URL + '/getUser', {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.users = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async deleteUser(id) {
-      try {
-        const response = await axios.delete(BASE_URL + '/deleteUser/' + id, {
-          headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
-          },
-        });
-        this.retrieveUser();
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    // async retrieveUser() {
+    //   try {
+    //     const response = await axios.get(BASE_URL + '/getUser', {
+    //       headers: {
+    //         Authorization: "Bearer " + localStorage.getItem('access_token')
+    //       }
+    //     });
+    //     this.users = response.data;
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
+    // async deleteUser(id) {
+    //   try {
+    //     const response = await axios.delete(BASE_URL + '/deleteUser/' + id, {
+    //       headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+    //       },
+    //     });
+    //     this.retrieveUser();
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
 
   }
 };

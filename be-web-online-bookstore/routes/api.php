@@ -41,7 +41,7 @@ Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
 Route::prefix('/buku')->middleware('auth:sanctum')->group(function () {
     Route::post('/add', [BukusController::class, 'add']);
     Route::get('/get', [BukusController::class, 'getBuku']);
-    Route::get('/detail/{id}', [AddressesController::class, 'getDetailBuku']);
-    Route::put('/update/{id}', [AddressesController::class, 'update']);
+    Route::get('/detail/{id}', [BukusController::class, 'getDetailBuku']);
+    Route::post('/update/{id}', [BukusController::class, 'update']);
     Route::delete('/delete/{id}', [BukusController::class, 'delete']);
 });
