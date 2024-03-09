@@ -14,7 +14,7 @@
         <v-data-table v-model:search="search" :items="items" item-key="item.id">
             <template v-slot:item.id="{ item }">
                 <div v-if="false">{{ item.id }}</div>
-            </template>
+            </template> 
             <template v-slot:header.id>
             </template>
             <template v-slot:item.no="{ item }">
