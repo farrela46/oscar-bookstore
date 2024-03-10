@@ -12,18 +12,10 @@ const store = useStore();
             :class="store.state.isRTL ? 'text-lg-end' : 'text-lg-start'"
           >
             ©
-            {{ new Date().getFullYear() }}, made with
-            <i class="fa fa-heart"></i> by
-            <a
-              href="https://www.creative-tim.com"
-              class="font-weight-bold"
-              target="_blank"
-              >Creative Tim</a
-            >
-            for a better web.
+            {{ new Date().getFullYear() }}, made by Farrel Ahmad
           </div>
         </div>
-        <div class="col-lg-6">
+        <!-- <div class="col-lg-6">
           <ul
             class="nav nav-footer justify-content-center justify-content-lg-end"
           >
@@ -60,7 +52,7 @@ const store = useStore();
               >
             </li>
           </ul>
-        </div>
+        </div> -->
       </div>
     </div>
   </footer>
