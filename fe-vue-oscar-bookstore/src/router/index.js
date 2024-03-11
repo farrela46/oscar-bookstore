@@ -32,7 +32,7 @@ const routes = [
     component: Login,
   },
   {
-    path: "/dashboard-default",
+    path: "/admin/dashboard",
     name: "Dashboard",
     component: Dashboard,
   },

@@ -222,7 +222,6 @@ export default {
 
                 if (error.response && error.response.data.message) {
                     const errorMessage = error.response.data.message;
-                    // Display notification with red color
                     this.$notify({
                         type: 'error',
                         title: 'Error',

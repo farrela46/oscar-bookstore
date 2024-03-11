@@ -1,64 +1,31 @@
-<script>
-// import { computed, ref } from "vue";
-// import { useStore } from "vuex";
-// import { useRoute, useRouter } from "vue-router";
+<script setup>
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
-import axios from 'axios';
-import BASE_URL from '@/api/config-api';
 
-export default {
-  components: {
-    Breadcrumbs
-  },
-  data() {
-    return {
-      showMenu: false,
-      showMenuUser: false
-    };
-  },
-  computed: {
-    isRTL() {
-      return this.$store.state.isRTL;
-    },
-    currentRouteName() {
-      return this.$route.name;
-    },
-    currentDirectory() {
-      let dir = this.$route.path.split("/")[1];
-      return dir.charAt(0).toUpperCase() + dir.slice(1);
-    }
-  },
-  methods: {
-    minimizeSidebar() {
-      this.$store.commit("sidebarMinimize");
-    },
-    closeMenu() {
-      setTimeout(() => {
-        this.showMenu = false;
-      }, 100);
-    },
-    closeMenuUser() {
-      setTimeout(() => {
-        this.showMenuUser = false;
-      }, 100);
-    },
-    async onLogout() {
-      try {
-        await axios.post(`${BASE_URL}/logout`, {}, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token'),
-          }
-        });
+const showMenu = ref(false);
+const store = useStore();
+const isRTL = computed(() => store.state.isRTL);
 
-        localStorage.removeItem('access_token');
-        this.$router.push('/login');
-      } catch (error) {
-        console.error('Logout failed:', error);
-      }
-    }
-  }
+const route = useRoute();
+
+const currentRouteName = computed(() => {
+  return route.name;
+});
+const currentDirectory = computed(() => {
+  let dir = route.path.split("/")[1];
+  return dir.charAt(0).toUpperCase() + dir.slice(1);
+});
+
+const minimizeSidebar = () => store.commit("sidebarMinimize");
+const toggleConfigurator = () => store.commit("toggleConfigurator");
+
+const closeMenu = () => {
+  setTimeout(() => {
+    showMenu.value = false;
+  }, 100);
 };
-
 </script>
 
 <template>
@@ -68,26 +35,38 @@ export default {
       <breadcrumbs :current-page="currentRouteName" :current-directory="currentDirectory" />
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" :class="isRTL ? 'px-0' : 'me-sm-4'"
         id="navbar">
-        <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
-          <!-- <div class="input-group">
+        <div class="pe-md-3 d-flex align-items-center" :class="ms-md-auto">
+          <div class="input-group">
             <span class="input-group-text text-body">
               <i class="fas fa-search" aria-hidden="true"></i>
             </span>
             <input type="text" class="form-control" :placeholder="isRTL ? 'أكتب هنا...' : 'Type here...'" />
-          </div> -->
+          </div>
         </div>
         <ul class="navbar-nav justify-content-end">
+          <li class="nav-item d-flex align-items-center">
+            <router-link :to="{ name: 'Signin' }" class="px-0 nav-link font-weight-bold text-white" target="_blank">
+              <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
+              <span v-if="isRTL" class="d-sm-inline d-none">يسجل دخول</span>
+              <span v-else class="d-sm-inline d-none">Sign In</span>
+            </router-link>
+          </li>
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
-            <a @click="minimizeSidebar" class="p-0 nav-link text-black" id="iconNavbarSidenav">
+            <a href="#" @click="minimizeSidebar" class="p-0 nav-link text-white" id="iconNavbarSidenav">
               <div class="sidenav-toggler-inner">
-                <i class="sidenav-toggler-line bg-black"></i>
-                <i class="sidenav-toggler-line bg-black"></i>
-                <i class="sidenav-toggler-line bg-black"></i>
+                <i class="sidenav-toggler-line bg-white"></i>
+                <i class="sidenav-toggler-line bg-white"></i>
+                <i class="sidenav-toggler-line bg-white"></i>
               </div>
             </a>
           </li>
-          <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <a href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
+          <li class="px-3 nav-item d-flex align-items-center">
+            <a class="p-0 nav-link text-white" @click="toggleConfigurator">
+              <i class="cursor-pointer fa fa-cog fixed-plugin-button-nav"></i>
+            </a>
+          </li>
+          <li class="nav-item dropdown d-flex align-items-center" :class="isRTL ? 'ps-2' : 'pe-2'">
+            <a href="#" class="p-0 nav-link text-white" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
               <i class="cursor-pointer fa fa-bell"></i>
             </a>
@@ -162,52 +141,6 @@ export default {
                         <i class="fa fa-clock me-1"></i>
                         2 days
                       </p>
-                    </div>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <a href="#" class="p-0 nav-link text-black" :class="[showMenuUser ? 'show' : '']" id="dropdownMenuUser"
-              data-bs-toggle="dropdown" aria-expanded="false" @click="showMenuUse = !showMenuUser"
-              @blur="closeMenuUser">
-              <i class="cursor-pointer fa fa-user"></i>
-            </a>
-            <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenuUser ? 'show' : ''"
-              aria-labelledby="dropdownMenuUser">
-              <li class="mb-2">
-                <a class="dropdown-item border-radius-md" href="/profile">
-                  <div class="py-1 d-flex">
-                    <div class="my-auto mx-3">
-                      <span style="font-size: 1rem;">
-                        <span style="color: black;">
-                          <i class="fas fa-user"></i>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="d-flex flex-column ml-4 justify-content-center">
-                      <h6 class="mb-1 text-sm font-weight-normal">
-                        My Profile
-                      </h6>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item border-radius-md" @click="onLogout">
-                  <div class="py-1 d-flex">
-                    <div class="my-auto mx-3">
-                      <span style="font-size: 1rem;">
-                        <span style="color: black;">
-                          <i class="fas fa-running"></i>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="d-flex flex-column ml-4 justify-content-center">
-                      <h6 class="mb-1 text-sm font-weight-normal">
-                        Logout
-                      </h6>
                     </div>
                   </div>
                 </a>
