@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../views/LandingPage.vue";
-import Dashboard from "../views/Dashboard.vue";
-import Tables from "../views/Tables.vue";
-import Billing from "../views/Billing.vue";
+import Dashboard from "../views/admin/Dashboard.vue";
+import Tables from "../views/admin/Tables.vue";
+import Billing from "../views/admin/Billing.vue";
+import UserDashboard from "../views/user/Dashboard.vue";
 import VirtualReality from "../views/VirtualReality.vue";
 import RTL from "../views/Rtl.vue";
 import Profile from "../views/Profile.vue";
@@ -45,6 +46,11 @@ const routes = [
     path: "/billing",
     name: "Billing",
     component: Billing,
+  },
+  {
+    path: "/dashboard",
+    name: "UserDashboard",
+    component: UserDashboard,
   },
   {
     path: "/virtual-reality",

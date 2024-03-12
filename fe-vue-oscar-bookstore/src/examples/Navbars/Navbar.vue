@@ -219,3 +219,8 @@ export default {
     </div>
   </nav>
 </template>
+<style scoped>
+.dropdown-menu {
+    top: 0.25rem !important;
+}
+</style>

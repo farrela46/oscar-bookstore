@@ -4,7 +4,7 @@ import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
-import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
+// import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 
 export default {
@@ -13,7 +13,7 @@ export default {
     Navbar,
     AppFooter,
     ArgonInput,
-    ArgonCheckbox,
+    // ArgonCheckbox,
     ArgonButton
   },
   data() {
@@ -21,7 +21,8 @@ export default {
       username: '',
       password: '',
       store: null,
-      body: null
+      body: null,
+      loading: false
     };
   },
   created() {
@@ -34,6 +35,7 @@ export default {
   },
   methods: {
     async onSubmit() {
+      this.loading = true;
       try {
         console.log("test")
         const response = await axios.post(`${BASE_URL}/login`, {
@@ -69,10 +71,12 @@ export default {
             color: 'red'
           });
         }
+      } finally {
+        this.loading = false; 
       }
     },
 
-        setupPage() {
+    setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = false;
       this.store.state.showSidenav = false;
@@ -113,7 +117,7 @@ export default {
           <div class="col-auto text-left mb-5">
             <h1 class="text-white mb-2 mt-2">Login</h1>
             <p class="text-lead text-white">
-              Silahkan login terlebih dahulu untuk mengakses <br> Website Manajemen Usul Pesan!
+              Silahkan login terlebih dahulu untuk mengakses <br> Website Toko Buku Oscar!
             </p>
           </div>
         </div>
@@ -131,14 +135,11 @@ export default {
                 <argon-input v-model="username" id="email" type="email" placeholder="Email" aria-label="Email" />
                 <argon-input v-model="password" id="password" type="password" placeholder="Password"
                   aria-label="Password" />
-                <argon-checkbox checked>
-                  <label class="form-check-label" for="flexCheckDefault">
-                    I agree the
-                    <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
-                  </label>
-                </argon-checkbox>
                 <div class="text-center">
-                  <argon-button fullWidth color="dark" type="submit" variant="gradient" class="my-4 mb-2">Login</argon-button>
+                  <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient"
+                    class="my-4 mb-2">Login</argon-button>
+                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2"><v-progress-circular
+                      indeterminate></v-progress-circular></argon-button>
                 </div>
                 <p class="text-sm mt-3 mb-0">
                   Tidak punya akun?
@@ -153,8 +154,9 @@ export default {
   </main>
   <app-footer />
 </template>
+
 <style scoped>
 .mt-lg-n10 {
-    margin-top: -185px !important;
+  margin-top: -185px !important;
 }
 </style>

@@ -4,7 +4,7 @@ import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
-import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
+// import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 
 export default {
@@ -13,15 +13,17 @@ export default {
     Navbar,
     AppFooter,
     ArgonInput,
-    ArgonCheckbox,
+    // ArgonCheckbox,
     ArgonButton
   },
   data() {
     return {
-      username: '',
+      name: '',
+      email: '',
       password: '',
       store: null,
-      body: null
+      body: null,
+      loading: false
     };
   },
   created() {
@@ -34,28 +36,20 @@ export default {
   },
   methods: {
     async onSubmit() {
+      this.loading = true;
       try {
-        const response = await axios.post(`${BASE_URL}/login`, {
-          email: this.username,
+        const response = await axios.post(`${BASE_URL}/register`, {
+          name: this.name,
+          email: this.email,
           password: this.password
         });
-
         this.$notify({
           type: 'success',
           title: 'Success',
           text: response.data.message,
           color: 'green'
         });
-
-        const { role } = response.data.user;
-
-        if (role === 'ADMIN') {
-          localStorage.setItem('access_token', response.data.access_token);
-          this.$router.push('/admin/dashboard');
-        } else if (role === 'USER') {
-          localStorage.setItem('access_token', response.data.access_token);
-          this.$router.push('/dashboard');
-        }
+        this.$router.push('/login');
       } catch (error) {
         console.error(error);
 
@@ -68,10 +62,12 @@ export default {
             color: 'red'
           });
         }
+      } finally {
+        this.loading = false; 
       }
     },
 
-        setupPage() {
+    setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = false;
       this.store.state.showSidenav = false;
@@ -99,7 +95,7 @@ export default {
     </div>
   </div>
   <main class="main-content mt-0">
-   
+
     <div class="mx-3 mt-2 position-relative" :style="{
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ) ,url(' + require('@/assets/img/library.png') + ')',
           backgroundSize: 'cover',
@@ -112,7 +108,7 @@ export default {
           <div class="col-auto text-left mb-5">
             <h1 class="text-white mb-2 mt-2">Register</h1>
             <p class="text-lead text-white">
-              Silahkan membuat akun terlebih dahulu untuk mengakses <br> Website Manajemen Usul Pesan!
+              Silahkan membuat akun terlebih dahulu untuk mengakses <br> Website Toko Buku Oscar!
             </p>
           </div>
         </div>
@@ -126,18 +122,21 @@ export default {
               <h5>Register</h5>
             </div>
             <div class="card-body">
-              <form role="form">
-                <argon-input id="name" type="text" placeholder="Name" aria-label="Name" />
-                <argon-input id="email" type="email" placeholder="Email" aria-label="Email" />
-                <argon-input id="password" type="password" placeholder="Password" aria-label="Password" />
-                <argon-checkbox checked>
+              <form role="form" @submit.prevent="onSubmit">
+                <argon-input v-model="name" id="name" type="text" placeholder="Name" aria-label="Name" />
+                <argon-input v-model="email" id="email" type="email" placeholder="Email" aria-label="Email" />
+                <argon-input v-model="password" id="password" type="password" placeholder="Password"
+                  aria-label="Password" />
+                <!-- <argon-checkbox checked>
                   <label class="form-check-label" for="flexCheckDefault">
                     I agree the
                     <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
                   </label>
-                </argon-checkbox>
+                </argon-checkbox> -->
                 <div class="text-center">
-                  <argon-button fullWidth color="dark" variant="gradient" class="my-4 mb-2">Sign up</argon-button>
+                  <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient" class="my-4 mb-2">Sign up</argon-button>
+                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2"><v-progress-circular
+                      indeterminate></v-progress-circular></argon-button>
                 </div>
                 <p class="text-sm mt-3 mb-0">
                   Sudah punya akun?
@@ -152,8 +151,9 @@ export default {
   </main>
   <app-footer />
 </template>
+
 <style scoped>
 .mt-lg-n10 {
-    margin-top: -185px !important;
+  margin-top: -185px !important;
 }
 </style>

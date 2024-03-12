@@ -241,8 +241,8 @@ onBeforeUnmount(() => {
                     <h5 class="font-weight-normal"><a href="javascript:;">Buku adalah jendela Dunia!</a></h5>
                     <p class="mb-0">Dengan membaca buku, kita bisa mendapatkan beragam pengetahuan yang
                       belum kita
-                      ketahui. Sehingga wawasan kita kian bertambah.</p><button type="button"
-                      class="btn btn-sm mb-0 mt-3 bg-gradient-success">Beli buku sekarang</button>
+                      ketahui. Sehingga wawasan kita kian bertambah.</p>
+                    <button type="button" class="btn btn-sm mb-0 mt-3 bg-gradient-success">Beli buku sekarang</button>
                   </div>
                 </div>
               </div>

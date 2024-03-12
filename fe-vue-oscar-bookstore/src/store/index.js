@@ -17,8 +17,12 @@ export default createStore({
     showFooter: true,
     showMain: true,
     layout: "default",
+    userRole: null
   },
   mutations: {
+    setUserRole(state, userRole) {
+      state.userRole = userRole; // Set the userRole state
+    },
     toggleConfigurator(state) {
       state.showConfig = !state.showConfig;
     },
