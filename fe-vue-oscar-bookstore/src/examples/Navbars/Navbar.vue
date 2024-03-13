@@ -17,16 +17,13 @@ export default {
     };
   },
   computed: {
-    isRTL() {
-      return this.$store.state.isRTL;
-    },
     currentRouteName() {
       return this.$route.name;
     },
     currentDirectory() {
-      let dir = this.$route.path.split("/")[1];
-      return dir.charAt(0).toUpperCase() + dir.slice(1);
+      return this.$route.name;
     }
+
   },
   methods: {
     minimizeSidebar() {
@@ -69,12 +66,7 @@ export default {
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" :class="isRTL ? 'px-0' : 'me-sm-4'"
         id="navbar">
         <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
-          <!-- <div class="input-group">
-            <span class="input-group-text text-body">
-              <i class="fas fa-search" aria-hidden="true"></i>
-            </span>
-            <input type="text" class="form-control" :placeholder="isRTL ? 'أكتب هنا...' : 'Type here...'" />
-          </div> -->
+
         </div>
         <ul class="navbar-nav justify-content-end">
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
@@ -219,8 +211,9 @@ export default {
     </div>
   </nav>
 </template>
+
 <style scoped>
 .dropdown-menu {
-    top: 0.25rem !important;
+  top: 0.25rem !important;
 }
 </style>

@@ -37,12 +37,7 @@ export default {
 
         if (error.response && error.response.data.message) {
           const errorMessage = error.response.data.message;
-          this.$notify({
-            type: 'error',
-            title: 'Error',
-            text: errorMessage,
-            color: 'red'
-          });
+          console.log(errorMessage)
         }
       }
     }
@@ -56,23 +51,30 @@ export default {
   <div class="collapse navbar-collapse w-auto h-auto h-100" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/admin/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''"
-          navText="Dashboard">
+        <sidenav-item to="/admin/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''" navText="Dashboard">
           <template v-slot:icon>
             <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
+        <sidenav-item to="/admin/manageusers" :class="getRoute() === 'manage users' ? 'active' : ''" navText="Manage Users">
+          <template v-slot:icon>
+            <i class="fas fa-users text-success text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
+      <li v-if="userRole === 'ADMIN'" class="nav-item">
         <sidenav-item to="/tables" :class="getRoute() === 'tables' ? 'active' : ''" navText="Tables">
+
           <template v-slot:icon>
             <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/billing" :class="getRoute() === 'billing' ? 'active' : ''"
-          navText="Billing">
+        <sidenav-item to="/billing" :class="getRoute() === 'billing' ? 'active' : ''" navText="Billing">
+
           <template v-slot:icon>
             <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
           </template>
@@ -81,16 +83,17 @@ export default {
       <li v-if="userRole === 'ADMIN'" class="nav-item">
         <sidenav-item to="/virtual-reality" :class="getRoute() === 'virtual-reality' ? 'active' : ''"
           navText="Virtual Reality">
+
           <template v-slot:icon>
             <i class="ni ni-app text-info text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
-      
+
       <!-- Additional navigation items for other roles -->
       <li v-else-if="userRole === 'USER'" class="nav-item">
-        <sidenav-item to="/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''"
-          navText="Dashboard">
+        <sidenav-item to="/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''" navText="Home">
+
           <template v-slot:icon>
             <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
           </template>

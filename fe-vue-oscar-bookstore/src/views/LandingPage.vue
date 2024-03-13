@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeMount, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeMount, onBeforeUnmount } from "vue";
 import { useStore } from "vuex";
 import AppFooter from "@/examples/Footer.vue";
 import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
@@ -21,11 +21,11 @@ const store = useStore();
 //   new Typed('#typed', typedOptions);
 // });
 
-const images = ref([
-  { link: require("@/assets/img/oscar0.png") },
-  { link: require("@/assets/img/oscar1.png") },
-  { link: require("@/assets/img/oscar2.png") }
-]);
+// const images = ref([
+//   { link: require("@/assets/img/oscar0.png") },
+//   { link: require("@/assets/img/oscar1.png") },
+//   { link: require("@/assets/img/oscar2.png") }
+// ]);
 
 
 onMounted(() => {
@@ -118,38 +118,21 @@ onBeforeUnmount(() => {
           borderRadius: '30px 30px 30px 30px'
         }">
         <div class="row h-100 justify-content-center align-items-center m-5">
-          <div class="col-auto text-center m-2">
-            <h2 class="text-dark mb-4 mt-5 pb-5">Toko Buku Oscar Kediri</h2>
-            <div class="row">
-              <div class="col-md-6 ">
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                  <div class="carousel-inner">
-                    <div v-for="(image, index) in images" :key="index"
-                      :class="['carousel-item', { active: index === 0 }]">
-                      <img :src="image.link" class="d-block w-100" :alt="'Slide ' + (index + 1)"
-                        style="max-width: 400px; object-fit: cover; border-radius: 30px;">
-                    </div>
-                  </div>
-                  <div class="carousel-indicators">
-                    <button v-for="(image, index) in images" :key="index" type="button"
-                      :data-bs-target="'#carouselExampleIndicators'" :data-bs-slide-to="index"
-                      :class="['thumbnail', { 'first-two': index === 0 || index === 1 }, { active: index === 0 }]"
-                      aria-label="'Slide ' + (index + 1)">
-                      <img :src="image.link" class="d-block" :alt="'Slide ' + (index + 1)"
-                        style="width: 90px; height: auto;">
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-              <div class="col-md-6 d-flex align-items-center">
-                <p class="lead teks"> Toko Buku Terlengkap dan Terjangkau di kawasan Kediri, kami
-                  menyediakan buku -buku
-                  mulai dari buku pengetahuan, buku cerita, buku resep makanan,
-                  komik, majalah, hingga ratusan buku lainnya dengan stok yang banyak, kami berkomitmen memberikan
-                  layanan terbaik bagi pelanggan kami. </p>
-              </div>
+          <h1 class="text-dark text-center mb-4 mt-5">Toko Buku Oscar Kediri</h1>
+          <div class="row">
+            <div class="col-12 gambar">
+              <v-carousel show-arrows="hover" cycle >
+                <v-carousel-item  :src="require('@/assets/img/oscar3.jpg')" cover></v-carousel-item>
+                <v-carousel-item  :src="require('@/assets/img/oscar4.jpg')" cover></v-carousel-item>
+              </v-carousel>
             </div>
+          </div>
+          <div class="col-auto text-center m-2">
+            <p class="lead"> Toko Buku Terlengkap dan Terjangkau di kawasan Kediri, kami
+              menyediakan buku -buku
+              mulai dari buku pengetahuan, buku cerita, buku resep makanan,
+              komik, majalah, hingga ratusan buku lainnya dengan stok yang banyak, kami berkomitmen memberikan
+              layanan terbaik bagi pelanggan kami. </p>
           </div>
           <br>
           <div class="col-auto text-center m-4 px-3">
@@ -161,22 +144,6 @@ onBeforeUnmount(() => {
               pembelian.
             </p>
           </div>
-          <!-- <div class="col-auto text-center m-4 px-3">
-            <h2 class="text-dark mb-4 mt-5">Alamat Kami</h2>
-            <div class="row">
-
-              <div class="col-md-6">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.7926225546043!2d112.02894431093304!3d-7.81176419217626!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e785769dee1ffc1%3A0x8841f2f6bd62b46d!2sToko%20Buku%20Oscar!5e0!3m2!1sid!2sid!4v1696152777230!5m2!1sid!2sid"
-                  width="600" height="500" style="border:0;" allowfullscreen="" loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"></iframe>
-              </div>
-              <div class="col-md-6 d-flex align-items-center">
-                <p class="lead" style="font-size: 24px;">Kami berada di Jalan Ahmad Yani No. 85, Kecamatan Ngasem, Kabupaten Kediri, Provinsi
-                  Jawa Timur</p>
-              </div>
-            </div>
-          </div> -->
           <section class="py-5 ">
             <div class="row align-items-center">
               <h2 class="text-dark mb-4 pb-6 mt-5 text-center">Komitmen Kami</h2>
@@ -345,70 +312,22 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.thumbnail {
-  padding: 5px;
+.gambar {
+  padding-left: 50px;
+  padding-right: 50px;
 }
-
-.first-two {
-  margin-right: 10px;
-}
-
-.carousel-indicators button.thumbnail {
-  width: 100px;
-}
-
-.carousel-indicators button.thumbnail:not(.active) {
-  opacity: 0.7;
-}
-
-.carousel-indicators {
-  position: static;
-  margin-right: 50%;
-  margin-bottom: 100px;
-}
-
-
-.details-snippet1 {
-  color: #585656;
-}
-
-
-.details-snippet1 .mini-preview img {
-  border: 1px solid #585656;
-  border: 1px solid purple;
-  margin-bottom: 100px;
-}
-
-
-@media screen and (min-width: 992px) {
-  .carousel {
-    max-width: 70%;
-    margin: 0 auto;
-    margin-right: 5%;
-  }
-
-}
-
 .teks {
   font-size: 24px;
 }
 
 @media screen and (max-width: 840px) {
-  .carousel {
-    max-width: 80%;
-    margin: 0 auto;
-    margin-right: 5%;
-  }
-
-  .carousel-indicators {
-    position: static;
-    margin-right: 10%;
-    margin-bottom: 100px;
-  }
-
   .teks {
     font-size: 16px;
   }
+  .gambar {
+  padding-left: 0px;
+  padding-right: 0px;
+}
 
 }
 </style>

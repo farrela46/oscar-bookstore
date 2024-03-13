@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../views/LandingPage.vue";
 import Dashboard from "../views/admin/Dashboard.vue";
+import ManageUsers from "../views/admin/ManageUsers.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";
 import UserDashboard from "../views/user/Dashboard.vue";
@@ -36,6 +37,11 @@ const routes = [
     path: "/admin/dashboard",
     name: "Dashboard",
     component: Dashboard,
+  },
+  {
+    path: "/admin/manageusers",
+    name: "Manage Users",
+    component: ManageUsers,
   },
   {
     path: "/tables",

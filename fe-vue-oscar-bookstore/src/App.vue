@@ -35,7 +35,6 @@ export default {
     this.hideConfigButton = computed(() => store.state.hideConfigButton);
   },
   methods: {
-    
 
   }
 };
