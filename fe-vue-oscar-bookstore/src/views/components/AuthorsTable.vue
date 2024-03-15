@@ -286,14 +286,12 @@
 </template>
 
 <style>
-@media (max-width: 768px) {
-  /* Force table elements to not behave like a table */
+/* @media (max-width: 768px) {
   table, thead, tbody, th, td, tr {
     display: block;
     width: 100%;
   }
   
-  /* Hide table headers (but not display: none;, for accessibility) */
   thead tr {
     position: absolute;
     top: -9999px;
@@ -303,7 +301,6 @@
   tr { border: 1px solid #ccc; margin-bottom: 5px; }
   
   td {
-    /* Behave like a "row" */
     border: none;
     border-bottom: 1px solid #eee;
     position: relative;
@@ -313,18 +310,15 @@
   }
   
   td:before {
-    /* Now like a table header */
     position: absolute;
-    /* Top/left values mimic padding */
     top: 6px;
     left: 6px;
     width: 45%;
     padding-right: 10px;
     white-space: nowrap;
-    /* Label the data */
     content: attr(data-label);
     font-weight: bold;
   }
-}
+} */
 
 </style>

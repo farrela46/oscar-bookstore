@@ -5,6 +5,7 @@ import Sidenav from "./examples/Sidenav";
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
 
+
 export default {
   components: {
     Sidenav,
