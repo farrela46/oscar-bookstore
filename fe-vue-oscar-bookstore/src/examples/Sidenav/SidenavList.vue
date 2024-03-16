@@ -41,7 +41,6 @@ export default {
         }
       }
     }
-
   },
 };
 </script>
@@ -80,7 +79,7 @@ export default {
           </template>
         </sidenav-item>
       </li>
-      <li v-if="userRole === 'ADMIN'" class="nav-item">
+      <!-- <li v-if="userRole === 'ADMIN'" class="nav-item">
         <sidenav-item to="/virtual-reality" :class="getRoute() === 'virtual-reality' ? 'active' : ''"
           navText="Virtual Reality">
 
@@ -88,7 +87,7 @@ export default {
             <i class="ni ni-app text-info text-sm opacity-10"></i>
           </template>
         </sidenav-item>
-      </li>
+      </li> -->
 
       <!-- Additional navigation items for other roles -->
       <li v-else-if="userRole === 'USER'" class="nav-item">
