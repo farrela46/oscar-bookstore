@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukusController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AddressesController;
+use App\Http\Controllers\CategoriesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -44,4 +45,11 @@ Route::prefix('/buku')->middleware('auth:sanctum')->group(function () {
     Route::get('/detail/{id}', [BukusController::class, 'getDetailBuku']);
     Route::post('/update/{id}', [BukusController::class, 'update']);
     Route::delete('/delete/{id}', [BukusController::class, 'delete']);
+});
+
+Route::prefix('/category')->middleware('auth:sanctum')->group(function () {
+    Route::post('/add', [CategoriesController::class, 'store']);
+    Route::get('/get', [CategoriesController::class, 'index']);
+    Route::post('/update/{id}', [CategoriesController::class, 'update']);
+    Route::delete('/delete/{id}', [CategoriesController::class, 'destroy']);
 });

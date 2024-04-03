@@ -42,14 +42,13 @@ class BukusController extends Controller
             ]);
 
             if ($created) {
-                return response()->json([
-                    'message' => 'Successfully Add Buku!',
-                ], 201);
-            } else {
-                return response()->json([
-                    'message' => 'Server error',
-                ], 500);
+                $categories = $request->input('categories');
+                $created->categories()->attach($categories);
             }
+
+            return response()->json([
+                'message' => $created ? 'Successfully Add Buku!' : 'Server error',
+            ], $created ? 201 : 500);
         }
 
         return response()->json([
@@ -88,8 +87,10 @@ class BukusController extends Controller
         $buku->stok = $request->input('stok');
         $buku->harga = $request->input('harga');
         $buku->save();
-
-        // Return success response
+        
+        $categories = $request->input('categories');
+        $buku->categories()->sync($categories);
+        
         return response()->json(['message' => 'Successfully updated Buku'], 200);
     }
     public function getBuku(Request $request)

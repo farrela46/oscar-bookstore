@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Category;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,8 +19,11 @@ class Buku extends Model
         'tahun_terbit',
         'foto',
         'stok',
-        'harga'
+        'harga',
     ];
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
-  
 }
