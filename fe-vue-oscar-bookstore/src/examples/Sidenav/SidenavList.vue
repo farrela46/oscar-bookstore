@@ -57,14 +57,14 @@ export default {
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/admin/manageproducts" :class="getRoute() === 'manage products' ? 'active' : ''" navText="Manage Products">
+        <sidenav-item to="/admin/products" :class="getRoute() === 'manage products' ? 'active' : ''" navText="Manage Products">
           <template v-slot:icon>
             <i class="fa fa-book text-success text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/admin/manageusers" :class="getRoute() === 'manage users' ? 'active' : ''" navText="Manage Users">
+        <sidenav-item to="/admin/users" :class="getRoute() === 'manage users' ? 'active' : ''" navText="Manage Users">
           <template v-slot:icon>
             <i class="fas fa-users text-success text-sm opacity-10"></i>
           </template>

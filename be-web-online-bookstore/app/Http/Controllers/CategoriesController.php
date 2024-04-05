@@ -16,11 +16,11 @@ class CategoriesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:categories|max:255',
+            'nama' => 'required|unique:categories|max:255',
         ]);
 
         $category = Category::create([
-            'name' => $request->input('name'),
+            'nama' => $request->input('nama'),
         ]);
 
         return response()->json($category, 201);
@@ -34,10 +34,10 @@ class CategoriesController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|unique:categories|max:255',
+            'nama' => 'required|unique:categories|max:255',
         ]);
 
-        $category->name = $request->input('name');
+        $category->nama = $request->input('nama');
         $category->save();
 
         return response()->json($category, 200);

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     {
         use HasApiTokens, HasFactory;
         protected $fillable = [
-            'name',
+            'nama',
         ];
 
         public function bukus()

@@ -3,8 +3,11 @@ import LandingPage from "../views/LandingPage.vue";
 import Dashboard from "../views/admin/Dashboard.vue";
 import ManageUsers from "../views/admin/ManageUsers.vue";
 import ManageProducts from "../views/admin/ManageProducts.vue";
+import ManageCategories from "../views/admin/ManageCategories.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";
+
+//USER
 import UserDashboard from "../views/user/Dashboard.vue";
 import VirtualReality from "../views/VirtualReality.vue";
 import RTL from "../views/Rtl.vue";
@@ -40,14 +43,19 @@ const routes = [
     component: Dashboard,
   },
   {
-    path: "/admin/manageusers",
+    path: "/admin/users",
     name: "Manage Users",
     component: ManageUsers,
   },
   {
-    path: "/admin/manageproducts",
+    path: "/admin/products",
     name: "Manage Products",
     component: ManageProducts,
+  },
+  {
+    path: "/admin/categories",
+    name: "Manage Categories",
+    component: ManageCategories,
   },
   {
     path: "/tables",

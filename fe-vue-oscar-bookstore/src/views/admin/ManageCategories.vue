@@ -19,14 +19,9 @@ export default {
   },
   data() {
     return {
-      users: [],
-      users_edit: [],
+      items_edit: [],
       items: [],
-      register: {
-        name: '',
-        email: '',
-        password: '',
-      },
+      categories: '',
       loading: false,
       loadingRegist: false,
       dialog: false,
@@ -56,10 +51,10 @@ export default {
         this.loading = false;
       }
     },
-    async retrieveBuku() {
+    async retrieveCat() {
       this.loading = true;
       try {
-        const response = await axios.get(`${BASE_URL}/buku/get`, {
+        const response = await axios.get(`${BASE_URL}/category/get`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
@@ -79,12 +74,16 @@ export default {
     async onSubmit() {
       this.loadingRegist = true;
       try {
-        const response = await axios.post(`${BASE_URL}/register`, {
-          name: this.register.name,
-          email: this.register.email,
-          password: this.register.password
+        const response = await axios.post(`${BASE_URL}/category/add`, {
+          nama: this.categories,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          },
         });
-        this.getAllUser();
+
+        this.retrieveCat();
+
         this.$notify({
           type: 'success',
           title: 'Success',
@@ -109,9 +108,36 @@ export default {
         this.closeModal();
       }
     },
-    async deleteUser(id) {
+    async catUpdate(id) {
+      this.loadingRegist = true;
+      console.log(id)
       try {
-        const response = await axios.delete(`${BASE_URL}/deleteUser/` + id, {
+        const response = await axios.post(`${BASE_URL}/category/update/` +  id, {
+          nama: this.items_edit.nama,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          },
+        });
+        console.log('User updated:', response.data);
+        this.closeModalEdit();
+        this.retrieveCat();
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: response.data.message,
+          color: 'green'
+        });
+      } catch (error) {
+        console.error('Update failed:', error);
+
+      } finally {
+        this.loadingRegist = false;
+      }
+    },
+    async deleteCat(id) {
+      try {
+        const response = await axios.delete(`${BASE_URL}/category/delete/` + id, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
           },
@@ -120,47 +146,46 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'User berhasil dihapus',
+          text: 'Category berhasil dihapus',
           color: 'green'
         });
-        this.getAllUser();
+        this.retrieveCat();
       } catch (error) {
         console.error(error);
       }
     },
     clearForm() {
-      this.register.name = '';
-      this.register.email = '';
-      this.register.password = '';
+      this.categories = '';
     },
     openDeleteConfirmation(id) {
-      this.selectedUserId = id;
+      this.selectedCatId = id;
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.show();
     },
     confirmDelete() {
-      if (this.selectedUserId) {
-        this.deleteUser(this.selectedUserId);
+      if (this.selectedCatId) {
+        this.deleteCat(this.selectedCatId);
         this.closeModalDelete();
       }
+    },
+    closeModalEdit() {
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'))
+      modal.hide();
     },
     closeModalDelete() {
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.hide();
     },
-    editUser(id_user) {
-      let obj = this.users.find(o => o.id === id_user);
-      this.users_edit = obj;
+    editCat(id_cat) {
+      let obj = this.items.find(o => o.id === id_cat);
+      this.items_edit = obj;
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'))
       modal.show();
-    },
-    goCategories() {
-      console.log("Navigating to profile...");
-      this.$router.push('/admin/categories')
+      console.log(id_cat)
     },
   },
   mounted() {
-    this.retrieveBuku();
+    this.retrieveCat();
   },
 };
 </script>
@@ -173,18 +198,9 @@ export default {
           <div class="col-md-12 col-12">
             <div class="card">
               <div class="card-header pb-0 d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">List Products</h6>
+                <h6 class="mb-0">List Categories</h6>
                 <div class="div">
-                  <v-tooltip text="Categories Setting" location="start" >
-                    <template v-slot:activator="{ props }">
-                      <span v-bind="props" class="mx-3" style="font-size: 1.5rem; cursor: pointer;" @click="goCategories">
-                        <span style="color: #2DCE89;">
-                          <i class="fas fa-cog"></i>
-                        </span>
-                      </span>
-                    </template>
-                  </v-tooltip>
-                  <argon-button data-bs-toggle="modal" data-bs-target="#exampleModal">Add Products</argon-button>
+                  <argon-button data-bs-toggle="modal" data-bs-target="#exampleModal">Add Categories</argon-button>
                 </div>
               </div>
               <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -192,20 +208,18 @@ export default {
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title text-black" id="userModalLabel">Add Products</h5>
+                      <h5 class="modal-title text-black" id="userModalLabel">Add Categories</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                         id="closeModal"></button>
                     </div>
                     <form role="form" @submit.prevent="onSubmit">
                       <div class="modal-body">
-                        <argon-input type="text" placeholder="Name" v-model="register.name" />
-                        <argon-input type="email" placeholder="Email" v-model="register.email" />
-                        <argon-input type="password" placeholder="Password" v-model="register.password" />
+                        <argon-input type="text" placeholder="Name" v-model="categories" />
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">Add</button>
                       </div>
                     </form>
                   </div>
@@ -223,18 +237,9 @@ export default {
                           No
                         </th>
                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Title
+                          Categories
                         </th>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                          Author
-                        </th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Penerbit
-                        </th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                          Tahun Terbit
-                        </th>
-                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                           Aksi</th>
                       </tr>
                     </thead>
@@ -250,25 +255,12 @@ export default {
                         <td>
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">{{ item.judul }}</h6>
-                              <p class="text-xs text-secondary mb-0">
-                                {{ item.no_isbn }}
-                              </p>
+                              <h6 class="mb-0 text-sm">{{ item.nama }}</h6>
                             </div>
                           </div>
                         </td>
-                        <td>
-                          <p class="text-xs text-secondary mb-0">{{ item.pengarang }}</p>
-                        </td>
-                        <td>
-                          <p class="text-xs text-secondary mb-0 text-center">{{ item.penerbit }}</p>
-                        </td>
-                        <td class="align-middle text-center">
-                          <span class="text-secondary text-xs font-weight-bold">{{ formatDate(item.tahun_terbit)
-                            }}</span>
-                        </td>
                         <td class="align-middle">
-                          <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(item.id)">
+                          <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editCat(item.id)">
                             <span style="color: green;">
                               <i class="fa fa-pencil-square-o"></i>
                             </span>
@@ -296,7 +288,7 @@ export default {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Are you sure you want to delete this user?
+                Are you sure you want to delete this category?
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -309,15 +301,13 @@ export default {
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title text-black" id="userModalLabel">Edit User</h5>
+                <h5 class="modal-title text-black" id="userModalLabel">Edit Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                   id="closeModal"></button>
               </div>
-              <form role="form" @submit.prevent="userUpdate">
+              <form role="form" @submit.prevent="catUpdate(items_edit.id)">
                 <div class="modal-body">
-                  <argon-input type="text" placeholder="Name" v-model="users_edit.name" />
-                  <argon-input type="email" placeholder="Email" v-model="users_edit.email" />
-                  <argon-input type="password" placeholder="Password" v-model="users_edit.password" />
+                  <argon-input type="text" placeholder="Name" v-model="items_edit.nama" />
                 </div>
                 <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                 <div class="modal-footer">

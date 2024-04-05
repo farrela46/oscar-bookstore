@@ -62,7 +62,6 @@ export default {
       }
     },
     goProfile() {
-      console.log("Navigating to profile...");
       this.$router.push('/profile')
     },
     async onLogout() {

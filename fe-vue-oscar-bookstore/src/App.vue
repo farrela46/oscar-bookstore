@@ -56,6 +56,6 @@ export default {
 
     <app-footer v-show="showFooter" />
 
-    <configurator :toggle="toggleConfigurator" :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']" />
+    <!-- <configurator :toggle="toggleConfigurator" :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']" /> -->
   </main>
 </template>
