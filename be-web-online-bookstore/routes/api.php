@@ -7,6 +7,7 @@ use App\Http\Controllers\BukusController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,7 +20,7 @@ use App\Http\Controllers\CategoriesController;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
-Route::get('/user', [AuthController::class, 'getUser']);
+    Route::get('/user', [AuthController::class, 'getUser']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);

@@ -22,11 +22,18 @@ export default {
       users: [],
       users_edit: [],
       items: [],
-      register: {
-        name: '',
-        email: '',
-        password: '',
+      buku: {
+        judul: '',
+        no_isbn: '',
+        desc: '',
+        pengarang: '',
+        penerbit: '',
+        tahun_terbit: '',
+        harga: '',
+        stok: '',
+        foto: null
       },
+      selectedFile: [],
       loading: false,
       loadingRegist: false,
       dialog: false,
@@ -76,38 +83,61 @@ export default {
         this.loading = false;
       }
     },
-    async onSubmit() {
-      this.loadingRegist = true;
+    async addBuku() {
       try {
-        const response = await axios.post(`${BASE_URL}/register`, {
-          name: this.register.name,
-          email: this.register.email,
-          password: this.register.password
+        const formData = new FormData();
+
+        // Append other fields to formData
+        formData.append('judul', this.buku.judul);
+        formData.append('no_isbn', this.buku.no_isbn);
+        formData.append('desc', this.buku.desc);
+        formData.append('pengarang', this.buku.pengarang);
+        formData.append('penerbit', this.buku.penerbit);
+        formData.append('tahun_terbit', this.buku.tahun_terbit);
+        formData.append('harga', this.buku.harga);
+        formData.append('stok', this.buku.stok);
+
+        if (this.buku.foto) {
+          formData.append('foto', this.buku.foto, this.buku.foto.name);
+        }
+
+
+        const token = localStorage.getItem('access_token');
+        const response = await axios.post(BASE_URL + '/buku/add', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer ' + token,
+          },
         });
-        this.getAllUser();
+
+        console.log(response.data);
+
+        this.closeModal();
+        this.retrieveBuku();
+        this.clearForm();
+
         this.$notify({
           type: 'success',
           title: 'Success',
           text: response.data.message,
-          color: 'green'
+          color: 'green',
         });
       } catch (error) {
         console.error(error);
-
         if (error.response && error.response.data.message) {
           const errorMessage = error.response.data.message;
           this.$notify({
             type: 'error',
             title: 'Error',
             text: errorMessage,
-            color: 'red'
+            color: 'red',
           });
         }
-      } finally {
-        this.loadingRegist = false;
-        this.clearForm();
-        this.closeModal();
       }
+    },
+
+    handleFileChange(event) {
+      this.buku.foto = event.target.files[0];
     },
     async deleteUser(id) {
       try {
@@ -128,10 +158,20 @@ export default {
         console.error(error);
       }
     },
+    handleclose() {
+      this.clearForm();
+    },
     clearForm() {
-      this.register.name = '';
-      this.register.email = '';
-      this.register.password = '';
+      this.buku.judul = '';
+      this.buku.no_isbn = '';
+      this.buku.desc = '';
+      this.buku.pengarang = '';
+      this.buku.penerbit = '';
+      this.buku.tahun_terbit = '';
+      this.buku.harga = '';
+      this.buku.stok = '';
+      this.buku.foto = '';
+      this.selectedFile = '';
     },
     openDeleteConfirmation(id) {
       this.selectedUserId = id;
@@ -175,9 +215,10 @@ export default {
               <div class="card-header pb-0 d-flex justify-content-between align-items-center mb-2">
                 <h6 class="mb-0">List Products</h6>
                 <div class="div">
-                  <v-tooltip text="Categories Setting" location="start" >
+                  <v-tooltip text="Categories Setting" location="start">
                     <template v-slot:activator="{ props }">
-                      <span v-bind="props" class="mx-3" style="font-size: 1.5rem; cursor: pointer;" @click="goCategories">
+                      <span v-bind="props" class="mx-3" style="font-size: 1.5rem; cursor: pointer;"
+                        @click="goCategories">
                         <span style="color: #2DCE89;">
                           <i class="fas fa-cog"></i>
                         </span>
@@ -194,17 +235,23 @@ export default {
                     <div class="modal-header">
                       <h5 class="modal-title text-black" id="userModalLabel">Add Products</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeModal"></button>
+                        id="closeModal" @click="handleclose"></button>
                     </div>
-                    <form role="form" @submit.prevent="onSubmit">
+                    <form role="form" @submit.prevent="addBuku">
                       <div class="modal-body">
-                        <argon-input type="text" placeholder="Name" v-model="register.name" />
-                        <argon-input type="email" placeholder="Email" v-model="register.email" />
-                        <argon-input type="password" placeholder="Password" v-model="register.password" />
+                        <argon-input type="text" placeholder="No ISBN" v-model="buku.no_isbn" />
+                        <argon-input type="text" placeholder="Judul Buku" v-model="buku.judul" />
+                        <argon-input type="text-area" placeholder="Deskripsi Buku" v-model="buku.desc" />
+                        <argon-input type="text" placeholder="Pengarang" v-model="buku.pengarang" />
+                        <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
+                        <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
+                        <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
+                        <argon-input type="text" placeholder="Harga" v-model="buku.harga" />
+                        <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="handleclose">Close</button>
                         <button type="submit" class="btn btn-primary">Save</button>
                       </div>
                     </form>
@@ -221,6 +268,9 @@ export default {
                       <tr>
                         <th class="text-uppercase text-center text-secondary text-xxs font-weight-bolder opacity-7">
                           No
+                        </th>
+                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                          Images
                         </th>
                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                           Title
@@ -246,6 +296,9 @@ export default {
                               <h6 class="mb-0 text-sm">{{ index + 1 }}</h6>
                             </div>
                           </div>
+                        </td>
+                        <td>
+                          <img style="max-width: 100px;" :src="item.foto" class="rounded img-fluid" alt="Book Image">
                         </td>
                         <td>
                           <div class="d-flex px-2 py-1">

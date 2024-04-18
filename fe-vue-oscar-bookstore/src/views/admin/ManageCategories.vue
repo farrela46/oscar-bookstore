@@ -33,6 +33,9 @@ export default {
     closeModal() {
       document.getElementById('closeModal').click();
     },
+    handleclose() {
+      this.clearForm();
+    },
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
@@ -155,7 +158,7 @@ export default {
       }
     },
     clearForm() {
-      this.categories = '';
+      this.categories = null;
     },
     openDeleteConfirmation(id) {
       this.selectedCatId = id;
@@ -210,7 +213,7 @@ export default {
                     <div class="modal-header">
                       <h5 class="modal-title text-black" id="userModalLabel">Add Categories</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeModal"></button>
+                        id="closeModal" @click="handleclose"></button>
                     </div>
                     <form role="form" @submit.prevent="onSubmit">
                       <div class="modal-body">
@@ -218,7 +221,7 @@ export default {
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="handleclose">Close</button>
                         <button type="submit" class="btn btn-primary">Add</button>
                       </div>
                     </form>

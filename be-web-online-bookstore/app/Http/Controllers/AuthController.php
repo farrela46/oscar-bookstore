@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -20,8 +21,8 @@ class AuthController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
         return response()->json([
-           'message' => 'Akun telah berhasil dibuat'
-        ],);
+            'message' => 'Akun telah berhasil dibuat'
+        ], );
     }
     public function login(Request $request)
     {
@@ -55,5 +56,27 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function updateUser(Request $request)
+    {
+        $user = auth()->user();
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6|confirmed',
+            'no_telp' => 'nullable|string|max:20',
+        ]);
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->no_telp = $validatedData['no_telp'];
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validatedData['password']);
+        }
+
+        $user->save();
+
+        return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
+    }
 }
 

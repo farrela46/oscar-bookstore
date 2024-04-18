@@ -129,7 +129,6 @@ export default {
 
     // Method
     handleFileChange(event) {
-      // Handle file change event
       const fileInput = this.$refs.fileInput;
       this.selectedFile = fileInput.files[0];
     },

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
+use App\Models\Image;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BukusController extends Controller
 {
@@ -42,18 +44,40 @@ class BukusController extends Controller
             ]);
 
             if ($created) {
-                $categories = $request->input('categories');
-                $created->categories()->attach($categories);
+                return response()->json([
+                    'message' => 'Successfully Add Buku!',
+                ], 201);
+            } else {
+                return response()->json([
+                    'message' => 'Server error',
+                ], 500);
             }
-
-            return response()->json([
-                'message' => $created ? 'Successfully Add Buku!' : 'Server error',
-            ], $created ? 201 : 500);
         }
 
         return response()->json([
             'message' => 'File not provided',
         ], 400);
+    }
+
+    private function saveImage(array|UploadedFile $file, int $id): void
+    {
+        $file->store('buku_photos');
+        $path = Storage::path('buku_photos/' . $file->hashName());
+        $url = Storage::url('buku_photos/' . $file->hashName());
+        $this->replaceImage([
+            'buku_id' => $id,
+            'new_path' => $path,
+            'new_url' => $url 
+        ]);
+    }
+
+    private function replaceImage(array $data): void
+    {
+        $buku = $data['buku_id'];
+        Image::create([
+            'file_path' => $data['new_path'],
+            'buku_id' => $buku
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -87,10 +111,10 @@ class BukusController extends Controller
         $buku->stok = $request->input('stok');
         $buku->harga = $request->input('harga');
         $buku->save();
-        
+
         $categories = $request->input('categories');
         $buku->categories()->sync($categories);
-        
+
         return response()->json(['message' => 'Successfully updated Buku'], 200);
     }
     public function getBuku(Request $request)
