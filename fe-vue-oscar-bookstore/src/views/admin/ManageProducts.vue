@@ -170,7 +170,7 @@ export default {
       this.buku.tahun_terbit = '';
       this.buku.harga = '';
       this.buku.stok = '';
-      this.buku.foto = '';
+      this.buku.foto = null;
       this.selectedFile = '';
     },
     openDeleteConfirmation(id) {

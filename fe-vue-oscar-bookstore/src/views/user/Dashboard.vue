@@ -1,7 +1,7 @@
 <script>
 // import { useRoute } from "vue-router";
-// import axios from "axios";
-// import BASE_URL from '@/api/config-api';
+import axios from "axios";
+import BASE_URL from '@/api/config-api';
 // import AuthorsTable from "@/views/components/AuthorsTable.vue";
 
 export default {
@@ -10,44 +10,33 @@ export default {
   data() {
     return {
       products: [],
-      searchResults: [
-        {
-          id: 1,
-          images: [{ link: 'https://feedback.minecraft.net/hc/user_images/RU2A2xA0BE8LK3zqkYnmdw.jpeg' }],
-          category: { name: 'Category' }, // You may need to adjust this based on your actual data structure
-          name: 'Product Name',
-          stock: 10,
-          price: 100000, // Sample price
-          slug: 'product-slug-1' // Sample slug
-        },
-        {
-          id: 2,
-          images: [{ link: 'https://feedback.minecraft.net/hc/user_images/RU2A2xA0BE8LK3zqkYnmdw.jpeg' }],
-          category: { name: 'Category' }, // You may need to adjust this based on your actual data structure
-          name: 'Product Name',
-          stock: 10,
-          price: 100000, // Sample price
-          slug: 'product-slug-1' // Sample slug
-        },
-        {
-          id: 1,
-          images: [{ link: 'https://feedback.minecraft.net/hc/user_images/RU2A2xA0BE8LK3zqkYnmdw.jpeg' }],
-          category: { name: 'Category' }, // You may need to adjust this based on your actual data structure
-          name: 'Product Name',
-          stock: 10,
-          price: 100000, // Sample price
-          slug: 'product-slug-1' // Sample slug
-        },
 
-      ]
     };
   },
   mounted() {
+    this.retrieveBuku();
   },
   methods: {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    async retrieveBuku() {
+      try {
+        const response = await axios.get(`${BASE_URL}/buku/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.products = response.data;
+
+        if (response.data.length > 0) {
+          this.fotoUrl = response.data[0].foto;
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };
@@ -55,42 +44,39 @@ export default {
 
 <template>
   <div class="py-4 container-fluid">
-    <div class="row">
-      <router-link :to="'/product/' + item.slug" class="col-md-2 mb-2 col-6" v-for="item in searchResults"
-        :key="item.id">
-        <div class="product-single-card shadow">
-          <div class="product-top-area">
-            <div class="product-img">
-              <div class="first-view">
-                <img :src="item.images[0].link" alt="logo" class="img-fluid">
-              </div>
-              <div class="hover-view">
-                <img :src="item.images[0].link" alt="logo" class="img-fluid">
-              </div>
+    <div class="row mt-3">
+      <router-link :to="'/product/' + item.id" class="col-md-2 mb-2 col-6" v-for="item in products" :key="item.id">
+      <div class="product-single-card shadow">
+        <div class="product-top-area">
+          <div class="product-img">
+            <div class="first-view">
+              <img :src="item.foto" alt="Book Image" class="img-fluid">
             </div>
-            <div class="sideicons">
-              <button class="sideicons-btn">
-                <v-icon icon="mdi-heart"></v-icon>
-              </button>
-              <button class="sideicons-btn" @click.prevent="addCart(item.id)">
-                <v-icon icon="mdi-cart-plus"></v-icon>
-              </button>
+            <div class="hover-view">
+              <img :src="item.foto" alt="Book Image" class="img-fluid">
             </div>
           </div>
-          <div class="product-info">
-            <h6 class="product-category"><a href="#">{{ item.category.name }}</a></h6>
-            <h6 class="product-title text-truncate"><a href="#">{{ item.name }}</a></h6>
-            <div class="d-flex align-items-center">
-              <span class="review-count"><b>Stock: </b>{{ item.stock }}</span>
-            </div>
-            <div class="d-flex flex-wrap align-items-center py-2">
-              <div class="new-price">
-                Rp. {{ formatPrice(item.price) }}
-              </div>
-            </div>
+          <div class="sideicons">
+            <button class="sideicons-btn">
+              <v-icon icon="mdi-heart"></v-icon>
+            </button>
+            <button class="sideicons-btn" @click.prevent="addCart(item.id)">
+              <v-icon icon="mdi-cart-plus"></v-icon>
+            </button>
           </div>
         </div>
-      </router-link>
+        <div class="product-info">
+          <h6 class="text-muted" style="font-size: 15px"><a href="#">{{ item.pengarang }}</a></h6>
+          <h6 class="text-uppercase" style="font-size: 20px;"><a>{{ item.judul }}</a></h6>
+          <div class="d-flex align-items-center">
+            <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
+          </div>
+          <div class="d-flex align-items-center py-2">
+              <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a> 
+          </div>
+        </div>
+      </div>
+    </router-link>
     </div>
   </div>
 </template>
@@ -105,8 +91,8 @@ a {
 }
 
 .product-single-card {
-  padding: 20px;
-  border-radius: 20px;
+  padding: 10px;
+  border-radius: 10px;
   box-shadow: 1px 1px 15px #cccccc40;
   transition: 0.5s ease-in;
   background-color: white;
@@ -143,8 +129,9 @@ a {
 }
 
 .product-single-card .product-top-area .product-img {
-  aspect-ratio: 1/1;
+  aspect-ratio: 3/4;
   overflow: hidden;
+  object-fit:fill;
 }
 
 .product-single-card .product-top-area .product-img .first-view {
@@ -234,7 +221,7 @@ a {
 }
 
 .product-single-card .product-info .product-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
