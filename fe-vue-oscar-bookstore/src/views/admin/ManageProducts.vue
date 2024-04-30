@@ -246,7 +246,7 @@ export default {
                         <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
                         <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
                         <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
-                        <argon-input type="text" placeholder="Harga" v-model="buku.harga" />
+                        <argon-input class="mt-3" type="text" placeholder="Harga" v-model="buku.harga" />
                         <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>

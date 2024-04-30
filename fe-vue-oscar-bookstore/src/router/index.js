@@ -9,6 +9,7 @@ import Billing from "../views/admin/Billing.vue";
 
 //USER
 import UserDashboard from "../views/user/Dashboard.vue";
+import ViewProducts from "../views/user/ViewProducts.vue";
 import VirtualReality from "../views/VirtualReality.vue";
 import RTL from "../views/Rtl.vue";
 import Profile from "../views/Profile.vue";
@@ -65,12 +66,19 @@ const routes = [
   {
     path: "/billing",
     name: "Billing",
-    component: Billing,
+  component: Billing,
   },
+
+  //USER
   {
     path: "/dashboard",
-    name: "UserDashboard",
+    name: "Dashboard",
     component: UserDashboard,
+  },
+  {
+    path: '/products/:slug',
+    name: 'View Produk',
+    component: ViewProducts,
   },
   {
     path: "/virtual-reality",

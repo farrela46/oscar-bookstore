@@ -1,8 +1,6 @@
 <script>
-// import { useRoute } from "vue-router";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
-// import AuthorsTable from "@/views/components/AuthorsTable.vue";
 
 export default {
   components: {
@@ -10,16 +8,47 @@ export default {
   data() {
     return {
       products: [],
-
     };
   },
   mounted() {
     this.retrieveBuku();
+    this.getDetailProducts();
   },
   methods: {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    async getDetailProducts() {
+      try {
+        const slug = this.$route.params.slug;
+        const response = await axios.get(`${BASE_URL}/buku/detail/` + slug, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.products = response.data;
+        this.products.images = response.data.images;
+
+        setTimeout(() => {
+          this.dialog1 = false;
+          this.loading = false;
+        }, 500);
+      } catch (error) {
+        console.error(error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          // Display notification with red color
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
+        }
+      }
     },
     async retrieveBuku() {
       try {
@@ -44,39 +73,63 @@ export default {
 
 <template>
   <div class="py-4 container-fluid">
-    <div class="row mt-3">
-      <router-link :to="'/products/' + item.slug" class="col-md-2 mb-2 col-6" v-for="item in products" :key="item.id">
-      <div class="product-single-card shadow">
-        <div class="product-top-area">
-          <div class="product-img">
-            <div class="first-view">
-              <img :src="item.foto" alt="Book Image" class="img-fluid">
+    <div class="container">
+      <div class="row mt-3">
+        <div class="card border-0" v-if="!loading">
+          <div class="row p-2 pt-4">
+            <div class="col-md-3 ">
+              <img :src="products.foto" class="rounded img-fluid" alt="Book Image">
             </div>
-            <div class="hover-view">
-              <img :src="item.foto" alt="Book Image" class="img-fluid">
+            <div class="col-md-9 d-flex flex-column justify-content-between">
+              <a style="font-size: 32px; font-weight: bold;">{{ products.judul }}</a>
+
+              <!-- <div class="ratings">
+                  <div class="stars d-flex">
+                    <div class="theme-text mr-2">Product Ratings: </div>
+                    <div>&#9733;</div>
+                    <div>&#9733;</div>
+                    <div>&#9733;</div>
+                    <div>&#9733;</div>
+                    <div>&#9733;</div>
+                    <div class="ml-2">(4.5) 50 Reviews</div>
+                  </div>
+                </div> -->
+              <div class="price my-2" style="font-weight: bold; font-size: 32px;">Rp. {{ formatPrice(products.harga) }}
+              </div>
+              <div class="theme-text subtitle">Deskripsi:</div>
+              <div class="brief-description">
+                {{ products.desc }}
+              </div>
+              <br>
+              <div class="mt-auto pb-2">
+                <!-- <a>Tags:</a>
+                <p>Tag</p>
+                <a>Category &nbsp;: </a>
+                <br> -->
+
+                <h5>Detail</h5>
+                <a>No ISBN:</a>
+                <p>{{ products.no_isbn }}</p>
+                <a>Pengarang:</a>
+                <p>{{ products.pengarang }}</p>
+                <a>Penerbit:</a>
+                <p>{{ products.penerbit }}</p>
+                <!-- <v-chip class="mt-3">Tag</v-chip> -->
+                <hr>
+                <div class="row">
+                  <!-- <div class="col-md-3 mt-2">
+                      <input type="number" class="form-control" value="1">
+                    </div> -->
+                  <div class="col-md-9">
+                    <button class="btn addBtn btn-block mt-2 btn-primary" @click="addToCart(parfum.id)">Add to
+                      basket</button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="sideicons">
-            <button class="sideicons-btn">
-              <v-icon icon="mdi-heart"></v-icon>
-            </button>
-            <button class="sideicons-btn" @click.prevent="addCart(item.id)">
-              <v-icon icon="mdi-cart-plus"></v-icon>
-            </button>
-          </div>
-        </div>
-        <div class="product-info">
-          <h6 class="text-muted" style="font-size: 15px"><a href="#">{{ item.pengarang }}</a></h6>
-          <h6 class="text-uppercase" style="font-size: 20px;"><a>{{ item.judul }}</a></h6>
-          <div class="d-flex align-items-center">
-            <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
-          </div>
-          <div class="d-flex align-items-center py-2">
-              <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a> 
           </div>
         </div>
       </div>
-    </router-link>
     </div>
   </div>
 </template>
@@ -131,7 +184,7 @@ a {
 .product-single-card .product-top-area .product-img {
   aspect-ratio: 3/4;
   overflow: hidden;
-  object-fit:fill;
+  object-fit: fill;
 }
 
 .product-single-card .product-top-area .product-img .first-view {
@@ -244,5 +297,9 @@ a {
   display: block;
   margin: 0 auto;
   padding-right: 30px;
+}
+
+.card {
+  border-radius: 10px !important;
 }
 </style>

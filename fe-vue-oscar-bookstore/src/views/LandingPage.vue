@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
             <div class="text-center">
               <h1 class="text-gradient text-success"><span>70</span>+</h1>
               <h5 class="mt-3">Pengguna Aktif</h5>
-              <p class="text-sm font-weight-normal">Pengguna aktif YaDipinjam</p>
+              <p class="text-sm font-weight-normal">Pengguna aktif Toko Buku Oscar </p>
             </div>
           </div>
         </div>
@@ -121,9 +121,9 @@ onBeforeUnmount(() => {
           <h1 class="text-dark text-center mb-4 mt-5">Toko Buku Oscar Kediri</h1>
           <div class="row">
             <div class="col-12 gambar">
-              <v-carousel show-arrows="hover" cycle >
-                <v-carousel-item  :src="require('@/assets/img/oscar3.jpg')" cover></v-carousel-item>
-                <v-carousel-item  :src="require('@/assets/img/oscar4.jpg')" cover></v-carousel-item>
+              <v-carousel show-arrows="hover" cycle>
+                <v-carousel-item :src="require('@/assets/img/oscar3.jpg')" cover></v-carousel-item>
+                <v-carousel-item :src="require('@/assets/img/oscar4.jpg')" cover></v-carousel-item>
               </v-carousel>
             </div>
           </div>
@@ -209,7 +209,10 @@ onBeforeUnmount(() => {
                     <p class="mb-0">Dengan membaca buku, kita bisa mendapatkan beragam pengetahuan yang
                       belum kita
                       ketahui. Sehingga wawasan kita kian bertambah.</p>
-                    <button type="button" class="btn btn-sm mb-0 mt-3 bg-gradient-success">Beli buku sekarang</button>
+                    <router-link to="/dashboard">
+                      <button type="button" class="btn btn-sm mb-0 mt-3 bg-gradient-success">Beli
+                        buku sekarang</button>
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -316,6 +319,7 @@ onBeforeUnmount(() => {
   padding-left: 50px;
   padding-right: 50px;
 }
+
 .teks {
   font-size: 24px;
 }
@@ -324,10 +328,11 @@ onBeforeUnmount(() => {
   .teks {
     font-size: 16px;
   }
+
   .gambar {
-  padding-left: 0px;
-  padding-right: 0px;
-}
+    padding-left: 0px;
+    padding-right: 0px;
+  }
 
 }
 </style>

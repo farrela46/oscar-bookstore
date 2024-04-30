@@ -27,9 +27,10 @@ class BukusController extends Controller
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            // $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
             $fileName = time() . '_' . Str::of($file->getClientOriginalName())->slug('-') . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('public/buku_photos', $fileName);
+
+            $slug = Str::slug($request->input('judul'));
 
             $created = Buku::create([
                 'no_isbn' => $request->input('no_isbn'),
@@ -38,9 +39,10 @@ class BukusController extends Controller
                 'pengarang' => $request->input('pengarang'),
                 'penerbit' => $request->input('penerbit'),
                 'tahun_terbit' => $request->input('tahun_terbit'),
-                'foto' => $filePath, // Save the file path
+                'foto' => $filePath,
                 'stok' => $request->input('stok'),
                 'harga' => $request->input('harga'),
+                'slug' => $slug,
             ]);
 
             if ($created) {
@@ -101,7 +103,6 @@ class BukusController extends Controller
             $buku->foto = $filePath;
         }
 
-        // Update the book properties
         $buku->no_isbn = $request->input('no_isbn');
         $buku->judul = $request->input('judul');
         $buku->desc = $request->input('desc');
@@ -138,35 +139,37 @@ class BukusController extends Controller
                 'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
                 'stok' => $item->stok,
                 'harga' => $item->harga,
+                'slug' => $item->slug,
             ];
         });
 
         return response()->json($bukuData);
     }
-    public function getDetailBuku(Request $request, $id)
-    {
-        $buku = Buku::find($id);
+    public function getDetailBuku(Request $request, $slug)
+{
+    $buku = Buku::where('slug', $slug)->first();
 
-        if (!$buku) {
-            return response()->json(['error' => 'Buku tidak ditemukan'], 404);
-        }
-
-        // Construct the foto path in the same way as getBuku function
-        $bukuData = [
-            'id' => $buku->id,
-            'no_isbn' => $buku->no_isbn,
-            'judul' => $buku->judul,
-            'desc' => $buku->desc,
-            'pengarang' => $buku->pengarang,
-            'penerbit' => $buku->penerbit,
-            'tahun_terbit' => $buku->tahun_terbit,
-            'foto' => asset('storage/buku_photos/' . basename($buku->foto)), // Use the same path construction
-            'stok' => $buku->stok,
-            'harga' => $buku->harga,
-        ];
-
-        return response()->json($bukuData);
+    if (!$buku) {
+        return response()->json(['error' => 'Buku not found'], 404);
     }
+
+    $bukuData = [
+        'id' => $buku->id,
+        'no_isbn' => $buku->no_isbn,
+        'judul' => $buku->judul,
+        'desc' => $buku->desc,
+        'pengarang' => $buku->pengarang,
+        'penerbit' => $buku->penerbit,
+        'tahun_terbit' => $buku->tahun_terbit,
+        'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
+        'stok' => $buku->stok,
+        'harga' => $buku->harga,
+    ];
+
+    // Return the response as JSON
+    return response()->json($bukuData);
+}
+
     public function delete($id)
     {
         $buku = Buku::find($id);

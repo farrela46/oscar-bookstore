@@ -21,6 +21,7 @@ class Buku extends Model
         'foto',
         'stok',
         'harga',
+        'slug',
     ];
     public function categories()
     {

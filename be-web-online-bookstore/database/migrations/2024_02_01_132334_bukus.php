@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('foto')->nullable();
             $table->string('stok');
             $table->string('harga');
+            $table->string('slug')->unique()->nullable();
             $table->timestamps();
         });
     }
