@@ -30,7 +30,7 @@ export default {
           }
         });
         this.products = response.data;
-        
+
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
         }
@@ -47,48 +47,41 @@ export default {
 <template>
   <div class="py-4 container-fluid">
     <div class="row mt-3">
-      <v-overlay
-      :model-value="overlay"
-      class="d-flex align-items-center justify-content-center"
-    >
-      <v-progress-circular
-        color="primary"
-        size="96"
-        indeterminate
-      ></v-progress-circular>
-    </v-overlay>
+      <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
+        <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
+      </v-overlay>
       <router-link :to="'/products/' + item.slug" class="col-md-2 mb-2 col-6" v-for="item in products" :key="item.id">
-      <div class="product-single-card shadow">
-        <div class="product-top-area">
-          <div class="product-img">
-            <div class="first-view">
-              <img :src="item.foto" alt="Book Image" class="img-fluid">
+        <div class="product-single-card shadow">
+          <div class="product-top-area">
+            <div class="product-img">
+              <div class="first-view">
+                <img :src="item.foto" alt="Book Image" class="img-fluid">
+              </div>
+              <div class="hover-view">
+                <img :src="item.foto" alt="Book Image" class="img-fluid">
+              </div>
             </div>
-            <div class="hover-view">
-              <img :src="item.foto" alt="Book Image" class="img-fluid">
+            <div class="sideicons">
+              <button class="sideicons-btn">
+                <v-icon icon="mdi-heart"></v-icon>
+              </button>
+              <button class="sideicons-btn" @click.prevent="addCart(item.id)">
+                <v-icon icon="mdi-cart-plus"></v-icon>
+              </button>
             </div>
           </div>
-          <div class="sideicons">
-            <button class="sideicons-btn">
-              <v-icon icon="mdi-heart"></v-icon>
-            </button>
-            <button class="sideicons-btn" @click.prevent="addCart(item.id)">
-              <v-icon icon="mdi-cart-plus"></v-icon>
-            </button>
+          <div class="product-info p-2">
+            <h6 class="text-muted" style="font-size: 15px"><a href="#">{{ item.pengarang }}</a></h6>
+            <h6 class="text-uppercase" style="font-size: 20px;"><a>{{ item.judul }}</a></h6>
+            <div class="d-flex align-items-center">
+              <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
+            </div>
+            <div class="d-flex align-items-center py-2">
+              <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a>
+            </div>
           </div>
         </div>
-        <div class="product-info">
-          <h6 class="text-muted" style="font-size: 15px"><a href="#">{{ item.pengarang }}</a></h6>
-          <h6 class="text-uppercase" style="font-size: 20px;"><a>{{ item.judul }}</a></h6>
-          <div class="d-flex align-items-center">
-            <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
-          </div>
-          <div class="d-flex align-items-center py-2">
-              <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a> 
-          </div>
-        </div>
-      </div>
-    </router-link>
+      </router-link>
     </div>
   </div>
 </template>
@@ -102,9 +95,10 @@ a {
   color: unset;
 }
 
+
 .product-single-card {
-  padding: 10px;
-  border-radius: 10px;
+  /* padding: 10px; */
+  border-radius: 5px;
   box-shadow: 1px 1px 15px #cccccc40;
   transition: 0.5s ease-in;
   background-color: white;
@@ -143,7 +137,7 @@ a {
 .product-single-card .product-top-area .product-img {
   aspect-ratio: 3/4;
   overflow: hidden;
-  object-fit:fill;
+  object-fit: fill;
 }
 
 .product-single-card .product-top-area .product-img .first-view {
@@ -155,17 +149,6 @@ a {
   transition: 0.5s ease-in;
 }
 
-/* 
-.product-single-card .product-top-area:hover .product-img .first-view {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.product-single-card .product-top-area:hover .product-img .hover-view {
-  opacity: 100%;
-  scale: 1.2;
-} */
 .product-single-card .product-top-area .product-img img {
   /* width: 250px;  */
   /* height: 150px;  */
@@ -249,6 +232,7 @@ a {
   text-decoration: line-through;
   opacity: 70%;
 }
+
 
 
 .search-container {

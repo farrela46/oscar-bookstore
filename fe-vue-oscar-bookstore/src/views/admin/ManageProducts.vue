@@ -22,6 +22,7 @@ export default {
       users: [],
       users_edit: [],
       items: [],
+      categories: [],
       buku: {
         judul: '',
         no_isbn: '',
@@ -31,7 +32,8 @@ export default {
         tahun_terbit: '',
         harga: '',
         stok: '',
-        foto: null
+        foto: null,
+        categoriesId:''
       },
       selectedFile: [],
       loading: false,
@@ -61,6 +63,23 @@ export default {
         console.error(error);
       } finally {
         this.loading = false;
+      }
+    },
+    async retrieveCat() {
+      try {
+        const response = await axios.get(`${BASE_URL}/category/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.categories = response.data
+
+        if (response.data.length > 0) {
+          this.fotoUrl = response.data[0].foto;
+        }
+      } catch (error) {
+        console.error(error);
       }
     },
     async retrieveBuku() {
@@ -201,6 +220,7 @@ export default {
   },
   mounted() {
     this.retrieveBuku();
+    this.retrieveCat();
   },
 };
 </script>
@@ -234,8 +254,8 @@ export default {
                   <div class="modal-content">
                     <div class="modal-header">
                       <h5 class="modal-title text-black" id="userModalLabel">Add Products</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeModal" @click="handleclose"></button>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"
+                        @click="handleclose"></button>
                     </div>
                     <form role="form" @submit.prevent="addBuku">
                       <div class="modal-body">
@@ -246,12 +266,18 @@ export default {
                         <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
                         <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
                         <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
+                        <select class="form-select mt-3" v-model="buku.categoryId">
+                          <option value="" disabled>Select Category</option>
+                          <option v-for="category in categories" :key="category.id" :value="category.id">{{
+                      category.nama }}</option>
+                        </select>
                         <argon-input class="mt-3" type="text" placeholder="Harga" v-model="buku.harga" />
                         <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="handleclose">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                          @click="handleclose">Close</button>
                         <button type="submit" class="btn btn-primary">Save</button>
                       </div>
                     </form>
