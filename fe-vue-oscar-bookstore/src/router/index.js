@@ -40,7 +40,7 @@ const routes = [
   },
   {
     path: "/admin/dashboard",
-    name: "Dashboard",
+    name: "Admin Dashboard",
     component: Dashboard,
   },
   {

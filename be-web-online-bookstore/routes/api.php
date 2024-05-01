@@ -40,12 +40,14 @@ Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
     Route::delete('/delete/{id}', [AddressesController::class, 'delete']);
 });
 
-Route::prefix('/buku')->middleware('auth:sanctum')->group(function () {
-    Route::post('/add', [BukusController::class, 'add']);
+Route::prefix('/buku')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/add', [BukusController::class, 'add']);
+        Route::post('/update/{id}', [BukusController::class, 'update']);
+        Route::delete('/delete/{id}', [BukusController::class, 'delete']);
+    });
     Route::get('/get', [BukusController::class, 'getBuku']);
     Route::get('/detail/{slug}', [BukusController::class, 'getDetailBuku']);
-    Route::post('/update/{id}', [BukusController::class, 'update']);
-    Route::delete('/delete/{id}', [BukusController::class, 'delete']);
 });
 
 Route::prefix('/category')->middleware('auth:sanctum')->group(function () {

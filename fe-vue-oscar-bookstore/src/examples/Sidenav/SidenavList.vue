@@ -57,7 +57,8 @@ export default {
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/admin/products" :class="getRoute() === 'manage products' ? 'active' : ''" navText="Manage Products">
+        <sidenav-item to="/admin/products" :class="getRoute() === 'manage products' ? 'active' : ''"
+          navText="Manage Products">
           <template v-slot:icon>
             <i class="fa fa-book text-success text-sm opacity-10"></i>
           </template>
@@ -86,22 +87,25 @@ export default {
           </template>
         </sidenav-item>
       </li>
-      <!-- <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/virtual-reality" :class="getRoute() === 'virtual-reality' ? 'active' : ''"
-          navText="Virtual Reality">
-
-          <template v-slot:icon>
-            <i class="ni ni-app text-info text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li> -->
-
-      <!-- Additional navigation items for other roles -->
       <li v-else-if="userRole === 'USER'" class="nav-item">
         <sidenav-item to="/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''" navText="Home">
 
           <template v-slot:icon>
             <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
+      <li v-if="userRole === 'USER'" class="nav-item">
+        <sidenav-item to="/cart" :class="getRoute() === 'cart' ? 'active' : ''" navText="Cart">
+          <template v-slot:icon>
+            <i class="fas fa-shopping-cart text-info text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
+      <li v-if="userRole === ''" class="nav-item">
+        <sidenav-item to="/home" :class="getRoute() === 'cart' ? 'active' : ''" navText="Home">
+          <template v-slot:icon>
+            <i class="ni ni-tv-2 text-info text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>

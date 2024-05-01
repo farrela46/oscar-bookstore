@@ -10,7 +10,7 @@ export default {
   data() {
     return {
       products: [],
-
+      overlay: false,
     };
   },
   mounted() {
@@ -23,19 +23,21 @@ export default {
     },
     async retrieveBuku() {
       try {
+        this.overlay = true;
         const response = await axios.get(`${BASE_URL}/buku/get`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-
         this.products = response.data;
-
+        
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        this.overlay = false
       }
     },
   },
@@ -45,6 +47,16 @@ export default {
 <template>
   <div class="py-4 container-fluid">
     <div class="row mt-3">
+      <v-overlay
+      :model-value="overlay"
+      class="d-flex align-items-center justify-content-center"
+    >
+      <v-progress-circular
+        color="primary"
+        size="96"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
       <router-link :to="'/products/' + item.slug" class="col-md-2 mb-2 col-6" v-for="item in products" :key="item.id">
       <div class="product-single-card shadow">
         <div class="product-top-area">

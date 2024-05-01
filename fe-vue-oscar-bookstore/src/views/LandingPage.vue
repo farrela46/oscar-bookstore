@@ -91,7 +91,7 @@ onBeforeUnmount(() => {
               <h1 class="text-gradient text-success"><span>100</span>+</h1>
               <h5 class="mt-3">Buku tersedia</h5>
               <p class="text-sm font-weight-normal">Buku yang tersedia di Toko Buku Oscar</p>
-            </div>
+          </div>
             <hr class="vertical dark">
           </div>
           <div class="col-md-4 position-relative">
