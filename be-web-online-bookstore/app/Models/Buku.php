@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Image;
 use App\Models\Category;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +24,8 @@ class Buku extends Model
     ];
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class, 'buku_categories', 'buku_id','category_id');
     }
+    
 
 }

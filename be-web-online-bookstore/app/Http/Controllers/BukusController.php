@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
+use App\Models\BukuCategory;
 use App\Models\Image;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,16 +25,18 @@ class BukusController extends Controller
             'tahun_terbit' => 'required',
             'stok' => 'required',
             'harga' => 'required',
+            'categoryId' => 'required',
         ]);
 
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $fileName = time() . '_' . Str::of($file->getClientOriginalName())->slug('-') . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('public/buku_photos', $fileName);
+        try {
+            $filePath = null;
+            if ($request->hasFile('foto')) {
+                $file = $request->file('foto');
+                $fileName = time() . '_' . Str::slug($file->getClientOriginalName(), '-') . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('public/buku_photos', $fileName);
+            }
 
-            $slug = Str::slug($request->input('judul'));
-
-            $created = Buku::create([
+            $buku = Buku::create([
                 'no_isbn' => $request->input('no_isbn'),
                 'judul' => $request->input('judul'),
                 'desc' => $request->input('desc'),
@@ -42,23 +46,27 @@ class BukusController extends Controller
                 'foto' => $filePath,
                 'stok' => $request->input('stok'),
                 'harga' => $request->input('harga'),
-                'slug' => $slug,
+                'slug' => Str::slug($request->input('judul')),
             ]);
 
-            if ($created) {
-                return response()->json([
-                    'message' => 'Successfully Add Buku!',
-                ], 201);
-            } else {
-                return response()->json([
-                    'message' => 'Server error',
-                ], 500);
+            foreach ($request->input('categoryId') as $key => $category) {
+                BukuCategory::insert(
+                    [
+                        'category_id' => $category,
+                        'buku_id' => $buku->id
+                    ]
+                );
             }
-        }
 
-        return response()->json([
-            'message' => 'File not provided',
-        ], 400);
+            return response()->json([
+                'message' => 'Successfully Add Buku!',
+                'buku' => $buku,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function saveImage(array|UploadedFile $file, int $id): void
@@ -147,7 +155,7 @@ class BukusController extends Controller
     }
     public function getDetailBuku(Request $request, $slug)
 {
-    $buku = Buku::where('slug', $slug)->first();
+    $buku = Buku::with(['categories'])->where('slug', $slug)->first();
 
     if (!$buku) {
         return response()->json(['error' => 'Buku not found'], 404);
@@ -164,6 +172,7 @@ class BukusController extends Controller
         'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
         'stok' => $buku->stok,
         'harga' => $buku->harga,
+         'categoryName' => 'required'
     ];
 
     // Return the response as JSON

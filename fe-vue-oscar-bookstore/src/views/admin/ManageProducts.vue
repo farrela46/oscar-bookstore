@@ -33,8 +33,9 @@ export default {
         harga: '',
         stok: '',
         foto: null,
-        categoriesId:''
+        categoriesName: []
       },
+      selectedCategoryId: null,
       selectedFile: [],
       loading: false,
       loadingRegist: false,
@@ -43,9 +44,24 @@ export default {
       selectedUserId: null,
     };
   },
+  computed: {
+    formattedHarga: {
+      get() {
+        return this.buku.harga.toLocaleString('id-ID');
+      },
+      set(value) {
+        const numericValue = parseInt(value.replace(/\./g, ''), 10);
+        this.buku.harga = isNaN(numericValue) ? '' : numericValue;
+      }
+    }
+  },
   methods: {
     closeModal() {
       document.getElementById('closeModal').click();
+    },
+    formatPrice(price) {
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
     },
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
@@ -102,11 +118,16 @@ export default {
         this.loading = false;
       }
     },
+    updateHarga() {
+      const numericValue = parseInt(this.formattedHarga.replace(/\./g, ''), 10);
+      this.buku.harga = isNaN(numericValue) ? '' : numericValue;
+    },
     async addBuku() {
       try {
+
+
         const formData = new FormData();
 
-        // Append other fields to formData
         formData.append('judul', this.buku.judul);
         formData.append('no_isbn', this.buku.no_isbn);
         formData.append('desc', this.buku.desc);
@@ -115,7 +136,9 @@ export default {
         formData.append('tahun_terbit', this.buku.tahun_terbit);
         formData.append('harga', this.buku.harga);
         formData.append('stok', this.buku.stok);
-
+        this.buku.categoriesName.forEach((categoriesName) => {
+          formData.append('categoryId[]', categoriesName);
+        });
         if (this.buku.foto) {
           formData.append('foto', this.buku.foto, this.buku.foto.name);
         }
@@ -266,12 +289,19 @@ export default {
                         <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
                         <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
                         <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
-                        <select class="form-select mt-3" v-model="buku.categoryId">
-                          <option value="" disabled>Select Category</option>
-                          <option v-for="category in categories" :key="category.id" :value="category.id">{{
-                      category.nama }}</option>
-                        </select>
-                        <argon-input class="mt-3" type="text" placeholder="Harga" v-model="buku.harga" />
+                        <div class="mb-3">
+                          <label class="form-label">Category</label>
+                          <div class="form-check" v-for="category in categories" :key="category.id">
+                            <input class="form-check-input" type="checkbox" :value="category.id"
+                              v-model="buku.categoriesName">
+                            <label class="form-check-label">{{ category.nama }}</label>
+                          </div>
+                        </div>
+                        <div class="input-group mb-3">
+                          <span class="input-group-text" id="basic-addon1">Rp.</span>
+                          <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
+                            placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
+                        </div>
                         <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
                       </div>
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
@@ -311,6 +341,9 @@ export default {
                           Tahun Terbit
                         </th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                          Harga
+                        </th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                           Aksi</th>
                       </tr>
                     </thead>
@@ -345,6 +378,9 @@ export default {
                         <td class="align-middle text-center">
                           <span class="text-secondary text-xs font-weight-bold">{{ formatDate(item.tahun_terbit)
                             }}</span>
+                        </td>
+                        <td>
+                          <p class="text-xs text-secondary mb-0 text-center">Rp. {{ formatPrice(item.harga) }}</p>
                         </td>
                         <td class="align-middle">
                           <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(item.id)">
