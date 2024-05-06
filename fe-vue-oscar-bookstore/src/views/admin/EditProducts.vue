@@ -1,7 +1,7 @@
 <script>
 // import { useRoute } from "vue-router";
-import axios from "axios";
-import BASE_URL from '@/api/config-api';
+// import axios from "axios";
+// import BASE_URL from '@/api/config-api';
 // import AuthorsTable from "@/views/components/AuthorsTable.vue";
 
 export default {

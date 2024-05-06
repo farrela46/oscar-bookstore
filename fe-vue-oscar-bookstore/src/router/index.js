@@ -5,6 +5,7 @@ import LandingPage from "../views/LandingPage.vue";
 import Dashboard from "../views/admin/Dashboard.vue";
 import ManageUsers from "../views/admin/ManageUsers.vue";
 import ManageProducts from "../views/admin/ManageProducts.vue";
+import EditProducts from "../views/admin/EditProducts.vue";
 import ManageCategories from "../views/admin/ManageCategories.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";

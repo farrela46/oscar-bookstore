@@ -249,11 +249,8 @@ export default {
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.hide();
     },
-    editUser(id_user) {
-      let obj = this.users.find(o => o.id === id_user);
-      this.users_edit = obj;
-      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'))
-      modal.show();
+    editUser(slug) {
+      this.$router.push({ path: `/admin/products/` + slug })
     },
     goCategories() {
       console.log("Navigating to profile...");
@@ -407,7 +404,7 @@ export default {
                               <i class="fas fa-eye"></i>
                             </span>
                           </span>
-                          <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(item.id)">
+                          <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(item.slug)">
                             <span style="color: green;">
                               <i class="fa fa-pencil-square-o"></i>
                             </span>
@@ -495,7 +492,8 @@ export default {
                     <hr>
                     <p>Category:</p>
                     <template v-if="selectedProduct.category">
-                      <v-chip class="mx-2" v-for="(category, index) in selectedProduct.category.split(',')" :key="index">
+                      <v-chip class="mx-2" v-for="(category, index) in selectedProduct.category.split(',')"
+                        :key="index">
                         {{ category.trim() }}
                       </v-chip>
                     </template>
