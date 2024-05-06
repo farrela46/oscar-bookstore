@@ -506,14 +506,14 @@ export default {
                           <label class="form-label">Harga:</label>
                           <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control" :value="selectedProduct.price" disabled>
+                            <input type="text" class="form-control" :value="selectedProduct.harga" disabled>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label">Stok:</label>
-                          <input type="text" class="form-control" :value="selectedProduct.stock" disabled>
+                          <input type="text" class="form-control" :value="selectedProduct.stok" disabled>
                         </div>
                       </div>
                     </div>

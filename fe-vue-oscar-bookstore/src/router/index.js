@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../views/LandingPage.vue";
+
+//ADMIN
 import Dashboard from "../views/admin/Dashboard.vue";
 import ManageUsers from "../views/admin/ManageUsers.vue";
 import ManageProducts from "../views/admin/ManageProducts.vue";
@@ -38,6 +40,8 @@ const routes = [
     name: "Login",
     component: Login,
   },
+
+  //ADMIN
   {
     path: "/admin/dashboard",
     name: "Admin Dashboard",
@@ -52,6 +56,11 @@ const routes = [
     path: "/admin/products",
     name: "Manage Products",
     component: ManageProducts,
+  },
+  {
+    path: '/admin/products/:slug',
+    name: 'Edit Produk',
+    component: EditProducts,
   },
   {
     path: "/admin/categories",

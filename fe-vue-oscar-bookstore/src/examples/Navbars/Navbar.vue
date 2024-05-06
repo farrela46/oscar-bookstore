@@ -114,14 +114,14 @@ export default {
               @blur="closeMenu">
               <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
             </a>
-            <!-- <router-link v-else class="nav-link me-2" to="/login">
-                  <button class="btn btn-light"> Login </button>
-                </router-link> -->
-            <router-link v-else to="/login" class="px-0 nav-link font-weight-bold text-white"
-              target="_blank">
-              <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
-              <span class="d-sm-inline d-none">Sign In</span>
+            <router-link v-else class="nav-link me-2" to="/login">
+              <a class="text-black"> <i class="fa fa-user me-2"></i> Login </a>
             </router-link>
+            <!-- <router-link v-else to="/login" class="px-0 nav-link font-weight-bold text-white"
+              target="_blank">
+              <i class="fa fa-user"></i>
+              <span class="d-sm-inline d-none">Sign In</span>
+            </router-link> -->
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenu ? 'show' : ''"
               aria-labelledby="dropdownMenuButton">
               <li class="mb-2">
