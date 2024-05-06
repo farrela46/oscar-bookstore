@@ -63,7 +63,7 @@ export default {
           });
         }
       } finally {
-        this.loading = false; 
+        this.loading = false;
       }
     },
 
@@ -134,9 +134,10 @@ export default {
                   </label>
                 </argon-checkbox> -->
                 <div class="text-center">
-                  <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient" class="my-4 mb-2">Sign up</argon-button>
-                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2" disabled><v-progress-circular
-                      indeterminate></v-progress-circular></argon-button>
+                  <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient"
+                    class="my-4 mb-2">Sign up</argon-button>
+                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2"
+                    disabled><v-progress-circular indeterminate></v-progress-circular></argon-button>
                 </div>
                 <p class="text-sm mt-3 mb-0">
                   Sudah punya akun?

@@ -35,13 +35,15 @@ export default {
         foto: null,
         categoriesName: []
       },
+      showProductModal: false,
+      selectedProduct: {},
       selectedCategoryId: null,
       selectedFile: [],
       loading: false,
       loadingRegist: false,
       dialog: false,
       showModal: false,
-      selectedUserId: null,
+      selectedProductId: null,
     };
   },
   computed: {
@@ -65,6 +67,23 @@ export default {
     },
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
+    },
+    async showProduct(slug) {
+      this.selectedProduct = slug;
+
+      try {
+        const response = await axios.get(BASE_URL + '/buku/detail/' + slug, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.selectedProduct = response.data;
+        let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('showProduct'))
+        modal.show();
+        // $('#showProduct').modal('show');
+      } catch (error) {
+        console.error(error);
+      }
     },
     async getAllUser() {
       this.loading = true;
@@ -181,9 +200,9 @@ export default {
     handleFileChange(event) {
       this.buku.foto = event.target.files[0];
     },
-    async deleteUser(id) {
+    async deleteProduct(id) {
       try {
-        const response = await axios.delete(`${BASE_URL}/deleteUser/` + id, {
+        const response = await axios.delete(`${BASE_URL}/buku/delete/` + id, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
           },
@@ -192,10 +211,10 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'User berhasil dihapus',
+          text: 'Product berhasil dihapus',
           color: 'green'
         });
-        this.getAllUser();
+        this.retrieveBuku();
       } catch (error) {
         console.error(error);
       }
@@ -216,13 +235,13 @@ export default {
       this.selectedFile = '';
     },
     openDeleteConfirmation(id) {
-      this.selectedUserId = id;
+      this.selectedProductId = id;
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.show();
     },
     confirmDelete() {
-      if (this.selectedUserId) {
-        this.deleteUser(this.selectedUserId);
+      if (this.selectedProductId) {
+        this.deleteProduct(this.selectedProductId);
         this.closeModalDelete();
       }
     },
@@ -383,6 +402,11 @@ export default {
                           <p class="text-xs text-secondary mb-0 text-center">Rp. {{ formatPrice(item.harga) }}</p>
                         </td>
                         <td class="align-middle">
+                          <span class="" style="font-size: 1rem; cursor: pointer;" @click="showProduct(item.slug)">
+                            <span style="color: blue;">
+                              <i class="fas fa-eye"></i>
+                            </span>
+                          </span>
                           <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(item.id)">
                             <span style="color: green;">
                               <i class="fa fa-pencil-square-o"></i>
@@ -411,7 +435,7 @@ export default {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Are you sure you want to delete this user?
+                Are you sure you want to delete this Product?
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -440,6 +464,62 @@ export default {
                   <button type="submit" class="btn btn-primary">Save</button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade text-black" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Detail Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  id="closeModal"></button>
+              </div>
+              <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+                <div class="row">
+                  <h2>{{ selectedProduct.judul }}</h2>
+                </div>
+                <hr>
+                <div class="row d-flex justify-content-center align-items-center">
+                  <div class="col-12 " style="width: 400px">
+                    <v-carousel show-arrows="hover" height="auto">
+                      <v-carousel-item :src="selectedProduct.foto" cover></v-carousel-item>
+                    </v-carousel>
+                  </div>
+                </div>
+                <div class="row mt-2">
+                  <div class="col-12 mt-5">
+                    <h5>Description : </h5>
+                    <p>{{ selectedProduct.desc }}</p>
+                    <hr>
+                    <p>Category:</p>
+                    <template v-if="selectedProduct.category">
+                      <v-chip class="mx-2" v-for="(category, index) in selectedProduct.category.split(',')" :key="index">
+                        {{ category.trim() }}
+                      </v-chip>
+                    </template>
+                    <hr>
+                    <div class="row mt-3">
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label class="form-label">Harga:</label>
+                          <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" class="form-control" :value="selectedProduct.price" disabled>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label class="form-label">Stok:</label>
+                          <input type="text" class="form-control" :value="selectedProduct.stock" disabled>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

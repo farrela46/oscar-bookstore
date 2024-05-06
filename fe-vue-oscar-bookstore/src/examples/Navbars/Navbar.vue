@@ -34,7 +34,7 @@ export default {
   methods: {
     checkLoginStatus() {
       const accessToken = localStorage.getItem('access_token');
-      this.hasAccessToken = !!accessToken; 
+      this.hasAccessToken = !!accessToken;
     },
     minimizeSidebar() {
       this.$store.commit("sidebarMinimize");
@@ -109,13 +109,19 @@ export default {
             </a>
           </li>
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-              <a v-if="hasAccessToken" href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
-                data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
-                <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
-              </a>
-              <router-link v-else class="nav-link me-2" to="/login">
+            <a v-if="hasAccessToken" href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']"
+              id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu"
+              @blur="closeMenu">
+              <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
+            </a>
+            <!-- <router-link v-else class="nav-link me-2" to="/login">
                   <button class="btn btn-light"> Login </button>
-                </router-link>
+                </router-link> -->
+            <router-link v-else to="/login" class="px-0 nav-link font-weight-bold text-white"
+              target="_blank">
+              <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
+              <span class="d-sm-inline d-none">Sign In</span>
+            </router-link>
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenu ? 'show' : ''"
               aria-labelledby="dropdownMenuButton">
               <li class="mb-2">
