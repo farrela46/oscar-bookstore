@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LandingPage from "../views/LandingPage.vue";
+import Home from "../views/Homee.vue";
 
 //ADMIN
 import Dashboard from "../views/admin/Dashboard.vue";
@@ -28,7 +29,17 @@ const routes = [
   },
   {
     path: "/home",
-    name: "Landing Page",
+    name: "Home",
+    component: UserDashboard,
+  },
+  {
+    path: "/homee",
+    name: "Homee",
+    component: Home,
+  },
+  {
+    path: "/about-us",
+    name: "AboutUs",
     component: LandingPage,
   },
   {
@@ -80,11 +91,11 @@ const routes = [
   },
 
   //USER
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: UserDashboard,
-  },
+  // {
+  //   path: "/dashboard",
+  //   name: "Dashboard",
+  //   component: UserDashboard,
+  // },
   {
     path: '/products/:slug',
     name: 'View Produk',

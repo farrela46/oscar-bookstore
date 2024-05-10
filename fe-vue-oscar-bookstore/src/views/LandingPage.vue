@@ -9,25 +9,6 @@ const body = document.getElementsByTagName("body")[0];
 
 const store = useStore();
 
-// document.addEventListener('DOMContentLoaded', function () {
-//   const typedStrings = document.getElementById('typed-strings').getElementsByTagName('h1');
-//   const typedOptions = {
-//     strings: Array.from(typedStrings).map(el => el.innerText),
-//     typeSpeed: 100,
-//     backSpeed: 50,
-//     loop: true
-//   };
-
-//   new Typed('#typed', typedOptions);
-// });
-
-// const images = ref([
-//   { link: require("@/assets/img/oscar0.png") },
-//   { link: require("@/assets/img/oscar1.png") },
-//   { link: require("@/assets/img/oscar2.png") }
-// ]);
-
-
 onMounted(() => {
   setTooltip();
 
@@ -38,7 +19,6 @@ onBeforeMount(() => {
   store.state.showNavbar = false;
   store.state.showSidenav = false;
   store.state.showFooter = false;
-  body.classList.add("virtual-reality");
   store.state.isTransparent = "bg-white";
 });
 onBeforeUnmount(() => {

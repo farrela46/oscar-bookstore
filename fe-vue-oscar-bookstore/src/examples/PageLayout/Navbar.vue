@@ -26,7 +26,7 @@ defineProps({
         class="navbar-brand font-weight-bolder ms-lg-0 ms-3"
         :class="darkMode ? 'text-black' : 'text-white'"
         to="/"
-        >Oscar Bookstore</router-link
+        >Argon Dashboard 2</router-link
       >
       <button
         class="shadow-none navbar-toggler ms-2"
@@ -49,7 +49,7 @@ defineProps({
             <router-link
               class="nav-link d-flex align-items-center me-2 active"
               aria-current="page"
-              to="/admin/dashboard"
+              to="/dashboard-default"
             >
               <i
                 class="fa fa-chart-pie opacity-6 me-1"

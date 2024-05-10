@@ -1,14 +1,14 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Sidenav from "./examples/Sidenav";
+// import Sidenav from "./examples/Sidenav";
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
 
 
 export default {
   components: {
-    Sidenav,
+    // Sidenav,
     Navbar,
     AppFooter
   },
@@ -45,12 +45,12 @@ export default {
   <notifications />
   <div v-show="layout === 'landing'" class="landing-bg h-100 bg-gradient-primary position-fixed w-100"></div>
 
-  <sidenav  v-if="showSidenav" />
+  <!-- <sidenav  v-if="showSidenav" /> -->
 
-  <main class="main-content position-relative h-100 border-radius-lg">
-    <!-- nav -->
+  <main class="main-content position-relative h-100 border-radius-lg ">
+    <!-- nav --> 
 
-    <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" v-if="showNavbar" />
+    <navbar class="shadow position-sticky bg-white left-auto top-2 z-index-sticky blur" v-if="showNavbar" />
 
     <router-view />
 
@@ -59,3 +59,9 @@ export default {
     <!-- <configurator :toggle="toggleConfigurator" :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']" /> -->
   </main>
 </template>
+
+<style>
+.bg-langit {
+  background-color: #42BADB;
+}
+</style>

@@ -1,21 +1,21 @@
 <script>
-// import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+import AppFooter from "@/examples/Footer.vue";
+import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
+import setTooltip from "@/assets/js/tooltip.js";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 
-// import AuthorsTable from "@/views/components/AuthorsTable.vue";
-
 export default {
   components: {
+    AppFooter,
+    Navbar
   },
   data() {
     return {
       products: [],
       overlay: false,
     };
-  },
-  mounted() {
-    this.retrieveBuku();
   },
   methods: {
     formatPrice(price) {
@@ -42,6 +42,37 @@ export default {
       }
     },
   },
+  mounted() {
+    const store = useStore();
+
+    setTooltip();
+
+    store.state.layout = "vr";
+    store.state.showNavbar = false;
+    store.state.showSidenav = false;
+    store.state.showFooter = false;
+    store.state.isTransparent = "bg-white";
+    this.retrieveBuku();
+  },
+  beforeUnmount() {
+    const store = useStore();
+
+    store.state.layout = "default";
+    store.state.showNavbar = true;
+    store.state.showSidenav = true;
+    store.state.showFooter = true;
+
+    document.body.classList.remove("virtual-reality");
+
+    if (store.state.isPinned === false) {
+      const sidenav_show = document.querySelector(".g-sidenav-show");
+      sidenav_show.classList.remove("g-sidenav-hidden");
+      sidenav_show.classList.add("g-sidenav-pinned");
+      store.state.isPinned = true;
+    }
+
+    store.state.isTransparent = "bg-transparent";
+  }
 };
 </script>
 
@@ -53,9 +84,8 @@ export default {
       </div>
     </div>
   </div>
-  
   <div class="py-4 container">
-    <div class="row mt-2">
+    <div class="row mt-6">
       <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
         <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
       </v-overlay>
@@ -75,10 +105,10 @@ export default {
         </div>
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="../../assets/img/promote1.png" class="d-block w-100" alt="...">
+            <img src="../assets/img/promote1.png" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../../assets/img/promote2.jpg" class="d-block w-100" alt="...">
+            <img src="../assets/img/promote2.jpg" class="d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
@@ -127,12 +157,11 @@ export default {
     </div>
   </div>
 
+
+  <app-footer class="py-3 bg-white border-radius-lg" />
 </template>
+
 <style>
-.bg-langit {
-  background-color: #42BADB;
-  background-size: 30vh;
-}
 .user-select-none {
   user-select: none;
 }

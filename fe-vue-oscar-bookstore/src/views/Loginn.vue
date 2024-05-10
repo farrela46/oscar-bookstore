@@ -1,7 +1,6 @@
 <script>
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
-import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 // import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
@@ -10,7 +9,6 @@ import ArgonButton from "@/components/ArgonButton.vue";
 export default {
   name: 'LoginPage',
   components: {
-    Navbar,
     AppFooter,
     ArgonInput,
     // ArgonCheckbox,
@@ -57,8 +55,9 @@ export default {
           this.$router.push('/admin/dashboard');
         } else if (role === 'USER') {
           localStorage.setItem('access_token', response.data.access_token);
-          this.$router.push('/dashboard');
+          this.$router.push('/home');
         }
+        this.$router.reload();
       } catch (error) {
         console.error(error);
 
@@ -78,7 +77,7 @@ export default {
 
     setupPage() {
       this.store.state.hideConfigButton = true;
-      this.store.state.showNavbar = false;
+      this.store.state.showNavbar = true;
       this.store.state.showSidenav = false;
       this.store.state.showFooter = false;
       this.body.classList.remove("bg-gray-100");

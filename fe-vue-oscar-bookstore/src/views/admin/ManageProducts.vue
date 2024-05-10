@@ -1,4 +1,6 @@
 <script>
+// import { computed } from "vue";
+import { useStore } from "vuex";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import ArgonPagination from "@/components/ArgonPagination.vue";
@@ -258,6 +260,8 @@ export default {
     },
   },
   mounted() {
+    const store = useStore();
+    store.commit('toggleSidenav', false); 
     this.retrieveBuku();
     this.retrieveCat();
   },

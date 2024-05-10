@@ -1,42 +1,72 @@
-<script setup>
-defineProps({
-  btnBackground: {
-    type: String,
-    default: "",
+<script>
+import axios from 'axios';
+import BASE_URL from '@/api/config-api';
+
+export default {
+  data() {
+    return {
+      userName: '',
+      isLogin: false,
+    }
   },
-  isBlur: {
-    type: String,
-    default: "",
+  props: {
+    btnBackground: {
+      type: String,
+      default: "",
+    },
+    isBlur: {
+      type: String,
+      default: "",
+    },
+    darkMode: {
+      type: Boolean,
+      default: false,
+    },
+    isBtn: {
+      type: String,
+      default: "bg-gradient-light",
+    },
   },
-  darkMode: {
-    type: Boolean,
-    default: false,
+  mounted() {
+    this.checkLoginStatus();
+    this.getUser();
   },
-  isBtn: { type: String, default: "bg-gradient-light" },
-});
+  methods: {
+     checkLoginStatus() {
+      const accessToken = localStorage.getItem('access_token');
+      this.hasAccessToken = !!accessToken;
+    },
+    async getUser() {
+      try {
+        const response = await axios.get(`${BASE_URL}/user`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.id = response.data.user.id;
+        this.userName = response.data.user.name;
+        this.userRole = response.data.user.role;
+      } catch (error) {
+        console.error(error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage)
+        }
+      }
+    },
+  }
+};
 </script>
 <template>
   <!-- Navbar -->
-  <nav
-    class="navbar navbar-expand-lg top-0 z-index-3 position-absolute mt-4"
-    :class="isBlur ? isBlur : 'shadow-none my-2 navbar-transparent w-100'"
-  >
+  <nav class="navbar navbar-expand-lg top-0 z-index-3 position-absolute mt-4"
+    :class="isBlur ? isBlur : 'shadow-none my-2 navbar-transparent w-100'">
     <div class="container ps-2 pe-0">
-      <router-link
-        class="navbar-brand font-weight-bolder ms-lg-0 ms-3"
-        :class="darkMode ? 'text-black' : 'text-white'"
-        to="/"
-        >OSCAR BOOKSTORE</router-link
-      >
-      <button
-        class="shadow-none navbar-toggler ms-2"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navigation"
-        aria-controls="navigation"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-white'"
+        to="/">OSCAR BOOKSTORE</router-link>
+      <button class="shadow-none navbar-toggler ms-2" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
         <span class="mt-2 navbar-toggler-icon">
           <span class="navbar-toggler-bar bar1"></span>
           <span class="navbar-toggler-bar bar2"></span>
@@ -49,26 +79,15 @@ defineProps({
         </div>
         <ul class="navbar-nav justify-content-end">
           <li class="nav-item">
-            <router-link
-              class="nav-link d-flex align-items-center me-2 active"
-              aria-current="page"
-              to="/home"
-            >
-              <i
-                class="fa fa-home opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
+            <router-link class="nav-link d-flex align-items-center me-2 active" aria-current="page" to="/home">
+              <i class="fa fa-home opacity-6 me-1" aria-hidden="true" :class="isBlur ? 'text-dark' : 'text-white'"></i>
               Dashboard
             </router-link>
           </li>
           <li class="nav-item d-flex align-items-center">
             <router-link class="nav-link me-2" to="/login">
-              <i
-                class="fas fa-user-circle opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
+              <i class="fas fa-user-circle opacity-6 me-1" aria-hidden="true"
+                :class="isBlur ? 'text-dark' : 'text-white'"></i>
               Login
             </router-link>
             /

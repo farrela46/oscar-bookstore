@@ -2,13 +2,13 @@
 // import { computed, ref } from "vue";
 // import { useStore } from "vuex";
 // import { useRoute, useRouter } from "vue-router";
-import Breadcrumbs from "../Breadcrumbs.vue";
+// import Breadcrumbs from "../Breadcrumbs.vue";
 import axios from 'axios';
 import BASE_URL from '@/api/config-api';
 
 export default {
   components: {
-    Breadcrumbs
+    // Breadcrumbs
   },
   data() {
     return {
@@ -81,6 +81,7 @@ export default {
 
         localStorage.removeItem('access_token');
         this.$router.push('/login');
+        this.checkLoginStatus();
       } catch (error) {
         console.error('Logout failed:', error);
       }
@@ -91,15 +92,16 @@ export default {
 </script>
 
 <template>
-  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-md" v-bind="$attrs"
-    id="navbarBlur" data-scroll="true">
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow border-radius-md" v-bind="$attrs" id="navbarBlur"
+    data-scroll="true">
     <div class="px-3 py-1 container-fluid">
-      <breadcrumbs :current-page="currentRouteName" :current-directory="currentDirectory" />
+      <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
+        to="/">OSCAR BOOKSTORE</router-link>
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" :class="'px-0 me-sm-4'" id="navbar">
         <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
         </div>
         <ul class="navbar-nav justify-content-end">
-          <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+          <!-- <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a @click="minimizeSidebar" class="p-0 nav-link text-black" id="iconNavbarSidenav">
               <div class="sidenav-toggler-inner">
                 <i class="sidenav-toggler-line bg-black"></i>
@@ -107,16 +109,22 @@ export default {
                 <i class="sidenav-toggler-line bg-black"></i>
               </div>
             </a>
-          </li>
+          </li> -->
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
             <a v-if="hasAccessToken" href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']"
               id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu"
               @blur="closeMenu">
               <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
             </a>
-            <router-link v-else class="nav-link me-2" to="/login">
-              <a class="text-black"> <i class="fa fa-user me-2"></i> Login </a>
-            </router-link>
+            <div v-if="!hasAccessToken" class=" me-2">
+              <router-link to="/login">
+                <i class="fa fa-user me-2"></i> Login
+              </router-link>
+              <router-link to="/register">
+                / Register
+              </router-link>
+            </div>
+
             <!-- <router-link v-else to="/login" class="px-0 nav-link font-weight-bold text-white"
               target="_blank">
               <i class="fa fa-user"></i>
