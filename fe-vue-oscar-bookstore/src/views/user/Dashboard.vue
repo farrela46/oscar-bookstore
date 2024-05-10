@@ -2,11 +2,13 @@
 // import { useRoute } from "vue-router";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
+import Navbar from "@/examples/Navbars/Navbar.vue";
 
 // import AuthorsTable from "@/views/components/AuthorsTable.vue";
 
 export default {
   components: {
+    Navbar
   },
   data() {
     return {
@@ -46,13 +48,7 @@ export default {
 </script>
 
 <template>
-  <div class="container top-0 position-sticky z-index-sticky">
-    <div class="row">
-      <div class="col-12">
-        <navbar isBlur="blur  border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow" v-bind:darkMode="true" />
-      </div>
-    </div>
-  </div>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   
   <div class="py-4 container">
     <div class="row mt-2">

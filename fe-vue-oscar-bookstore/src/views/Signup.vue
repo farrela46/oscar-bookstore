@@ -1,11 +1,12 @@
 <script>
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
-import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
+
 import AppFooter from "@/examples/PageLayout/Footer.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 // import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
+import Navbar from "@/examples/Navbars/Navbar.vue";
 
 export default {
   name: 'Register',
@@ -87,22 +88,16 @@ export default {
 </script>
 
 <template>
-  <div class="container top-0 position-sticky z-index-sticky">
-    <div class="row">
-      <div class="col-12">
-        <navbar isBlur="blur  border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow" v-bind:darkMode="true" />
-      </div>
-    </div>
-  </div>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <main class="main-content mt-0">
 
     <div class="mx-3 mt-2 position-relative" :style="{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ) ,url(' + require('@/assets/img/library.png') + ')',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '65vh',
-          borderRadius: '30px 30px 0 0'
-        }">
+      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ) ,url(' + require('@/assets/img/library.png') + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '65vh',
+      borderRadius: '30px 30px 0 0'
+    }">
       <div class="container-fluid h-100">
         <div class="row h-100 justify-content-center align-items-center">
           <div class="col-auto text-left mb-5">

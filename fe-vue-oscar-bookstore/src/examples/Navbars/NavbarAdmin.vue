@@ -70,15 +70,6 @@ export default {
         }
       }
     },
-    goAdminDashboard() {
-      this.$router.push('/admin/dashboard')
-    },
-    goManageProducts() {
-      this.$router.push('/admin/products')
-    },
-    goManageUsers() {
-      this.$router.push('/admin/users')
-    },
     goCarts() {
       this.$router.push('/carts')
     },
@@ -109,8 +100,8 @@ export default {
 </script>
 
 <template>
-  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow blur border-radius-md" v-bind="$attrs"
-    id="navbarBlur" data-scroll="true">
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow blur border-radius-md" v-bind="$attrs" id="navbarBlur"
+    data-scroll="true">
     <div class="px-3 py-1 container-fluid">
       <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
         to="/">OSCAR BOOKSTORE</router-link>
@@ -128,17 +119,16 @@ export default {
             </a>
           </li> -->
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton" data-bs-toggle="dropdown"
-              aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
-              <a href="#" class="p-0 nav-link text-black">
-                <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
-              </a>
-            </div>
+            <a v-if="hasAccessToken" href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']"
+              id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu"
+              @blur="closeMenu">
+              <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
+            </a>
             <div v-else class=" me-2">
               <router-link to="/login">
-                Login
+                <i class="fa fa-user me-2"></i> Login
               </router-link>
-              <router-link to="/signup">
+              <router-link to="/register">
                 / Register
               </router-link>
             </div>
@@ -151,54 +141,18 @@ export default {
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenu ? 'show' : ''"
               aria-labelledby="dropdownMenuButton">
               <li v-if="role === 'ADMIN'" class="mb-2">
-                <a class="dropdown-item border-radius-md" @click="goAdminDashboard">
+                <a class="dropdown-item border-radius-md" @click="goAdminDashboar">
                   <div class="py-1 d-flex">
                     <div class="my-auto mx-3">
                       <span style="font-size: 1rem;">
                         <span style="color: black;">
-                          <i class="fas fa-home"></i>
+                          <i class="fas fa-shopping-cart"></i>
                         </span>
                       </span>
                     </div>
                     <div class="d-flex flex-column ml-4 justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
-                        Home
-                      </h6>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li v-if="role === 'ADMIN'" class="mb-2">
-                <a class="dropdown-item border-radius-md" @click="goManageProducts">
-                  <div class="py-1 d-flex">
-                    <div class="my-auto mx-3">
-                      <span style="font-size: 1rem;">
-                        <span style="color: black;">
-                          <i class="fas fa-book"></i>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="d-flex flex-column ml-4 justify-content-center">
-                      <h6 class="mb-1 text-sm font-weight-normal">
-                        Manage Products
-                      </h6>
-                    </div>
-                  </div>
-                </a>
-              </li>
-              <li v-if="role === 'ADMIN'" class="mb-2">
-                <a class="dropdown-item border-radius-md" @click="goManageUsers">
-                  <div class="py-1 d-flex">
-                    <div class="my-auto mx-3">
-                      <span style="font-size: 1rem;">
-                        <span style="color: black;">
-                          <i class="fas fa-users"></i>
-                        </span>
-                      </span>
-                    </div>
-                    <div class="d-flex flex-column ml-4 justify-content-center">
-                      <h6 class="mb-1 text-sm font-weight-normal">
-                        Manage Users
+                        My Cart
                       </h6>
                     </div>
                   </div>
@@ -235,6 +189,24 @@ export default {
                     <div class="d-flex flex-column ml-4 justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
                         My Order
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2">
+                <a class="dropdown-item border-radius-md" @click="goProfile">
+                  <div class="py-1 d-flex">
+                    <div class="my-auto mx-3">
+                      <span style="font-size: 1rem;">
+                        <span style="color: black;">
+                          <i class="fas fa-user"></i>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="d-flex flex-column ml-4 justify-content-center">
+                      <h6 class="mb-1 text-sm font-weight-normal">
+                        My Profile
                       </h6>
                     </div>
                   </div>
