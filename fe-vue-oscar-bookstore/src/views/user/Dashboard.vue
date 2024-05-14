@@ -14,42 +14,59 @@ export default {
     return {
       products: [],
       overlay: false,
-    };
+      items: [
+        {
+          title: 'Dashboard',
+          disabled: false,
+          href: 'breadcrumbs_dashboard',
+        },
+        {
+          title: 'Link 1',
+          disabled: false,
+          href: 'breadcrumbs_link_1',
+        },
+        {
+          title: 'Link 2',
+          disabled: true,
+          href: 'breadcrumbs_link_2',
+        },
+      ],
+  };
+},
+mounted() {
+  this.retrieveBuku();
+},
+methods: {
+  formatPrice(price) {
+    const numericPrice = parseFloat(price);
+    return numericPrice.toLocaleString('id-ID');
   },
-  mounted() {
-    this.retrieveBuku();
-  },
-  methods: {
-    formatPrice(price) {
-      const numericPrice = parseFloat(price);
-      return numericPrice.toLocaleString('id-ID');
-    },
     async retrieveBuku() {
-      try {
-        this.overlay = true;
-        const response = await axios.get(`${BASE_URL}/buku/get`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.products = response.data;
-
-        if (response.data.length > 0) {
-          this.fotoUrl = response.data[0].foto;
+    try {
+      this.overlay = true;
+      const response = await axios.get(`${BASE_URL}/buku/get`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem('access_token')
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.overlay = false
+      });
+      this.products = response.data;
+
+      if (response.data.length > 0) {
+        this.fotoUrl = response.data[0].foto;
       }
-    },
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.overlay = false
+    }
   },
+},
 };
 </script>
 
 <template>
   <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
-  
+
   <div class="py-4 container">
     <div class="row mt-2">
       <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
@@ -129,6 +146,7 @@ export default {
   background-color: #42BADB;
   background-size: 30vh;
 }
+
 .user-select-none {
   user-select: none;
 }

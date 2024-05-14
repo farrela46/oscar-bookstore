@@ -4,13 +4,15 @@ import { useStore } from "vuex";
 // import Sidenav from "./examples/Sidenav";
 // import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
+// import Configurator from "@/examples/Configurator.vue";
 
 
 export default {
   components: {
     // Sidenav,
     // Navbar,
-    AppFooter
+    AppFooter,
+    // Configurator
   },
   data() {
     return {
@@ -33,10 +35,12 @@ export default {
     this.showNavbar = computed(() => store.state.showNavbar);
     this.showFooter = computed(() => store.state.showFooter);
     this.showConfig = computed(() => store.state.showConfig);
-    this.hideConfigButton = computed(() => store.state.hideConfigButton);
+    // this.hideConfigButton = computed(() => store.state.hideConfigButton);
   },
   methods: {
-
+toggleWhatsapp() {
+  window.open('https://wa.me/6285179684793', '_blank');
+}
   }
 };
 </script>
@@ -45,7 +49,7 @@ export default {
   <notifications />
   <div v-show="layout === 'landing'" class="landing-bg h-100 bg-gradient-primary position-fixed w-100"></div>
 
-  <sidenav  v-if="showSidenav" />
+  <sidenav v-if="showSidenav" />
 
   <main class="main-content position-relative h-100 border-radius-lg">
     <!-- nav -->
@@ -56,6 +60,10 @@ export default {
 
     <app-footer v-show="showFooter" />
 
-    <!-- <configurator :toggle="toggleConfigurator" :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']" /> -->
+    <div class="fixed-plugin">
+      <a class="px-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
+        <i class=" py-2 fab fa-whatsapp"></i>
+      </a>
+    </div>
   </main>
 </template>
