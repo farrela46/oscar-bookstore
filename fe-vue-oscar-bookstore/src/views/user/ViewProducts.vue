@@ -1,9 +1,11 @@
 <script>
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
+import Navbar from "@/examples/Navbars/Navbar.vue";
 
 export default {
   components: {
+    Navbar,
   },
   data() {
     return {
@@ -77,10 +79,11 @@ export default {
 </script>
 
 <template>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <div class="py-4 container-fluid">
     <v-overlay v-if="overlay" :model-value="overlay" class="d-flex align-items-center justify-content-center">
-        <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
-      </v-overlay>
+      <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
+    </v-overlay>
     <div class="container" v-else>
       <div class="row mt-3">
         <div class="card border-0" v-if="!loading">

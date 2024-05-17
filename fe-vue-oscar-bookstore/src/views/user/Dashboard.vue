@@ -3,12 +3,13 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
+// import ArgonButton from "@/components/ArgonButton.vue";
 
-// import AuthorsTable from "@/views/components/AuthorsTable.vue";
 
 export default {
   components: {
-    Navbar
+    Navbar,
+    // ArgonButton
   },
   data() {
     return {
@@ -31,36 +32,58 @@ export default {
           href: 'breadcrumbs_link_2',
         },
       ],
-  };
-},
-mounted() {
-  this.retrieveBuku();
-},
-methods: {
-  formatPrice(price) {
-    const numericPrice = parseFloat(price);
-    return numericPrice.toLocaleString('id-ID');
+    };
   },
+  mounted() {
+    this.retrieveBuku();
+  },
+  created() {
+    this.store = this.$store;
+    this.body = document.getElementsByTagName("body")[0];
+    this.setupPage();
+  },
+  beforeUnmount() {
+    this.restorePage();
+  },
+  methods: {
+    formatPrice(price) {
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
+    },
     async retrieveBuku() {
-    try {
-      this.overlay = true;
-      const response = await axios.get(`${BASE_URL}/buku/get`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem('access_token')
-        }
-      });
-      this.products = response.data;
+      try {
+        this.overlay = true;
+        const response = await axios.get(`${BASE_URL}/buku/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.products = response.data;
 
-      if (response.data.length > 0) {
-        this.fotoUrl = response.data[0].foto;
+        if (response.data.length > 0) {
+          this.fotoUrl = response.data[0].foto;
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.overlay = false
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.overlay = false
+    },
+    setupPage() {
+      this.store.state.hideConfigButton = true;
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = false;
+      this.store.state.showFooter = false;
+      this.body.classList.remove("bg-gray-100");
+    },
+    restorePage() {
+      this.store.state.hideConfigButton = false;
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = true;
+      this.store.state.showFooter = true;
+      this.body.classList.add("bg-gray-100");
     }
   },
-},
 };
 </script>
 
@@ -127,14 +150,17 @@ methods: {
           </div>
           <div class="product-info p-2">
             <h6 class="text-muted" style="font-size: 10px"><a href="#">{{ item.pengarang }}</a></h6>
-            <h6 class="text-uppercase" style="font-size: 16px;"><a>{{ item.judul }}</a></h6>
+            <h6 class="text-uppercase  text-truncate" style="font-size: 16px;"><a>{{ item.judul }}</a></h6>
             <div class="d-flex align-items-center">
               <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
             </div>
-            <div class="d-flex align-items-center py-2">
+            <div class="d-flex align-items-center">
               <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a>
             </div>
           </div>
+          <!-- <div class="px-2 pb-1">
+            <argon-button>Buy</argon-button>
+          </div> -->
         </div>
       </router-link>
     </div>

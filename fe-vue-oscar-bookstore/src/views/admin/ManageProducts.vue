@@ -6,18 +6,19 @@ import BASE_URL from '@/api/config-api';
 import ArgonPagination from "@/components/ArgonPagination.vue";
 import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
-import ArgonInput from "@/components/ArgonInput.vue";
+// import ArgonInput from "@/components/ArgonInput.vue";
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import Navbar from "@/examples/Navbars/Navbar.vue";
 
 
 export default {
+
   components: {
     ArgonPagination,
     ArgonPaginationItem,
     ArgonButton,
-    ArgonInput,
+    // ArgonInput,
     Navbar
   },
   data() {
@@ -41,7 +42,7 @@ export default {
       showProductModal: false,
       selectedProduct: {},
       selectedCategoryId: null,
-      selectedFile: [],
+      selectedFile: '',
       loading: false,
       loadingRegist: false,
       dialog: false,
@@ -235,7 +236,8 @@ export default {
       this.buku.harga = '';
       this.buku.stok = '';
       this.buku.foto = null;
-      this.selectedFile = '';
+      this.selectedFile = null;
+      this.categoriesName = null;
     },
     openDeleteConfirmation(id) {
       this.selectedProductId = id;
@@ -311,7 +313,7 @@ export default {
                         <argon-input type="text" placeholder="Pengarang" v-model="buku.pengarang" />
                         <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
                         <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
-                        <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" multiple>
+                        <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" >
                         <div class="mb-3">
                           <label class="form-label">Category</label>
                           <div class="form-check" v-for="category in categories" :key="category.id">
