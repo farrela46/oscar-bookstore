@@ -71,22 +71,6 @@ export default {
           </template>
         </sidenav-item>
       </li>
-      <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/tables" :class="getRoute() === 'tables' ? 'active' : ''" navText="Tables">
-
-          <template v-slot:icon>
-            <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
-      <li v-if="userRole === 'ADMIN'" class="nav-item">
-        <sidenav-item to="/billing" :class="getRoute() === 'billing' ? 'active' : ''" navText="Billing">
-
-          <template v-slot:icon>
-            <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
-          </template>
-        </sidenav-item>
-      </li>
       <li v-else-if="userRole === 'USER'" class="nav-item">
         <sidenav-item to="/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''" navText="Home">
 

@@ -56,9 +56,11 @@ export default {
 
         if (role === 'ADMIN') {
           localStorage.setItem('access_token', response.data.access_token);
+          localStorage.setItem('username', response.data.user.name);
           this.$router.push('/admin/dashboard');
         } else if (role === 'USER') {
           localStorage.setItem('access_token', response.data.access_token);
+          localStorage.setItem('username', response.data.user.name);
           this.$router.push('/home');
         }
       } catch (error) {

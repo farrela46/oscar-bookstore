@@ -7,6 +7,7 @@ import ArgonButton from "@/components/ArgonButton.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
+import Navbar from "@/examples/Navbars/Navbar.vue";
 
 
 
@@ -15,7 +16,8 @@ export default {
     ArgonPagination,
     ArgonPaginationItem,
     ArgonButton,
-    ArgonInput
+    ArgonInput,
+    Navbar
   },
   data() {
     return {
@@ -141,6 +143,7 @@ export default {
 </script>
 
 <template>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">

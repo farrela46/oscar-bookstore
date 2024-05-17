@@ -29,6 +29,7 @@ export default {
       id: null,
       username: null,
       showWhatsapp: false,
+      inputChat: ''
 
     };
   },
@@ -48,6 +49,14 @@ export default {
     // },
     toggleWhatsapp() {
       this.showWhatsapp = !this.showWhatsapp;
+    },
+    sendWhatsapp() {
+      const baseUrl = 'https://wa.me/6285179684793';
+      const encodedText = encodeURIComponent(this.inputChat.trim());
+      const url = `${baseUrl}?text=${encodedText}`;
+      window.open(url, '_blank');
+      this.inputChat = '',
+      this.showWhatsapp = false
     },
 
   }
@@ -87,11 +96,11 @@ export default {
       </div>
       <div class="row ">
         <div class="col-7">
-          <argon-input class="ms-1" id="Text" type="email" placeholder="Email" name="email" size="md" />
+          <argon-input v-model="inputChat" class="ms-1" id="Text" type="text" placeholder="Tanya disini" name="email"
+            size="md" />
         </div>
         <div class="col-5">
-          <argon-button color="success"
-            size="sm" variant="contained">Kirim</argon-button>
+          <argon-button color="success" size="sm" variant="contained" @click="sendWhatsapp">Kirim</argon-button>
         </div>
       </div>
     </div>

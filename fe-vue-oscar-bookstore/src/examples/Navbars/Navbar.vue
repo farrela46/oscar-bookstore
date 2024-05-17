@@ -21,6 +21,7 @@ export default {
     };
   },
   mounted() {
+    this.getUsername();
     this.checkLoginStatus();
     this.getUser();
 
@@ -51,6 +52,9 @@ export default {
         this.showMenuUser = false;
       }, 100);
     },
+    getUsername() {
+      this.userName = localStorage.getItem('username')
+    },
     async getUser() {
       try {
         const response = await axios.get(`${BASE_URL}/user`, {
@@ -59,7 +63,6 @@ export default {
           }
         });
         this.id = response.data.user.id;
-        this.userName = response.data.user.name;
         this.role = response.data.user.role;
       } catch (error) {
         console.error(error);
@@ -97,6 +100,7 @@ export default {
         });
 
         localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
         this.$router.push('/login');
         this.checkLoginStatus();
       } catch (error) {
