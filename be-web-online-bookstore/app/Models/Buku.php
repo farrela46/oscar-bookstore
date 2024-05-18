@@ -24,8 +24,12 @@ class Buku extends Model
     ];
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'buku_categories', 'buku_id','category_id');
+        return $this->belongsToMany(Category::class, 'buku_categories', 'buku_id', 'category_id');
     }
-    
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
 
 }

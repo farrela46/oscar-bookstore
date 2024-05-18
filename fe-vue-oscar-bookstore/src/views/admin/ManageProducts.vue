@@ -6,7 +6,7 @@ import BASE_URL from '@/api/config-api';
 import ArgonPagination from "@/components/ArgonPagination.vue";
 import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
-// import ArgonInput from "@/components/ArgonInput.vue";
+import ArgonInput from "@/components/ArgonInput.vue";
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import Navbar from "@/examples/Navbars/Navbar.vue";
@@ -18,7 +18,7 @@ export default {
     ArgonPagination,
     ArgonPaginationItem,
     ArgonButton,
-    // ArgonInput,
+    ArgonInput,
     Navbar
   },
   data() {
@@ -48,6 +48,7 @@ export default {
       dialog: false,
       showModal: false,
       selectedProductId: null,
+      addProducts: false,
     };
   },
   computed: {
@@ -177,7 +178,7 @@ export default {
 
         console.log(response.data);
 
-        this.closeModal();
+        this.addProducts = false;
         this.retrieveBuku();
         this.clearForm();
 
@@ -264,7 +265,7 @@ export default {
   },
   mounted() {
     const store = useStore();
-    store.commit('toggleSidenav', false); 
+    store.commit('toggleSidenav', false);
     this.retrieveBuku();
     this.retrieveCat();
   },
@@ -272,7 +273,7 @@ export default {
 </script>
 
 <template>
-   <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
 
   <div class="py-4 container-fluid">
     <div class="row">
@@ -293,52 +294,50 @@ export default {
                       </span>
                     </template>
                   </v-tooltip>
-                  <argon-button data-bs-toggle="modal" data-bs-target="#exampleModal">Add Products</argon-button>
+                  <argon-button @click="addProducts = true">Add Products</argon-button>
                 </div>
               </div>
-              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title text-black" id="userModalLabel">Add Products</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"
-                        @click="handleclose"></button>
-                    </div>
-                    <form role="form" @submit.prevent="addBuku">
-                      <div class="modal-body">
-                        <argon-input type="text" placeholder="No ISBN" v-model="buku.no_isbn" />
-                        <argon-input type="text" placeholder="Judul Buku" v-model="buku.judul" />
-                        <argon-input type="text-area" placeholder="Deskripsi Buku" v-model="buku.desc" />
-                        <argon-input type="text" placeholder="Pengarang" v-model="buku.pengarang" />
-                        <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
-                        <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
-                        <input type="file" class="form-control" ref="fileInput" @change="handleFileChange" >
-                        <div class="mb-3">
-                          <label class="form-label">Category</label>
-                          <div class="form-check" v-for="category in categories" :key="category.id">
-                            <input class="form-check-input" type="checkbox" :value="category.id"
-                              v-model="buku.categoriesName">
-                            <label class="form-check-label">{{ category.nama }}</label>
-                          </div>
+              <v-dialog v-model="addProducts" max-width="600px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">Add Product</span>
+                  </v-card-title>
+
+                  <v-form @submit.prevent="addBuku">
+                    <v-card-text>
+                      <argon-input type="text" placeholder="No ISBN" v-model="buku.no_isbn" />
+                      <argon-input type="text" placeholder="Judul Buku" v-model="buku.judul" />
+                      <argon-input type="text-area" placeholder="Deskripsi Buku" v-model="buku.desc" />
+                      <argon-input type="text" placeholder="Pengarang" v-model="buku.pengarang" />
+                      <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
+                      <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
+                      <input type="file" class="form-control" ref="fileInput" @change="handleFileChange">
+                      <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <div class="form-check" v-for="category in categories" :key="category.id">
+                          <input class="form-check-input" type="checkbox" :value="category.id"
+                            v-model="buku.categoriesName">
+                          <label class="form-check-label">{{ category.nama }}</label>
                         </div>
-                        <div class="input-group mb-3">
-                          <span class="input-group-text" id="basic-addon1">Rp.</span>
-                          <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
-                            placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
-                        </div>
-                        <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
                       </div>
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">Rp.</span>
+                        <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
+                          placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
+                      </div>
+                      <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
+
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                          @click="handleclose">Close</button>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+                    </v-card-text>
+
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <button type="button" class="btn btn-secondary" text @click="addProducts = false">Close</button>
+                      <button type="submit" class="ms-2 btn btn-primary">Add</button>
+                    </v-card-actions>
+                  </v-form>
+                </v-card>
+              </v-dialog>
               <div class="card-body px-0 pt-0 pb-2">
                 <div v-if="loading" class="divider">
                   <v-progress-linear indeterminate></v-progress-linear>
