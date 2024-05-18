@@ -58,6 +58,38 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
+    async addToCart(id) {
+      try {
+        const response = await axios.post(`${BASE_URL}/cart/add`, {
+          buku_id: id,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        console.log("Product added to cart:", response.data);
+
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Product added to cart',
+          color: 'green'
+        });
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
+        }
+      }
+    },
     async getDetailProducts() {
       try {
         this.overlay = true;
@@ -153,8 +185,8 @@ export default {
                     <h2>Rp. {{ formatPrice(products.harga) }}</h2>
                   </div>
                   <div class="col-md-3">
-                    <button class="btn addBtn btn-block mt-2 btn-primary" @click="addToCart(parfum.id)">Add to
-                      basket</button>
+                    <button class="btn addBtn btn-block mt-2 btn-primary" @click="addToCart(products.id)">Add to
+                      cart</button>
                   </div>
                 </div>
               </div>
@@ -185,12 +217,14 @@ a {
 .card {
   border-radius: 10px !important;
 }
+
 .title-author {
   font-size: 16px;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
 .title-deskripsi {
   font-size: 16px;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 </style>

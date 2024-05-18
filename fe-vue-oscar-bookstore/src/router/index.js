@@ -14,12 +14,12 @@ import Billing from "../views/admin/Billing.vue";
 //USER
 import UserDashboard from "../views/user/Dashboard.vue";
 import ViewProducts from "../views/user/ViewProducts.vue";
-import VirtualReality from "../views/VirtualReality.vue";
-import RTL from "../views/Rtl.vue";
+import Cart from "../views/user/Cart.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Login from "../views/Loginn.vue";
 import Signin from "../views/Signin.vue";
+
 
 const routes = [
   {
@@ -91,26 +91,17 @@ const routes = [
   },
 
   //USER
-  // {
-  //   path: "/dashboard",
-  //   name: "Dashboard",
-  //   component: UserDashboard,
-  // },
   {
     path: '/products/:slug',
     name: 'View Produk',
     component: ViewProducts,
   },
   {
-    path: "/virtual-reality",
-    name: "Virtual Reality",
-    component: VirtualReality,
+    path: '/cart',
+    name: 'Cart',
+    component: Cart,
   },
-  {
-    path: "/rtl-page",
-    name: "RTL",
-    component: RTL,
-  },
+
   {
     path: "/profile",
     name: "Profile",

@@ -239,6 +239,7 @@ export default {
       this.buku.foto = null;
       this.selectedFile = null;
       this.categoriesName = null;
+      this.categories = []
     },
     openDeleteConfirmation(id) {
       this.selectedProductId = id;

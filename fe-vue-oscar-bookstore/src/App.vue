@@ -64,7 +64,7 @@ export default {
 </script>
 
 <template>
-  <notifications />
+  <notifications position="top left" />
   <div v-show="layout === 'landing'" class="landing-bg h-100 bg-gradient-primary position-fixed w-100"></div>
 
   <sidenav v-if="showSidenav" />

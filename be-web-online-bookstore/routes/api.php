@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukusController;
+use App\Http\Controllers\CartsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
@@ -56,3 +57,11 @@ Route::prefix('/category')->middleware('auth:sanctum')->group(function () {
     Route::post('/update/{id}', [CategoriesController::class, 'update']);
     Route::delete('/delete/{id}', [CategoriesController::class, 'destroy']);
 });
+
+Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
+    Route::post('/add', [CartsController::class, 'addToCart']);
+    Route::get('/get', [CartsController::class, 'viewCart']);
+    Route::put('/update/{id}', [CartsController::class, 'updateCart']);
+    Route::delete('/delete/{id}', [CartsController::class, 'removeFromCart']);
+});
+
