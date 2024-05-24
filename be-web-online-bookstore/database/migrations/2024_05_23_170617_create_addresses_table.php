@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->string('provinsi');
             $table->string('kota');
             $table->string('kecamatan');
+            $table->string('alamat_lengkap');
             $table->string('postal_code');
             $table->string('label');
             $table->timestamps();

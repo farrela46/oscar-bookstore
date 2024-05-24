@@ -18,6 +18,7 @@ class Address extends Model
         'provinsi',
         'kota',
         'kecamatan',
+        'alamat_lengkap',
         'postal_code',
         'label',
     ];

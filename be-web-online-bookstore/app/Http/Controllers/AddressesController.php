@@ -39,6 +39,7 @@ class AddressesController extends Controller
         $address->kota = $request->kota;
         $address->kecamatan = $request->kecamatan;
         $address->postal_code = $request->postal_code;
+        $address->alamat_lengkap = $request->alamat_lengkap;
         $address->label = $request->label;
         $address->save();
 
