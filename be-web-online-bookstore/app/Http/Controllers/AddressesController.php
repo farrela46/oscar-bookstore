@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use App\Services\BiteshipService;
+use Illuminate\Support\Facades\Auth;
 
 class AddressesController extends Controller
 {
@@ -18,32 +19,39 @@ class AddressesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_name' => 'required|string|max:255',
-            'contact_phone' => 'required|string|max:15',
-            'address' => 'required|string|max:255',
-            'note' => 'nullable|string|max:255',
-            'postal_code' => 'required|numeric',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'selected_address_id' => 'required|string',
+            'name' => 'required|string',
+            'penerima' => 'required|string',
+            'no_penerima' => 'required|string',
+            'provinsi' => 'required|string',
+            'kota' => 'required|string',
+            'kecamatan' => 'required|string',
+            'label' => 'nullable|string',
         ]);
 
-        $data = $request->only([
-            'name',
-            'contact_name',
-            'contact_phone',
-            'address',
-            'note',
-            'postal_code',
-            'latitude',
-            'longitude'
-        ]);
+        $address = new Address();
+        $address->user_id = Auth::id();
+        $address->selected_address_id = $request->selected_address_id;
+        $address->name = $request->name;
+        $address->penerima = $request->penerima;
+        $address->no_penerima = $request->no_penerima;
+        $address->provinsi = $request->provinsi;
+        $address->kota = $request->kota;
+        $address->kecamatan = $request->kecamatan;
+        $address->postal_code = $request->postal_code;
+        $address->label = $request->label;
+        $address->save();
 
-        $response = $this->biteshipService->addAddress($data);
-
-        return response()->json($response);
+        return response()->json(['message' => 'Address saved successfully']);
     }
 
+    public function getUserAddresses()
+    {
+        $user = Auth::user();
+        $addresses = Address::where('user_id', $user->id)->get();
+
+        return response()->json(['addresses' => $addresses], 200);
+    }
     public function getAreas(Request $request)
     {
         $input = $request->query('input', '');

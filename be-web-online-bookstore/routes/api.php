@@ -23,6 +23,7 @@ use App\Http\Controllers\CategoriesController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
+    Route::put('/user/update', [AuthController::class, 'updateUser']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -36,10 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
     Route::post('/store', [AddressesController::class, 'store']);
-    Route::get('/get', [AddressesController::class, 'getAddress']);
-    Route::get('/getbyid/{id}', [AddressesController::class, 'getById']);
-    Route::put('/update/{id}', [AddressesController::class, 'update']);
-    Route::delete('/delete/{id}', [AddressesController::class, 'delete']);
+    Route::get('/get', [AddressesController::class, 'getUserAddresses']);
 });
 
 Route::prefix('/buku')->group(function () {

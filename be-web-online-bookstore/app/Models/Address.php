@@ -11,11 +11,15 @@ class Address extends Model
     use HasApiTokens, HasFactory;
     protected $fillable = [
         'user_id',
-        'province_id',
-        'city_id',
-        'district_id',
-        'detail_address',
-        'postal_code'
+        'selected_address_id',
+        'name',
+        'penerima',
+        'no_penerima',
+        'provinsi',
+        'kota',
+        'kecamatan',
+        'postal_code',
+        'label',
     ];
 
     public function user()
