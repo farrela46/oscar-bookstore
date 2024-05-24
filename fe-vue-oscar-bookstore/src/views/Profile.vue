@@ -1,5 +1,4 @@
 <script>
-import { useStore } from 'vuex';
 import setNavPills from '@/assets/js/nav-pills.js';
 import setTooltip from '@/assets/js/tooltip.js';
 import ProfileCard from './components/ProfileCard.vue';
@@ -7,6 +6,7 @@ import ArgonInput from '@/components/ArgonInput.vue';
 import ArgonButton from '@/components/ArgonButton.vue';
 import axios from 'axios';
 import BASE_URL from '@/api/config-api';
+import Navbar from "@/examples/Navbars/Navbar.vue";
 
 export default {
   name: 'Profile',
@@ -14,6 +14,7 @@ export default {
     ProfileCard,
     ArgonInput,
     ArgonButton,
+    Navbar
   },
   data() {
     return {
@@ -22,37 +23,34 @@ export default {
       users: '',
     };
   },
+  created() {
+    this.store = this.$store;
+    this.body = document.getElementsByTagName("body")[0];
+    this.setupPage();
+  },
+  beforeUnmount() {
+    this.restorePage();
+  },
   mounted() {
-    this.store = useStore();
-    this.body = document.getElementsByTagName('body')[0];
-    this.store.state.isAbsolute = true;
     setNavPills();
     setTooltip();
     this.getUser();
   },
-  beforeUnmount() {
-    this.store.state.isAbsolute = false;
-    this.store.state.imageLayout = 'default';
-    this.store.state.showNavbar = true;
-    this.store.state.showFooter = true;
-    this.store.state.hideConfigButton = false;
-    this.body.classList.remove('profile-overview');
-  },
+
   methods: {
     setupPage() {
-      this.store.state.imageLayout = 'profile-overview';
-      this.store.state.showNavbar = false;
-      this.store.state.showFooter = true;
       this.store.state.hideConfigButton = true;
-      this.body.classList.add('profile-overview');
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = false;
+      this.store.state.showFooter = false;
+      this.body.classList.remove("bg-gray-100");
     },
     restorePage() {
-      this.store.state.isAbsolute = false;
-      this.store.state.imageLayout = 'default';
-      this.store.state.showNavbar = true;
-      this.store.state.showFooter = true;
       this.store.state.hideConfigButton = false;
-      this.body.classList.remove('profile-overview');
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = true;
+      this.store.state.showFooter = true;
+      this.body.classList.add("bg-gray-100");
     },
     async getUser() {
       try {
@@ -90,16 +88,10 @@ export default {
 </script>
 
 <template>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <main>
     <div class="container-fluid">
-      <div class="page-header min-height-300" style="
-          background-image: url(&quot;https://images.unsplash.com/photo-1531512073830-ba890ca4eba2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80&quot;);
-          margin-right: -24px;
-          margin-left: -34%;
-        ">
-        <span class="mask bg-gradient-success opacity-6"></span>
-      </div>
-      <div class="card shadow-lg mt-n6">
+      <div class="card shadow-lg mt-5">
         <div class="card-body p-3">
           <div class="row gx-4">
             <div class="col-auto">
@@ -130,7 +122,7 @@ export default {
     <div class="py-4 container-fluid">
       <div class="row">
         <div class="col-md-8">
-          <div class="card">
+          <div class="card shadow-lg">
             <div class="card-header pb-0">
               <div class="d-flex align-items-center">
                 <p class="mb-0">Edit Profile</p>
@@ -195,3 +187,9 @@ export default {
     </div>
   </main>
 </template>
+<style>
+main {
+  background-color: #42BADB;
+  height: 20vh;
+}
+</style>

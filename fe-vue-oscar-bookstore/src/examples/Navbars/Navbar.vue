@@ -132,8 +132,8 @@ export default {
             </a>
           </li> -->
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton" data-bs-toggle="dropdown"
-              aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
+            <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
+              data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
               <a href="#" class="p-0 nav-link text-black">
                 <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
               </a>
@@ -154,6 +154,7 @@ export default {
             </router-link> -->
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenu ? 'show' : ''"
               aria-labelledby="dropdownMenuButton">
+
               <li v-if="role === 'ADMIN'" class="mb-2">
                 <a class="dropdown-item border-radius-md" @click="goAdminDashboard">
                   <div class="py-1 d-flex">
@@ -208,6 +209,7 @@ export default {
                   </div>
                 </a>
               </li>
+
               <li v-if="role === 'USER'" class="mb-2">
                 <a class="dropdown-item border-radius-md" @click="goCarts">
                   <div class="py-1 d-flex">
@@ -239,6 +241,24 @@ export default {
                     <div class="d-flex flex-column ml-4 justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
                         My Order
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2" v-if="role === 'USER'">
+                <a class="dropdown-item border-radius-md" href="/profile">
+                  <div class="py-1 d-flex">
+                    <div class="my-auto mx-3">
+                      <span style="font-size: 1rem;">
+                        <span style="color: black;">
+                          <i class="fas fa-user"></i>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="d-flex flex-column ml-4 justify-content-center">
+                      <h6 class="mb-1 text-sm font-weight-normal">
+                        My Profile
                       </h6>
                     </div>
                   </div>

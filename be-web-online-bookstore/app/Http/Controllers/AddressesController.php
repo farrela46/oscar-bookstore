@@ -4,82 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use Illuminate\Http\Request;
+use App\Services\BiteshipService;
 
 class AddressesController extends Controller
 {
+    protected $biteshipService;
+
+    public function __construct(BiteshipService $biteshipService)
+    {
+        $this->biteshipService = $biteshipService;
+    }
+
     public function store(Request $request)
     {
-        $created = Address::create([
-            'nama_penerima' => $request->input('nama_penerima'),
-            'no_telp_penerima' => $request->input('no_telp_penerima'),
-            'jalan' => $request->input('jalan'),
-            'kelurahan' => $request->input('kelurahan'),
-            'kecamatan' => $request->input('kecamatan'),
-            'kota' => $request->input('kota'),
-            'provinsi' => $request->input('provinsi'),
-            'kode_pos' => $request->input('kode_pos'),
-            'user_id' => $request->user()->id
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'contact_name' => 'required|string|max:255',
+            'contact_phone' => 'required|string|max:15',
+            'address' => 'required|string|max:255',
+            'note' => 'nullable|string|max:255',
+            'postal_code' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
 
-        if ($created) {
-            return response()->json([
-                'message' => 'Successfuly Add Address!'
-            ], 201);
-        } else {
-            return response()->json([
-                'message' => 'Server error'
-            ], 500);
-        }
-    }
-
-    public function getAddress(Request $request)
-    {
-        $address = Address::all();
-
-        if (!$address) {
-            return response()->json(['error' => 'Address not found'], 404);
-        }
-
-        return response()->json($address);
-    }
-
-    public function getById(Request $request, $id)
-    {
-
-        $address = Address::where('user_id', $id)->get();
-
-        if (!$address) {
-            return response()->json(['error' => 'Address not found'], 404);
-        }
-
-        return response()->json($address);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $address = Address::find($id);
-
-        if (!$address) {
-            return response()->json(['message' => 'Address not found'], 404);
-        }
-
-        $address->update([
-            'jalan' => $request->input('jalan'),
-            'kelurahan' => $request->input('kelurahan'),
-            'kecamatan' => $request->input('kecamatan'),
-            'kota' => $request->input('kota'),
-            'kode_pos' => $request->input('kode_pos'),
+        $data = $request->only([
+            'name',
+            'contact_name',
+            'contact_phone',
+            'address',
+            'note',
+            'postal_code',
+            'latitude',
+            'longitude'
         ]);
 
-        return response()->json(['message' => 'Successfully updated Address'], 200);
+        $response = $this->biteshipService->addAddress($data);
+
+        return response()->json($response);
     }
-    public function delete($id)
+
+    public function getAreas(Request $request)
     {
-        $address = Address::where('id', $id)->first();
-        if (!$address) {
-            return response()->json(['success' => false, "Message" => "Address Gagal Dihapus"], 404);
+        $input = $request->query('input', '');
+
+        try {
+            $areas = $this->biteshipService->getAreas($input);
+            return response()->json($areas);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        $address->delete();
-        return response()->json(['success' => true, "Message" => "Address Berhasil Dihapus"], 200);
     }
 }

@@ -10,21 +10,17 @@ class Address extends Model
 {
     use HasApiTokens, HasFactory;
     protected $fillable = [
-        'nama_penerima',
-        'no_telp_penerima',
-        'jalan',
-        'kelurahan',
-        'kecamatan',
-        'kecamatan',
-        'kota',
-        'provinsi',
-        'kode_pos',
-        'user_id'
+        'user_id',
+        'province_id',
+        'city_id',
+        'district_id',
+        'detail_address',
+        'postal_code'
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
 }
