@@ -38,6 +38,8 @@ class CartsController extends Controller
     public function viewCart()
     {
         $user = Auth::user();
+
+        Cart::where('user_id', $user->id)->update(['selected' => false]);
         $cartItems = $user->carts()->with('buku')->get();
 
         if ($cartItems->isEmpty()) {
@@ -81,7 +83,18 @@ class CartsController extends Controller
             return response()->json(['error' => 'Cart item not found'], 404);
         }
     }
+    public function updateSelected(Request $request)
+    {
+        $userId = Auth::id();
 
+        Cart::where('user_id', $userId)->update(['selected' => false]);
+
+        Cart::whereIn('id', $request->selected_ids)
+            ->where('user_id', $userId)
+            ->update(['selected' => true]);
+
+        return response()->json(['message' => 'Selected items updated successfully']);
+    }
 
     public function removeFromCart($id)
     {

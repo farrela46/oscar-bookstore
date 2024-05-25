@@ -14,6 +14,7 @@ class Cart extends Model
         'user_id',
         'buku_id',
         'quantity',
+        'selected'
     ];
 
     public function user()

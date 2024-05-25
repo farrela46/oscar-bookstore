@@ -62,6 +62,7 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
     Route::get('/get', [CartsController::class, 'viewCart']);
     Route::put('/update/{id}', [CartsController::class, 'updateCart']);
     Route::delete('/delete/{id}', [CartsController::class, 'removeFromCart']);
+    Route::put('/select', [CartsController::class, 'updateSelected']);
 });
 
 Route::prefix('/loc')->group(function () {

@@ -67,6 +67,23 @@ export default {
         return order.selected ? total + order.totalPrice : total;
       }, 0);
     },
+    async proceedToCheckout() {
+      const selectedOrders = this.orders.filter(order => order.selected);
+      if (selectedOrders.length > 0) {
+        try {
+          const selectedIds = selectedOrders.map(order => order.id);
+          await axios.put(`${BASE_URL}/cart/select`, 
+           { selected_ids: selectedIds }, {headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }});
+          this.$router.push({ name: 'Checkout' });
+        } catch (error) {
+          console.error('Error updating selected items:', error);
+        }
+      } else {
+        alert('Pilih setidaknya satu item untuk melanjutkan ke pembayaran.');
+      }
+    },
     incrementQuantity(index) {
       const order = this.orders[index];
       const newQuantity = order.quantity + 1;
@@ -174,12 +191,11 @@ export default {
                 <h5 class="card-title">Rincian Belanja</h5>
                 <p>Ringkasan Pembayaran</p>
                 <p>Rp {{ formatPrice(totalPayment) }}</p>
-                <button class="btn btn-primary w-100">Lanjut ke Pembayaran</button>
+                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
