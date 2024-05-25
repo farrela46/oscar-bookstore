@@ -7,7 +7,7 @@ import "./assets/css/nucleo-svg.css";
 import ArgonDashboard from "./argon-dashboard";
 import Notifications from '@kyvg/vue3-notification'
 // Vuetify
-import 'vuetify/styles'
+// import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'

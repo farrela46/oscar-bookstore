@@ -46,7 +46,8 @@ class CartsController extends Controller
 
         $books = $cartItems->map(function ($cartItem) {
             return [
-                'id' => $cartItem->buku->id,
+
+                'id' => $cartItem->id,
                 'no_isbn' => $cartItem->buku->no_isbn,
                 'judul' => $cartItem->buku->judul,
                 'desc' => $cartItem->buku->desc,
@@ -70,7 +71,7 @@ class CartsController extends Controller
     public function updateCart(Request $request, $id)
     {
         $user = Auth::user();
-        $cartItem = $user->carts()->where('buku_id', $id)->first();
+        $cartItem = $user->carts()->where('id', $id)->first();
 
         if ($cartItem) {
             $cartItem->quantity = $request->quantity;
@@ -85,9 +86,6 @@ class CartsController extends Controller
     public function removeFromCart($id)
     {
         $cartItem = Cart::findOrFail($id);
-        if ($cartItem->user_id != Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
         $cartItem->delete();
 
         return response()->json(['message' => 'Buku berhasil dihapus dari keranjang!'], 200);
