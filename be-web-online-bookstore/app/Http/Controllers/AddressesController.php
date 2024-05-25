@@ -64,4 +64,17 @@ class AddressesController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function delete($id)
+    {
+        $user = Auth::user();
+        $address = Address::where('id', $id)->where('user_id', $user->id)->first();
+
+        if (!$address) {
+            return response()->json(['error' => 'Address not found or you do not have permission to delete this address'], 404);
+        }
+
+        $address->delete();
+
+        return response()->json(['message' => 'Address deleted successfully']);
+    }
 }

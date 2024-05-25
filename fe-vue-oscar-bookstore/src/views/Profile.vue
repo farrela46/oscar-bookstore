@@ -6,7 +6,6 @@ import ArgonButton from '@/components/ArgonButton.vue';
 import axios from 'axios';
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
-import { debounce } from 'lodash';
 
 export default {
   name: 'Profile',
@@ -41,14 +40,15 @@ export default {
         label: '',
         alamat_lengkap: ''
       },
-      alamat: []
+      alamat: [],
+      selectedAddressId: null,
+      confirmdeletion: false
     };
   },
   created() {
     this.store = this.$store;
     this.body = document.getElementsByTagName("body")[0];
     this.setupPage();
-    this.debouncedSearchAddress = debounce(this.searchAddress, 2000);
   },
   beforeUnmount() {
     this.restorePage();
@@ -142,6 +142,7 @@ export default {
             color: 'green'
           });
         this.resetForm();
+        this.fetchUserAddresses();
       } catch (error) {
         console.error('Error saving address:', error);
       }
@@ -173,7 +174,35 @@ export default {
         console.error('Error fetching addresses:', error);
       }
     },
-
+    async deleteAddress(id) {
+      try {
+        const response = await axios.delete(`${BASE_URL}/address/` + id, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+          },
+        });
+        console.log(response)
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Addresss berhasil dihapus',
+          color: 'green'
+        });
+        this.fetchUserAddresses();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    openDeleteConfirmation(id) {
+      this.selectedAddressId = id;
+      this.confirmdeletion = true
+    },
+    confirmDelete() {
+      if (this.selectedAddressId) {
+        this.deleteAddress(this.selectedAddressId);
+        this.confirmdeletion = false
+      }
+    },
     async getUser() {
       try {
         const response = await axios.get(`${BASE_URL}/user`, {
@@ -237,192 +266,208 @@ export default {
   <div class="border-main">
 
     <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
-      <div class="container-fluid">
-        <div class="card shadow-lg" style="margin-top: 30px;">
-          <div class="card-body p-3">
-            <div class="row gx-4">
-              <div class="col-auto">
-                <div class="avatar avatar-xl position-relative">
-                  <img src="../assets/img/team-1.jpg" alt="profile_image" class="shadow-sm w-100 border-radius-lg" />
-                </div>
+    <div class="container-fluid">
+      <div class="card shadow-lg" style="margin-top: 30px;">
+        <div class="card-body p-3">
+          <div class="row gx-4">
+            <div class="col-auto">
+              <div class="avatar avatar-xl position-relative">
+                <img src="../assets/img/team-1.jpg" alt="profile_image" class="shadow-sm w-100 border-radius-lg" />
               </div>
-              <div class="col-auto my-auto">
-                <div class="h-100">
-                  <h5 class="mb-1">{{ users.name }}</h5>
-                  <p class="mb-0 font-weight-bold text-sm">{{ users.role }}</p>
-                </div>
+            </div>
+            <div class="col-auto my-auto">
+              <div class="h-100">
+                <h5 class="mb-1">{{ users.name }}</h5>
+                <p class="mb-0 font-weight-bold text-sm">{{ users.role }}</p>
               </div>
-              <div class="mx-auto mt-3 col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0">
-                <div class="nav-wrapper position-relative end-0">
-                  <argon-button color="danger" @click="onLogout"><span class="mx-3"
-                      style="font-size: 1rem; cursor: pointer;">
-                      <span style="color: WHITE;">
-                        <i class="fas fa-running"></i>
-                      </span>
-                    </span>Logout</argon-button>
-                </div>
+            </div>
+            <div class="mx-auto mt-3 col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0">
+              <div class="nav-wrapper position-relative end-0">
+                <argon-button color="danger" @click="onLogout"><span class="mx-3"
+                    style="font-size: 1rem; cursor: pointer;">
+                    <span style="color: WHITE;">
+                      <i class="fas fa-running"></i>
+                    </span>
+                  </span>Logout</argon-button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="py-4 container-fluid">
-        <div class="row">
-          <div class="col-md-7">
-            <div class="card shadow-lg">
-              <div class="card-header pb-0">
-                <div class="d-flex align-items-center">
-                  <p class="mb-0">Edit Profile</p>
-                </div>
-              </div>
-              <div class="card-body">
-                <p class="text-uppercase text-sm">User Information</p>
-                <div class="row">
-                  <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">Username</label>
-                    <argon-input v-model="users.name" type="text" />
-                  </div>
-                  <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">Email address</label>
-                    <argon-input v-model="users.email" type="email" />
-                  </div>
-                  <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">Nomor Telepon</label>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1">+62</span>
-                      <input type="text" class="form-control" v-model="users.no_telp" placeholder="Phone Number"
-                        aria-label="phone" aria-describedby="basic-addon1">
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label for="example-text-input" class="form-control-label">Password</label>
-                    <input type="password" class="form-control" v-model="users.password">
-                  </div>
-                </div>
-                <hr class="horizontal dark" />
-                <div class="col-md-12 text-end">
-                  <argon-button color="success" size="sm" class="ms-auto" @click="updateUser">Update</argon-button>
-                </div>
+    </div>
+    <div class="py-4 container-fluid">
+      <div class="row">
+        <div class="col-md-7">
+          <div class="card shadow-lg">
+            <div class="card-header pb-0">
+              <div class="d-flex align-items-center">
+                <p class="mb-0">Edit Profile</p>
               </div>
             </div>
-          </div>
-          <div class="col-md-5">
-            <div class="card shadow-lg">
-              <div class="card-header pb-0">
-                <div class="d-flex align-items-center">
-                  <p class="mb-0">Alamat</p>
+            <div class="card-body">
+              <p class="text-uppercase text-sm">User Information</p>
+              <div class="row">
+                <div class="col-md-6">
+                  <label for="example-text-input" class="form-control-label">Username</label>
+                  <argon-input v-model="users.name" type="text" />
                 </div>
-              </div>
-              <div class="card-body">
-                <p class="text-uppercase text-sm">Alamat Pengguna</p>
-                <div class="row">
-                  <argon-button @click="dialog = true" color="success" size="sm" class="ms-auto"><i
-                      class="fas fa-plus"></i>&nbsp;Alamat</argon-button>
+                <div class="col-md-6">
+                  <label for="example-text-input" class="form-control-label">Email address</label>
+                  <argon-input v-model="users.email" type="email" />
                 </div>
-                <hr class="horizontal dark" />
-                <div class="row">
-                  <div v-for="item in alamat" :key="item.id" class="col-md-12 mb-3">
-                    <div class="border p-2 rounded-lg">
-                      <div class="row">
-                        <div class="col">
-                          <v-chip color="green" variant="elevated">
-                            {{ item.label }}
-                          </v-chip>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-9 col-9">
-                          <div class="mt-2">
-                            <a class="card-alamat">{{ item.penerima }}</a>
-                            <br>
-                            <a class="card-alamat">+62&nbsp;{{ item.no_penerima }}</a>
-                            <br>
-                            <a class="card-alamat">{{ item.name }}</a>
-                          </div>
-                        </div>
-                        <div class="col-md-3 col-3">
-                          <argon-button color="danger" size="sm" class="ms-auto">Hapus</argon-button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <v-dialog v-model="dialog" persistent max-width="600px">
-          <v-card>
-            <v-card-title>
-              <span class="headline">Tambah Alamat</span>
-            </v-card-title>
-  
-            <v-card-text>
-              <div class="mb-3">
-                <label for="searchQuery" class="form-label">Cari Lokasi</label>
-                <input type="text" class="form-control" id="searchQuery" v-model="searchQuery" @input="searchWithDelay">
-              </div>
-  
-              <div v-if="searchResults.length" class="mb-3">
-                <label for="addressSelect" class="form-label">Pilih Alamat</label>
-                <select class="form-select" id="addressSelect" v-model="selectedAddress" @change="fillAddress">
-                  <option v-for="result in searchResults" :key="result.id" :value="result">{{ result.name }}</option>
-                </select>
-              </div>
-              <div v-else><a style="font-size: 12px; color:red;"><i class="fas fa-info-circle"
-                    style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
-                  input kode pos!</a></div>
-              <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-              <form>
-                <div class="mb-3">
-                  <label for="Province" class="form-label">Provinsi</label>
-                  <input type="text" class="form-control" id="province" v-model="address.provinsi">
-                </div>
-                <div class="mb-3">
-                  <label for="City" class="form-label">Kota</label>
-                  <input type="text" class="form-control" id="city" v-model="address.city">
-                </div>
-                <div class="mb-3">
-                  <label for="District" class="form-label">Kecamatan</label>
-                  <input type="text" class="form-control" id="district" v-model="address.district">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Kode Pos</label>
-                  <input type="text" class="form-control" id="district" v-model="address.postal_code">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Alamat Lengkap</label>
-                  <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
-                </div>
-                <hr class="horizontal dark" />
-                <div class="mb-3">
-                  <label for="recepient" class="form-label">Penerima</label>
-                  <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
-                </div>
-                <div class="mb-3">
-                  <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
+                <div class="col-md-6">
+                  <label for="example-text-input" class="form-control-label">Nomor Telepon</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">+62</span>
-                    <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
+                    <input type="text" class="form-control" v-model="users.no_telp" placeholder="Phone Number"
                       aria-label="phone" aria-describedby="basic-addon1">
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label for="addressNote" class="form-label">Label Alamat</label>
-                  <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
-                    v-model="address.label">
+                <div class="col-md-6">
+                  <label for="example-text-input" class="form-control-label">Password</label>
+                  <input type="password" class="form-control" v-model="users.password">
                 </div>
-              </form>
-            </v-card-text>
-  
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
-              <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+              </div>
+              <hr class="horizontal dark" />
+              <div class="col-md-12 text-end">
+                <argon-button color="success" size="sm" class="ms-auto" @click="updateUser">Update</argon-button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="card shadow-lg">
+            <div class="card-header pb-0">
+              <div class="d-flex align-items-center">
+                <p class="mb-0">Alamat</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="text-uppercase text-sm">Alamat Pengguna &nbsp;<span>({{ alamat.length }}/3)</span></p>
+              <div class="row">
+                <argon-button v-if="alamat.length < 3" @click="dialog = true" color="success" size="sm" class="ms-auto"><i
+                    class="fas fa-plus"></i>&nbsp;Alamat</argon-button>
+              </div>
+              <hr class="horizontal dark" />
+              <div class="row">
+                <div v-for="item in alamat" :key="item.id" class="col-md-12 mb-3">
+                  <div class="border p-2 rounded-lg">
+                    <div class="row">
+                      <div class="col">
+                        <v-chip color="green" variant="elevated">
+                          {{ item.label }}
+                        </v-chip>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-9 col-9">
+                        <div class="mt-2">
+                          <a class="card-alamat">{{ item.penerima }}</a>
+                          <br>
+                          <a class="card-alamat">{{ item.alamat_lengkap }}</a>
+                          <br>
+                          <a class="card-alamat">{{ item.name }}</a>
+                          <br>
+                          <a class="card-alamat">+62&nbsp;{{ item.no_penerima }}</a>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-3 d-flex align-items-center justify-content-center ">
+                        <i class="fas fa-trash fa-lg" style="color: #ff0000; cursor: pointer"
+                          @click="openDeleteConfirmation(item.id)"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Tambah Alamat</span>
+          </v-card-title>
+
+          <v-card-text>
+            <div class="mb-3">
+              <label for="searchQuery" class="form-label">Cari Lokasi</label>
+              <input type="text" class="form-control" id="searchQuery" v-model="searchQuery" @input="searchWithDelay">
+            </div>
+
+            <div v-if="searchResults.length" class="mb-3">
+              <label for="addressSelect" class="form-label">Pilih Alamat</label>
+              <select class="form-select" id="addressSelect" v-model="selectedAddress" @change="fillAddress">
+                <option v-for="result in searchResults" :key="result.id" :value="result">{{ result.name }}</option>
+              </select>
+            </div>
+            <div v-else><a style="font-size: 12px; color:red;"><i class="fas fa-info-circle"
+                  style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
+                input kode pos!</a></div>
+            <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
+            <form>
+              <div class="mb-3">
+                <label for="Province" class="form-label">Provinsi</label>
+                <input type="text" class="form-control" id="province" v-model="address.provinsi">
+              </div>
+              <div class="mb-3">
+                <label for="City" class="form-label">Kota</label>
+                <input type="text" class="form-control" id="city" v-model="address.city">
+              </div>
+              <div class="mb-3">
+                <label for="District" class="form-label">Kecamatan</label>
+                <input type="text" class="form-control" id="district" v-model="address.district">
+              </div>
+              <div class="mb-3">
+                <label for="postal code" class="form-label">Kode Pos</label>
+                <input type="text" class="form-control" id="district" v-model="address.postal_code">
+              </div>
+              <div class="mb-3">
+                <label for="postal code" class="form-label">Alamat Lengkap</label>
+                <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
+              </div>
+              <hr class="horizontal dark" />
+              <div class="mb-3">
+                <label for="recepient" class="form-label">Penerima</label>
+                <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
+              </div>
+              <div class="mb-3">
+                <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">+62</span>
+                  <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
+                    aria-label="phone" aria-describedby="basic-addon1">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="addressNote" class="form-label">Label Alamat</label>
+                <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
+                  v-model="address.label">
+              </div>
+            </form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
+            <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="confirmdeletion" max-width="600px">
+        <v-card>
+          <v-card-title class="headline">Confirmation</v-card-title>
+          <v-card-text>
+            Are you sure you want to delete this Address?
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="red darken-1" text @click="confirmdeletion = false">Batal</v-btn>
+            <v-btn color="green darken-1" text @click="confirmDelete">Saya Setuju</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </div>
 </template>
 <style scoped>

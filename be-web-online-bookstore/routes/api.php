@@ -7,7 +7,6 @@ use App\Http\Controllers\BukusController;
 use App\Http\Controllers\CartsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AddressesController;
-use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\CategoriesController;
 
 /*
@@ -38,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('/address')->middleware('auth:sanctum')->group(function () {
     Route::post('/store', [AddressesController::class, 'store']);
     Route::get('/get', [AddressesController::class, 'getUserAddresses']);
+    Route::delete('/{id}', [AddressesController::class, 'delete']);
 });
 
 Route::prefix('/buku')->group(function () {
@@ -65,7 +65,6 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('/loc')->group(function () {
-    Route::post('/addresses', [AddressesController::class, 'store']);
     Route::get('/areas', [AddressesController::class, 'getAreas']);
 });
 
