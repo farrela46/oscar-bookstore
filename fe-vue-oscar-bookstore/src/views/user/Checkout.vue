@@ -12,11 +12,13 @@ export default {
     return {
       overlay: false,
       orders: [],
-      totalPayment: {}
+      totalPayment: '',
+      alamat: []
     };
   },
   mounted() {
     this.retrieveCart();
+    this.fetchUserAddresses();
   },
   created() {
     this.store = this.$store;
@@ -44,6 +46,18 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    async fetchUserAddresses() {
+      try {
+        const response = await axios.get(`${BASE_URL}/address/get`, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+          }
+        });
+        this.alamat = response.data.addresses;
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
     },
     async updateQuantity(index, id, newQuantity) {
       if (newQuantity < 1) return;
@@ -78,17 +92,12 @@ export default {
               Authorization: "Bearer " + localStorage.getItem('access_token')
             }
           });
-          this.$router.push('/checkout');
+          this.$router.push({ name: 'Checkout' });
         } catch (error) {
           console.error('Error updating selected items:', error);
         }
       } else {
-        this.$notify({
-          type: 'danger',
-          title: 'Gagal',
-          text: 'Pilih salah satu item untuk checkout',
-          color: 'green'
-        });
+        alert('Pilih setidaknya satu item untuk melanjutkan ke pembayaran.');
       }
     },
     incrementQuantity(index) {
@@ -106,14 +115,14 @@ export default {
     async retrieveCart() {
       this.overlay = true;
       try {
-        const response = await axios.get(`${BASE_URL}/cart/get`, {
+        const response = await axios.get(`${BASE_URL}/cart/checkout`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
 
         this.orders = response.data.data
-        this.totalPayment = 0;
+        this.totalPayment = response.data.totalPayment;
       } catch (error) {
         console.error(error);
         this.$notify({
@@ -154,36 +163,39 @@ export default {
       <div class="container">
         <div class="row">
           <div class="col-lg-8">
-            <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
-              <div class="card-body">
-                <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
-                <div class="row">
-                  <div class="col-md-3">
-                    <div class="row">
-                      <div class="col-1 align-items-center d-flex">
-                        <input type="checkbox" class="large-checkbox" v-model="order.selected"
-                          @change="updateTotalPayment" />
-                      </div>
-                      <div class="col">
-                        <img :src="order.foto" class="img-fluid" alt="Book image">
+            <div class="row mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Pilih Alamat</h5>
+                  <div class="row">
+                    Sendirian
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
+                <div class="card-body">
+                  <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="row">
+                        <div class="col">
+                          <img :src="order.buku.foto" class="img-fluid" alt="Book image">
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="col-md-9">
-                    <div class="row">
-                      <div class="col">
-                        <h6>{{ order.judul }}</h6>
-                        <p>Rp {{ formatPrice(order.harga) }}</p>
-                      </div>
-                      <div class="col">
-                        <div class="d-flex align-items-center">
-                          <i class="fas fa-minus-circle" style="cursor: pointer;" @click="decrementQuantity(index)"></i>
-                          <span class="mx-2">{{ order.quantity }}</span>
-                          <i class="fas fa-plus-circle" style="cursor: pointer;" @click="incrementQuantity(index)"></i>
-                          <button class="btn btn-link text-danger ms-3" @click="removeOrder(index)">
-                            <i class="bi bi-trash"></i> Hapus
-                          </button>
-                          <span class="ms-auto">Rp {{ formatPrice(order.totalPrice) }}</span>
+                    <div class="col-md-9">
+                      <div class="row">
+                        <div class="col">
+                          <h6>{{ order.judul }}</h6>
+                          <p><span class="mx-2">{{ order.quantity }} barang</span>X Rp {{ formatPrice(order.buku.harga)
+                            }}</p>
+                        </div>
+                        <div class="col">
+                          <div class="d-flex align-items-center">
+                            <span class="ms-auto"><strong>Rp {{ formatPrice(order.totalPrice) }}</strong></span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -192,13 +204,30 @@ export default {
               </div>
             </div>
           </div>
-
           <div class="col-lg-4">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Rincian Belanja</h5>
+                <div class="py-2">
+                  <h3 class="card-title">Rincian Belanja</h3>
+                </div>
+                <hr class="horizontal dark">
                 <p>Ringkasan Pembayaran</p>
-                <p>Rp {{ formatPrice(totalPayment) }}</p>
+                <div class="row ring-bayar">
+                  <div class="col-7">
+                    Total Harga :
+                  </div>
+                  <div class="col">
+                    <p>Rp {{ formatPrice(totalPayment) }}</p>
+                  </div>
+                </div>
+                <div class="row ring-bayar">
+                  <div class="col-7">
+                    Total biaya pengiriman :
+                  </div>
+                  <div class="col">
+                    <p>Rp {{ formatPrice(totalPayment) }}</p>
+                  </div>
+                </div>
                 <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
               </div>
             </div>
@@ -221,5 +250,9 @@ a {
 .large-checkbox {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.ring-bayar {
+  font-size: 14px;
 }
 </style>

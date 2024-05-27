@@ -12,15 +12,6 @@ class BiteshipService
         $this->apiKey = env('BITESHIP_API_KEY');
     }
 
-    public function addAddress($data)
-    {
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->apiKey,
-            'Content-Type' => 'application/json'
-        ])->post('https://api.biteship.com/v1/locations', $data);
-
-        return $response->json();
-    }
     public function getAreas($input)
     {
         $response = Http::withHeaders([

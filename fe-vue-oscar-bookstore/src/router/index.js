@@ -15,6 +15,7 @@ import Billing from "../views/admin/Billing.vue";
 import UserDashboard from "../views/user/Dashboard.vue";
 import ViewProducts from "../views/user/ViewProducts.vue";
 import Cart from "../views/user/Cart.vue";
+import Checkout from "../views/user/Checkout.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Login from "../views/Loginn.vue";
@@ -87,7 +88,7 @@ const routes = [
   {
     path: "/billing",
     name: "Billing",
-  component: Billing,
+    component: Billing,
   },
 
   //USER
@@ -101,7 +102,11 @@ const routes = [
     name: 'Cart',
     component: Cart,
   },
-
+  {
+    path: '/checkout',
+    name: 'Checkout',
+    component: Checkout,
+  },
   {
     path: "/profile",
     name: "Profile",

@@ -103,4 +103,53 @@ class CartsController extends Controller
 
         return response()->json(['message' => 'Buku berhasil dihapus dari keranjang!'], 200);
     }
+
+    public function getCheckout()
+    {
+        $userId = Auth::id();
+        $selectedItems = Cart::where('user_id', $userId)
+            ->where('selected', true)
+            ->with('buku')
+            ->get();
+
+        $totalPayment = 0;
+
+        $formattedItems = $selectedItems->map(function ($item) use (&$totalPayment) {
+            $itemTotalPrice = $item->quantity * $item->buku->harga;
+            $totalPayment += $itemTotalPrice;
+
+            return [
+                'id' => $item->id,
+                'user_id' => $item->user_id,
+                'buku_id' => $item->buku_id,
+                'quantity' => $item->quantity,
+                'selected' => $item->selected,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'totalPrice' => $itemTotalPrice,
+                'buku' => [
+                    'id' => $item->buku->id,
+                    'no_isbn' => $item->buku->no_isbn,
+                    'judul' => $item->buku->judul,
+                    'desc' => $item->buku->desc,
+                    'pengarang' => $item->buku->pengarang,
+                    'penerbit' => $item->buku->penerbit,
+                    'tahun_terbit' => $item->buku->tahun_terbit,
+                    'foto' => asset('storage/buku_photos/' . basename($item->buku->foto)),
+                    'stok' => $item->buku->stok,
+                    'harga' => $item->buku->harga,
+                    'slug' => $item->buku->slug,
+                    'created_at' => $item->buku->created_at,
+                    'updated_at' => $item->buku->updated_at,
+                ]
+            ];
+        });
+
+        return response()->json([
+            'data' => $formattedItems,
+            'totalPayment' => $totalPayment
+        ], 200);
+    }
+
+
 }
