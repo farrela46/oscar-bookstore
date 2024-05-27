@@ -13,7 +13,8 @@ export default {
       overlay: false,
       orders: [],
       totalPayment: '',
-      alamat: []
+      alamat: [],
+      selectAddress:''
     };
   },
   mounted() {
@@ -168,7 +169,11 @@ export default {
                 <div class="card-body">
                   <h5 class="card-title">Pilih Alamat</h5>
                   <div class="row">
-                    Sendirian
+                    <select class="form-select" aria-label="Default select example" v-model="selectAddress">
+                      <option value="" disabled>Pilih alamat</option>
+                  <option v-for="item in alamat" :key="item.selected_address_id" :value="item.selected_address_id">{{
+          item.name }}</option>
+                    </select>
                   </div>
                 </div>
               </div>
