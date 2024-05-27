@@ -14,7 +14,16 @@ export default {
       orders: [],
       totalPayment: '',
       alamat: [],
-      selectAddress:''
+      kirim: {
+        provinsi: '',
+        kota: '',
+        kecamatan: '',
+        postal_code: '',
+        penerima: '',
+        no_penerima: ''
+      },
+      selectedAddressId: "",
+      selectedAddress: {}
     };
   },
   mounted() {
@@ -47,6 +56,9 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    fillAddress() {
+      this.selectedAddress = this.alamat.find(address => address.selected_address_id === this.selectedAddressId) || {};
     },
     async fetchUserAddresses() {
       try {
@@ -169,11 +181,64 @@ export default {
                 <div class="card-body">
                   <h5 class="card-title">Pilih Alamat</h5>
                   <div class="row">
-                    <select class="form-select" aria-label="Default select example" v-model="selectAddress">
+                    <select class="form-select" aria-label="Default select example" v-model="selectedAddressId"
+                      @change="fillAddress">
                       <option value="" disabled>Pilih alamat</option>
-                  <option v-for="item in alamat" :key="item.selected_address_id" :value="item.selected_address_id">{{
-          item.name }}</option>
+                      <option v-for="item in alamat" :key="item.selected_address_id" :value="item.selected_address_id">
+                        {{ item.name }}
+                      </option>
                     </select>
+                  </div>
+                  <div v-if="selectedAddressId">
+                    <hr class="horizontal dark">
+                    <div class="row" >
+                      <div class="row">
+                        <div class="col">
+                          Nama Penerima
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.penerima }}
+                        </div>
+                        <div class="col">
+                          Nomor Penerima
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.no_penerima }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="row">
+                        <div class="col">
+                          Provinsi
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.provinsi }}
+                        </div>
+                        <div class="col">
+                          Kota
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.kota }}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="row">
+                        <div class="col">
+                          Kecamatan
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.kecamatan }}
+                        </div>
+                        <div class="col">
+                          Kode Pos
+                        </div>
+                        <div class="col">
+                          : {{ selectedAddress.postal_code }}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
