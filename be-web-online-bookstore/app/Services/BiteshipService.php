@@ -28,4 +28,18 @@ class BiteshipService
 
         throw new \Exception('Error fetching areas from Biteship: ' . $response->body());
     }
+
+    public function getShippingRates($payload)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Content-Type' => 'application/json',
+        ])->post('https://api.biteship.com/v1/rates/couriers', $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        throw new \Exception('Error fetching shipping rates from Biteship: ' . $response->body());
+    }
 }

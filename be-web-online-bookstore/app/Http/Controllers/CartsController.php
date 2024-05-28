@@ -6,9 +6,16 @@ use App\Models\Buku;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\BiteshipService;
 
 class CartsController extends Controller
 {
+    protected $biteshipService;
+
+    public function __construct(BiteshipService $biteshipService)
+    {
+        $this->biteshipService = $biteshipService;
+    }
     public function addToCart(Request $request)
     {
         $request->validate([
@@ -151,5 +158,34 @@ class CartsController extends Controller
         ], 200);
     }
 
+    public function getShippingRates(Request $request)
+    {
+        $request->validate([
+            'destination_area_id' => 'required|string',
+            'items' => 'required|array',
+            'items.*.name' => 'required|string',
+            'items.*.description' => 'required|string',
+            'items.*.value' => 'required|numeric',
+            'items.*.length' => 'required|numeric',
+            'items.*.width' => 'required|numeric',
+            'items.*.height' => 'required|numeric',
+            'items.*.weight' => 'required|numeric',
+            'items.*.quantity' => 'required|integer',
+        ]);
+
+        $payload = [
+            'origin_area_id' => 'IDNP11IDNC172IDND1288IDZ64129', // default origin area ID
+            'destination_area_id' => $request->destination_area_id,
+            'couriers' => 'jne,sicepat', // default couriers
+            'items' => $request->items,
+        ];
+
+        try {
+            $shippingRates = $this->biteshipService->getShippingRates($payload);
+            return response()->json(['data' => $shippingRates], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 }
