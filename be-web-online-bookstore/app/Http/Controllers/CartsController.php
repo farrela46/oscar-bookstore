@@ -176,7 +176,7 @@ class CartsController extends Controller
         $payload = [
             'origin_area_id' => 'IDNP11IDNC172IDND1288IDZ64129', // default origin area ID
             'destination_area_id' => $request->destination_area_id,
-            'couriers' => 'jne,sicepat', // default couriers
+            'couriers' => 'jne,sicepat', 
             'items' => $request->items,
         ];
 

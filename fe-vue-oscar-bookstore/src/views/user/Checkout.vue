@@ -23,9 +23,11 @@ export default {
         no_penerima: ''
       },
       selectedAddressId: "",
-      selectedAddress: {}
+      selectedAddress: {},
+      shippingRates: {},
     };
   },
+
   mounted() {
     this.retrieveCart();
     this.fetchUserAddresses();
@@ -37,6 +39,12 @@ export default {
   },
   beforeUnmount() {
     this.restorePage();
+  },
+  watch: {
+    selectedAddressId() {
+      this.fillAddress();
+      this.fetchShippingRates();
+    },
   },
   methods: {
     setupPage() {
@@ -56,6 +64,38 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    async fetchShippingRates() {
+      if (!this.selectedAddressId) {
+        return;
+      }
+
+      const payload = {
+        destination_area_id: this.selectedAddressId,
+        items: this.orders.map((order) => ({
+          name: order.buku.judul,
+          description: order.buku.desc,
+          value: order.buku.harga,
+          length: 30,
+          width: 15,
+          height: 20,
+          weight: 200,
+          quantity: order.quantity,
+        })),
+      };
+
+      try {
+        const response = await axios.post(`${BASE_URL}/cart/rates`, payload, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            'Content-Type': 'application/json',
+          },
+        });
+
+        this.shippingRates = response.data;
+      } catch (error) {
+        console.error('Error fetching shipping rates:', error);
+      }
     },
     fillAddress() {
       this.selectedAddress = this.alamat.find(address => address.selected_address_id === this.selectedAddressId) || {};
@@ -179,7 +219,8 @@ export default {
             <div class="row mb-4">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title">Pilih Alamat</h5>
+                  <h5 class="card-title">Pilih Alamat <i class="fas fa-plus fa-md mx-4"
+                      style="color: #5e72e4; cursor:pointer"></i></h5>
                   <div class="row">
                     <select class="form-select" aria-label="Default select example" v-model="selectedAddressId"
                       @change="fillAddress">
@@ -191,7 +232,7 @@ export default {
                   </div>
                   <div v-if="selectedAddressId">
                     <hr class="horizontal dark">
-                    <div class="row" >
+                    <div class="row">
                       <div class="row">
                         <div class="col">
                           Nama Penerima

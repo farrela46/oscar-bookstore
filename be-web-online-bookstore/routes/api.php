@@ -64,9 +64,11 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
     Route::delete('/delete/{id}', [CartsController::class, 'removeFromCart']);
     Route::put('/select', [CartsController::class, 'updateSelected']);
     Route::get('/checkout', [CartsController::class, 'getCheckout']);
+    Route::post('/rates', [CartsController::class, 'getShippingRates']);
 });
 
 Route::prefix('/loc')->group(function () {
     Route::get('/areas', [AddressesController::class, 'getAreas']);
+    
 });
 
