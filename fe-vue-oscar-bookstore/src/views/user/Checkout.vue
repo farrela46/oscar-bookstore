@@ -15,6 +15,7 @@ export default {
       totalPayment: '',
       alamat: [],
       loadingRegist: false,
+      loadingKurir: false,
       searchQuery: '',
       searchResults: [],
       selectedAddresses: null,
@@ -38,7 +39,7 @@ export default {
       },
       selectedAddressId: "",
       selectedAddress: {},
-      shippingRates: {},
+      shippingRates: [],
       dialog: false
     };
   },
@@ -164,7 +165,9 @@ export default {
         label: ''
       };
     },
+
     async fetchShippingRates() {
+      this.loadingKurir = true;
       if (!this.selectedAddressId) {
         return;
       }
@@ -191,9 +194,11 @@ export default {
           },
         });
 
-        this.shippingRates = response.data;
+        this.shippingRates = response.data.data.pricing;
       } catch (error) {
         console.error('Error fetching shipping rates:', error);
+      } finally {
+        this.loadingKurir = false
       }
     },
     fillAddress() {
@@ -387,7 +392,9 @@ export default {
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Pilih Kurir</h5>
-                  <div class="row border">
+                  <v-progress-linear v-if="loadingKurir" indeterminate></v-progress-linear>
+                  <div v-else v-for="(rate, index) in shippingRates" :key="index" class="row border mb-3"
+                    style="border-radius: 10px;">
                     <div class="col-sm-12">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
@@ -395,15 +402,17 @@ export default {
                             <input type="checkbox" class="large-checkbox" />
                           </div>
                           <div class="col-2 d-flex align-items-center">
-                            <img src="../../assets/img/jne.png" alt="jne" class="img-fluid"
-                              style="width: 50px; margin-right: 20px;">
+                            <img v-if="rate.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
+                              class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                            <img v-if="rate.company === 'sicepat'" src="../../assets/img/sicepat.png" alt="sicepat"
+                              class="img-fluid" style="width: 50px; margin-right: 20px;" />
                           </div>
                           <div class="col-3">
                             <div class="row">
                               <strong class="d-block d-sm-inline">Jenis Layanan</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">JNE REG</a>
+                              <a class="d-block d-sm-inline">{{ rate.courier_name }} {{ rate.courier_service_name }}</a>
                             </div>
                           </div>
                           <div class="col-4">
@@ -411,7 +420,7 @@ export default {
                               <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">3-5 Hari</a>
+                              <a class="d-block d-sm-inline">{{ rate.duration }}</a>
                             </div>
                           </div>
                           <div class="col-2">
@@ -419,45 +428,44 @@ export default {
                               <strong class="d-block d-sm-inline">Tarif</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">Rp. 15.000</a>
+                              <a class="d-block d-sm-inline">Rp. {{ formatPrice(rate.price) }}</a>
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
             <div class="row">
-  <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
-    <div class="card-body">
-      <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
-      <div class="row">
-        <div class="col-md-3 col-4">
-          <div class="row">
-            <div class="col">
-              <img :src="order.buku.foto" class="img-fluid" alt="Book image">
+              <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
+                <div class="card-body">
+                  <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
+                  <div class="row">
+                    <div class="col-md-3 col-4">
+                      <div class="row">
+                        <div class="col">
+                          <img :src="order.buku.foto" class="img-fluid" alt="Book image">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-9 col-8">
+                      <div class="row">
+                        <div class="col-12">
+                          <h6>{{ order.buku.judul }}</h6>
+                          <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{
+        formatPrice(order.buku.harga) }}</p>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end align-items-center mt-2">
+                          <span><strong>Rp {{ formatPrice(order.quantity * order.buku.harga) }}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="col-md-9 col-8">
-          <div class="row">
-            <div class="col-12">
-              <h6>{{ order.buku.judul }}</h6>
-              <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{ formatPrice(order.buku.harga) }}</p>
-            </div>
-            <div class="col-12 d-flex justify-content-end align-items-center mt-2">
-              <span><strong>Rp {{ formatPrice(order.quantity * order.buku.harga) }}</strong></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
           </div>
           <div class="col-lg-4">
@@ -603,6 +611,4 @@ a {
     margin-right: 10px;
   }
 }
-
-
 </style>
