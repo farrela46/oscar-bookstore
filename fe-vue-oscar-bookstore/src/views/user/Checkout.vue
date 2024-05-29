@@ -388,7 +388,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="row mb-4">
+            <div class="row mb-4" v-if="selectedAddressId">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Pilih Kurir</h5>
