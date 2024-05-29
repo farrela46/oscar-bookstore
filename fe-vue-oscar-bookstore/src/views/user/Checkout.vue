@@ -14,6 +14,20 @@ export default {
       orders: [],
       totalPayment: '',
       alamat: [],
+      loadingRegist: false,
+      searchQuery: '',
+      searchResults: [],
+      selectedAddresses: null,
+      address: {
+        provinsi: '',
+        city: '',
+        district: '',
+        postal_code: '',
+        penerima: '',
+        no_penerima: '',
+        label: '',
+        alamat_lengkap: ''
+      },
       kirim: {
         provinsi: '',
         kota: '',
@@ -25,6 +39,7 @@ export default {
       selectedAddressId: "",
       selectedAddress: {},
       shippingRates: {},
+      dialog: false
     };
   },
 
@@ -64,6 +79,90 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    searchWithDelay() {
+      this.loadingRegist = true;
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
+      this.searchTimeout = setTimeout(this.searchAddress, 2000);
+    },
+    async searchAddress() {
+      if (this.searchQuery && this.searchQuery.length > 2) {
+        try {
+          const response = await axios.get(`${BASE_URL}/loc/areas`, {
+            params: {
+              countries: 'ID',
+              input: this.searchQuery,
+              type: 'single',
+            },
+          });
+          this.searchResults = response.data.areas;
+        } catch (error) {
+          console.error('Error fetching address:', error);
+          this.searchResults = [];
+        } finally {
+          this.loadingRegist = false
+        }
+      } else {
+        this.searchResults = [];
+      }
+    },
+    filledAddress() {
+      if (this.selectedAddresses) {
+        this.address.provinsi = this.selectedAddresses.administrative_division_level_1_name;
+        this.address.city = this.selectedAddresses.administrative_division_level_2_name;
+        this.address.district = this.selectedAddresses.administrative_division_level_3_name;
+        this.address.postal_code = this.selectedAddresses.postal_code;
+      }
+    },
+    async saveAddress() {
+      const addressData = {
+        selected_address_id: this.selectedAddresses.id,
+        name: this.selectedAddresses.name,
+        provinsi: this.selectedAddresses.administrative_division_level_1_name,
+        kota: this.selectedAddresses.administrative_division_level_2_name,
+        kecamatan: this.selectedAddresses.administrative_division_level_3_name,
+        postal_code: this.selectedAddresses.postal_code,
+        penerima: this.address.penerima,
+        alamat_lengkap: this.address.alamat_lengkap,
+        no_penerima: this.address.no_penerima,
+        label: this.address.label,
+      };
+
+      try {
+        await axios.post(`${BASE_URL}/address/store`, addressData, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.dialog = false,
+          this.$notify({
+            type: 'success',
+            title: 'Success',
+            text: 'Successfully Updated!',
+            color: 'green'
+          });
+        this.resetForm();
+        this.fetchUserAddresses();
+      } catch (error) {
+        console.error('Error saving address:', error);
+      }
+    },
+    resetForm() {
+      this.searchQuery = '';
+      this.searchResults = [];
+      this.selectedAddress = null;
+      this.address = {
+        provinsi: '',
+        kota: '',
+        kecamatan: '',
+        postal_code: '',
+        alamat_lengkap: '',
+        penerima: '',
+        no_penerima: '',
+        label: ''
+      };
     },
     async fetchShippingRates() {
       if (!this.selectedAddressId) {
@@ -220,7 +319,7 @@ export default {
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Pilih Alamat <i class="fas fa-plus fa-md mx-4"
-                      style="color: #5e72e4; cursor:pointer"></i></h5>
+                      style="color: #5e72e4; cursor:pointer" @click="dialog = true"></i></h5>
                   <div class="row">
                     <select class="form-select" aria-label="Default select example" v-model="selectedAddressId"
                       @change="fillAddress">
@@ -344,6 +443,77 @@ export default {
             </div>
           </div>
         </div>
+        <v-dialog v-model="dialog" persistent max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Tambah Alamat</span>
+            </v-card-title>
+
+            <v-card-text>
+              <div class="mb-3">
+                <label for="searchQuery" class="form-label">Cari Lokasi</label>
+                <input type="text" class="form-control" id="searchQuery" v-model="searchQuery" @input="searchWithDelay">
+              </div>
+
+              <div v-if="searchResults.length" class="mb-3">
+                <label for="addressSelect" class="form-label">Pilih Alamat</label>
+                <select class="form-select" id="addressSelect" v-model="selectedAddresses" @change="filledAddress">
+                  <option v-for="result in searchResults" :key="result.id" :value="result">{{ result.name }}</option>
+                </select>
+              </div>
+              <div v-else><a style="font-size: 12px; color:red;"><i class="fas fa-info-circle"
+                    style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
+                  input kode pos!</a></div>
+              <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
+              <form>
+                <div class="mb-3">
+                  <label for="Province" class="form-label">Provinsi</label>
+                  <input type="text" class="form-control" id="province" v-model="address.provinsi">
+                </div>
+                <div class="mb-3">
+                  <label for="City" class="form-label">Kota</label>
+                  <input type="text" class="form-control" id="city" v-model="address.city">
+                </div>
+                <div class="mb-3">
+                  <label for="District" class="form-label">Kecamatan</label>
+                  <input type="text" class="form-control" id="district" v-model="address.district">
+                </div>
+                <div class="mb-3">
+                  <label for="postal code" class="form-label">Kode Pos</label>
+                  <input type="text" class="form-control" id="district" v-model="address.postal_code">
+                </div>
+                <div class="mb-3">
+                  <label for="postal code" class="form-label">Alamat Lengkap</label>
+                  <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
+                </div>
+                <hr class="horizontal dark" />
+                <div class="mb-3">
+                  <label for="recepient" class="form-label">Penerima</label>
+                  <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
+                </div>
+                <div class="mb-3">
+                  <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">+62</span>
+                    <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
+                      aria-label="phone" aria-describedby="basic-addon1">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="addressNote" class="form-label">Label Alamat</label>
+                  <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
+                    v-model="address.label">
+                </div>
+              </form>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
+              <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>

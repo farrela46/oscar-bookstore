@@ -345,7 +345,7 @@ export default {
             <div class="card-body">
               <p class="text-uppercase text-sm">Alamat Pengguna &nbsp;<span>({{ alamat.length }}/3)</span></p>
               <div class="row">
-                <argon-button v-if="alamat.length < 3" @click="dialog = true" color="success" size="sm" class="ms-auto"><i
+                <argon-button @click="dialog = true" color="success" size="sm" class="ms-auto"><i
                     class="fas fa-plus"></i>&nbsp;Alamat</argon-button>
               </div>
               <hr class="horizontal dark" />
