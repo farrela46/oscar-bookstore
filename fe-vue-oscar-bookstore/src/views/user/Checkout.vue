@@ -1,5 +1,4 @@
 <script>
-// import { useRoute } from "vue-router";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
@@ -40,7 +39,8 @@ export default {
       selectedAddressId: "",
       selectedAddress: {},
       shippingRates: [],
-      dialog: false
+      dialog: false,
+      selectedCourier: null,
     };
   },
 
@@ -61,6 +61,9 @@ export default {
       this.fillAddress();
       this.fetchShippingRates();
     },
+    selectedCourier() {
+      this.updateTotalPayment();
+    }
   },
   methods: {
     setupPage() {
@@ -80,6 +83,14 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    updateTotalPayment() {
+      this.totalPayment = this.orders.reduce((total, order) => {
+        return order.selected ? total + order.totalPrice : total;
+      }, 0);
+    },
+    selectCourier(rate) {
+      this.selectedCourier = rate;
     },
     searchWithDelay() {
       this.loadingRegist = true;
@@ -233,42 +244,6 @@ export default {
         console.error(error);
       }
     },
-    updateTotalPayment() {
-      this.totalPayment = this.orders.reduce((total, order) => {
-        return order.selected ? total + order.totalPrice : total;
-      }, 0);
-    },
-    async proceedToCheckout() {
-      const selectedOrders = this.orders.filter(order => order.selected);
-      if (selectedOrders.length > 0) {
-        try {
-          const selectedIds = selectedOrders.map(order => order.id);
-          await axios.put(`${BASE_URL}/cart/select`,
-            { selected_ids: selectedIds }, {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem('access_token')
-            }
-          });
-          this.$router.push({ name: 'Checkout' });
-        } catch (error) {
-          console.error('Error updating selected items:', error);
-        }
-      } else {
-        alert('Pilih setidaknya satu item untuk melanjutkan ke pembayaran.');
-      }
-    },
-    incrementQuantity(index) {
-      const order = this.orders[index];
-      const newQuantity = order.quantity + 1;
-      this.updateQuantity(index, order.id, newQuantity);
-    },
-    decrementQuantity(index) {
-      const order = this.orders[index];
-      const newQuantity = order.quantity - 1;
-      if (newQuantity > 0) {
-        this.updateQuantity(index, order.id, newQuantity);
-      }
-    },
     async retrieveCart() {
       this.overlay = true;
       try {
@@ -290,20 +265,6 @@ export default {
         });
       } finally {
         this.overlay = false;
-      }
-    },
-    async removeOrder(index) {
-      const orderId = this.orders[index].id;
-      try {
-        await axios.delete(`${BASE_URL}/cart/delete/` + orderId, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.orders.splice(index, 1);
-        this.retrieveCart();
-      } catch (error) {
-        console.error(error);
       }
     },
   },
@@ -399,7 +360,8 @@ export default {
                       <div class="p-2">
                         <div class="row align-items-center py-2">
                           <div class="col-1 d-flex align-items-center">
-                            <input type="checkbox" class="large-checkbox" />
+                            <input type="checkbox" class="large-checkbox" :checked="selectedCourier === rate"
+                              @change="selectCourier(rate)" />
                           </div>
                           <div class="col-2 d-flex align-items-center">
                             <img v-if="rate.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
@@ -489,7 +451,16 @@ export default {
                     Total biaya pengiriman :
                   </div>
                   <div class="col">
-                    <p>Rp {{ formatPrice(totalPayment) }}</p>
+                    <p>Rp. {{ formatPrice(selectedCourier ? selectedCourier.price : 0) }}</p>
+                  </div>
+                </div>
+                <hr class="horizontal dark">
+                <div class="row ring-bayar">
+                  <div class="col-7">
+                    Total Bayar :
+                  </div>
+                  <div class="col">
+                    <p>Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
                   </div>
                 </div>
                 <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
