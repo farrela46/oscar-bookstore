@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
+use Exception;
 
 class OrdersController extends Controller
 {
@@ -17,10 +18,13 @@ class OrdersController extends Controller
 
     public function createOrder(Request $request)
     {
+        $orderId = uniqid();
+        $totalPayment = $request->input('amount') + $request->input('selectedCourier.price');
+
         $orderDetails = [
             'transaction_details' => [
-                'order_id' => uniqid(),
-                'gross_amount' => $request->input('amount'),
+                'order_id' => $orderId,
+                'gross_amount' => $totalPayment,
             ],
             'customer_details' => [
                 'first_name' => $request->input('first_name'),
@@ -30,11 +34,21 @@ class OrdersController extends Controller
             ],
         ];
 
+        $order = Order::create([
+            'user_id' => auth()->id(), 
+            'total_payment' => $totalPayment,
+            'shipping_cost' => $request->input('selectedCourier.price'),
+            'status' => 'pending',
+            'courier_details' => $request->input('selectedCourier'),
+            'items' => $request->input('items'),
+        ]);
+
         try {
-            $paymentUrl = $this->midtransService->createTransaction($orderDetails);
-            return redirect($paymentUrl);
+            $snapToken = $this->midtransService->createTransaction($orderDetails);
+            $paymentUrl = "https://app.midtrans.com/snap/v2/vtweb/$snapToken";
+            return response()->json(['paymentUrl' => $paymentUrl]);
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

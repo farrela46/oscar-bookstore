@@ -2,29 +2,21 @@
 
 namespace App\Services;
 
-use Midtrans\Config;
 use Midtrans\Snap;
-use Exception;
+use Midtrans\Config;
 
 class MidtransService
 {
     public function __construct()
     {
-        $config = config('midtrans');
-
-        Config::$serverKey = $config['serverKey'];
-        Config::$isProduction = $config['isProduction'];
-        Config::$isSanitized = $config['isSanitized'];
-        Config::$is3ds = $config['is3ds'];
+        Config::$serverKey = config('midtrans.serverKey');
+        Config::$isProduction = config('midtrans.isProduction');
+        Config::$isSanitized = config('midtrans.isSanitized');
+        Config::$is3ds = config('midtrans.is3ds');
     }
 
     public function createTransaction($orderDetails)
     {
-        try {
-            $transaction = Snap::createTransaction($orderDetails);
-            return $transaction->redirect_url;
-        } catch (Exception $e) {
-            throw new \Exception('Error creating Midtrans transaction: ' . $e->getMessage());
-        }
+        return Snap::getSnapToken($orderDetails);
     }
 }

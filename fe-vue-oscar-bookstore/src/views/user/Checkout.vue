@@ -176,7 +176,30 @@ export default {
         label: ''
       };
     },
+    async proceedToCheckout() {
+      try {
+        const response = await axios.post(`${BASE_URL}/order/checkout`, {
+          amount: this.totalPayment,
+          selectedCourier: this.selectedCourier,
+          items: this.orders,
+          first_name: 'Farrel',
+          last_name: '',
+          email: 'farrel@example.com',
+          phone: '815559800895',
+        }, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            'Content-Type': 'application/json',
+          },
+        });
 
+        const { paymentUrl } = response.data;
+
+        window.location.href = paymentUrl;
+      } catch (error) {
+        console.error('Error proceeding to checkout:', error);
+      }
+    },
     async fetchShippingRates() {
       this.loadingKurir = true;
       if (!this.selectedAddressId) {
@@ -463,7 +486,7 @@ export default {
                     <p>Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
                   </div>
                 </div>
-                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
+                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut untuk Membayar</button>
               </div>
             </div>
           </div>

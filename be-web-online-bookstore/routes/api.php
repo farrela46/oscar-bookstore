@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\OrdersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukusController;
 use App\Http\Controllers\CartsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
 
@@ -65,6 +67,14 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
     Route::put('/select', [CartsController::class, 'updateSelected']);
     Route::get('/checkout', [CartsController::class, 'getCheckout']);
     Route::post('/rates', [CartsController::class, 'getShippingRates']);
+});
+
+Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
+    Route::post('/checkout', [OrdersController::class, 'createOrder']);
+});
+
+Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
+    Route::post('/notification', [MidtransController::class, 'handleNotification']);
 });
 
 Route::prefix('/loc')->group(function () {

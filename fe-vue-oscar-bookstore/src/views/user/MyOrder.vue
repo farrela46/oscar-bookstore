@@ -1,0 +1,163 @@
+<script>
+// import { useRoute } from "vue-router";
+import axios from "axios";
+import BASE_URL from '@/api/config-api';
+import Navbar from "@/examples/Navbars/Navbar.vue";
+
+export default {
+  components: {
+    Navbar
+  },
+  data() {
+    return {
+      overlay: false,
+
+    
+    };
+  },
+  mounted() {
+    this.retrieveCart();
+  },
+  created() {
+    this.store = this.$store;
+    this.body = document.getElementsByTagName("body")[0];
+    this.setupPage();
+  },
+  beforeUnmount() {
+    this.restorePage();
+  },
+  methods: {
+    setupPage() {
+      this.store.state.hideConfigButton = true;
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = false;
+      this.store.state.showFooter = false;
+      this.body.classList.remove("bg-gray-100");
+    },
+    restorePage() {
+      this.store.state.hideConfigButton = false;
+      this.store.state.showNavbar = true;
+      this.store.state.showSidenav = true;
+      this.store.state.showFooter = true;
+      this.body.classList.add("bg-gray-100");
+    },
+    formatPrice(price) {
+      const numericPrice = parseFloat(price);
+      return numericPrice.toLocaleString('id-ID');
+    },
+    async retrieveCart() {
+      this.overlay = true;
+      try {
+        const response = await axios.get(`${BASE_URL}/cart/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.orders = response.data.data
+        this.totalPayment = 0;
+      } catch (error) {
+        console.error(error);
+        this.$notify({
+          type: 'danger',
+          title: 'Notif',
+          text: 'Anda belum menambahkan barang',
+          color: 'green'
+        });
+      } finally {
+        this.overlay = false;
+      }
+    },
+
+  },
+};
+</script>
+
+<template>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
+  <div class="py-4 container">
+    <div class="row mt-3">
+      <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
+        <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
+      </v-overlay>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="list-group">
+              <a href="#" class="list-group-item list-group-item-action active">Pesanan Saya</a>
+              <a href="/profile" class="list-group-item list-group-item-action">Profil Saya</a>
+              <a href="/cart" class="list-group-item list-group-item-action">My Cart</a>
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div class="card mb-3">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <span>01 Juni 2024, 12:23:06</span>
+                </div>
+                <div>
+                  <span>No. Pemesanan HF012NFE3D7R57</span>
+                  <span class="badge badge-warning text-dark mx-2">Menunggu Pembayaran</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="d-flex mb-3">
+                  <img src="" alt="Store Logo" class="img-fluid"
+                    style="width: 50px; margin-right: 20px;">
+                  <div>
+                    <h5>Pasukan Mau Tahu Enid Blyton</h5>
+                    <p>1 Barang x harga barang</p>
+                  </div>
+                </div>
+                <hr >
+                <div class="row">
+                  <div class="col-6">
+                    <p><a href="#">Lihat Detail Pesanan</a></p>
+                  </div>
+                  <div class="col-6 text-end">
+                    <a>Total Pesanan: Rp. 10.000</a>
+                  </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                  <span><strong>Metode pembayaran</strong> : Midtrans</span>
+                  <button class="btn btn-primary">Bayar Sekarang</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<style>
+.user-select-none {
+  user-select: none;
+}
+
+a {
+  text-decoration: none;
+  color: unset;
+}
+
+/* 
+.transaction-card {
+  max-width: 100%;
+  margin: auto;
+}
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+.card-header .badge {
+  margin-left: 10px;
+}
+.card-body {
+  background-color: #fff;
+}
+.list-group-item.active {
+  background-color: #007bff;
+  border-color: #007bff;
+} */
+</style>

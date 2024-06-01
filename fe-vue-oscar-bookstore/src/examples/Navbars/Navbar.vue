@@ -85,8 +85,8 @@ export default {
     goCarts() {
       this.$router.push('/cart')
     },
-    goOrders() {
-      this.$router.push('/profile')
+    goMyOrder() {
+      this.$router.push('/orders')
     },
     goProfile() {
       this.$router.push('/profile')
@@ -229,7 +229,7 @@ export default {
                 </a>
               </li>
               <li v-if="role === 'USER'" class="mb-2">
-                <a class="dropdown-item border-radius-md" @click="goProfile">
+                <a class="dropdown-item border-radius-md" @click="goMyOrder">
                   <div class="py-1 d-flex">
                     <div class="my-auto mx-3">
                       <span style="font-size: 1rem;">

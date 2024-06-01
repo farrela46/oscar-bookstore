@@ -16,6 +16,7 @@ import UserDashboard from "../views/user/Dashboard.vue";
 import ViewProducts from "../views/user/ViewProducts.vue";
 import Cart from "../views/user/Cart.vue";
 import Checkout from "../views/user/Checkout.vue";
+import MyOrder from "../views/user/MyOrder.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Login from "../views/Loginn.vue";
@@ -106,6 +107,11 @@ const routes = [
     path: '/checkout',
     name: 'Checkout',
     component: Checkout,
+  },
+  {
+    path: '/orders',
+    name: 'My Order',
+    component: MyOrder,
   },
   {
     path: "/profile",
