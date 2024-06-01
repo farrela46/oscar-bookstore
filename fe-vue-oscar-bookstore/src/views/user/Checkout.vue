@@ -469,27 +469,27 @@ export default {
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Harga :
+                    Total Harga 
                   </div>
                   <div class="col">
-                    <p>Rp {{ formatPrice(totalPayment) }}</p>
+                    <p>: Rp {{ formatPrice(totalPayment) }}</p>
                   </div>
                 </div>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total biaya pengiriman :
+                    Total biaya pengiriman 
                   </div>
                   <div class="col">
-                    <p>Rp. {{ formatPrice(selectedCourier ? selectedCourier.price : 0) }}</p>
+                    <p>: Rp. {{ formatPrice(selectedCourier ? selectedCourier.price : 0) }}</p>
                   </div>
                 </div>
                 <hr class="horizontal dark">
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Bayar :
+                    Total Bayar 
                   </div>
                   <div class="col">
-                    <p>Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
+                    <p>: Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
                   </div>
                 </div>
                 <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut untuk Membayar</button>
