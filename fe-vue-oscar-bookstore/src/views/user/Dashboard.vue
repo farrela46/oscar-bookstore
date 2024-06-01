@@ -50,6 +50,38 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
+    async addCart(id) {
+      try {
+        const response = await axios.post(`${BASE_URL}/cart/add`, {
+          buku_id: id,
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        console.log("Product added to cart:", response.data);
+
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Product added to cart',
+          color: 'green'
+        });
+      } catch (error) {
+        console.error("Error adding product to cart:", error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
+        }
+      }
+    },
     async retrieveBuku() {
       try {
         this.overlay = true;
@@ -140,9 +172,6 @@ export default {
               </div>
             </div>
             <div class="sideicons">
-              <button class="sideicons-btn">
-                <v-icon icon="mdi-heart"></v-icon>
-              </button>
               <button class="sideicons-btn" @click.prevent="addCart(item.id)">
                 <v-icon icon="mdi-cart-plus"></v-icon>
               </button>
