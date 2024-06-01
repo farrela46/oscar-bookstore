@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Item;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
-use Exception;
 
 class OrdersController extends Controller
 {
@@ -18,8 +19,16 @@ class OrdersController extends Controller
 
     public function createOrder(Request $request)
     {
-        $orderId = uniqid();
         $totalPayment = $request->input('amount') + $request->input('selectedCourier.price');
+        $order = Order::create([
+            'user_id' => auth()->id(),
+            'total_payment' => $totalPayment,
+            'shipping_cost' => $request->input('selectedCourier.price'),
+            'status' => 'pending',
+            'courier_details' => json_encode($request->input('selectedCourier')),
+            'items' => json_encode($request->input('items')),
+        ]);
+        $orderId = $order->id;
 
         $orderDetails = [
             'transaction_details' => [
@@ -33,22 +42,32 @@ class OrdersController extends Controller
                 'phone' => $request->input('phone'),
             ],
         ];
-
-        $order = Order::create([
-            'user_id' => auth()->id(), 
-            'total_payment' => $totalPayment,
-            'shipping_cost' => $request->input('selectedCourier.price'),
-            'status' => 'pending',
-            'courier_details' => $request->input('selectedCourier'),
-            'items' => $request->input('items'),
-        ]);
-
         try {
             $snapToken = $this->midtransService->createTransaction($orderDetails);
-            $paymentUrl = "https://app.midtrans.com/snap/v2/vtweb/$snapToken";
+            $paymentUrl = $snapToken->redirect_url;
+            $order->update(['link'=>$paymentUrl]);
+
+        foreach ($request->input('items') as $item) {
+            Item::create([
+                'order_id' => $order->id,
+                'buku_id' => $item['buku_id'],
+                'quantity' => $item['quantity'],
+                'price' => $item['totalPrice'],
+            ]);
+        }
+
             return response()->json(['paymentUrl' => $paymentUrl]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+    public function getUserOrders(Request $request)
+    {
+        $user = $request->user();
+        $orders = Order::where('user_id', $user->id)
+            ->with(['items.buku'])
+            ->get();
+
+        return response()->json($orders);
     }
 }

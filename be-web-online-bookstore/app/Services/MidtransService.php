@@ -17,6 +17,6 @@ class MidtransService
 
     public function createTransaction($orderDetails)
     {
-        return Snap::getSnapToken($orderDetails);
+        return Snap::createTransaction($orderDetails);
     }
 }

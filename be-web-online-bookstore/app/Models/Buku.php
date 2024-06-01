@@ -22,6 +22,11 @@ class Buku extends Model
         'harga',
         'slug',
     ];
+
+    public function getFotoAttribute($value)
+    {
+        return url('storage/buku_photos/' . basename($value));
+    }
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'buku_categories', 'buku_id', 'category_id');

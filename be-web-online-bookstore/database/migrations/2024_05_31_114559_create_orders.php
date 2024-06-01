@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->string('status')->default('pending');
             $table->json('courier_details');
             $table->json('items');
+            $table->text('link')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
