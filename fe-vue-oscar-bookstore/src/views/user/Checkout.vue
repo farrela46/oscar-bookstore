@@ -181,7 +181,11 @@ export default {
         const response = await axios.post(`${BASE_URL}/order/checkout`, {
           amount: this.totalPayment,
           selectedCourier: this.selectedCourier,
-          items: this.orders,
+          items: this.orders.map(order => ({
+            buku_id: order.buku.id,
+            quantity: order.quantity,
+            totalPrice: order.totalPrice,
+          })),  
           first_name: 'Farrel',
           last_name: '',
           email: 'farrel@example.com',
@@ -194,8 +198,10 @@ export default {
         });
 
         const { paymentUrl } = response.data;
-
-        window.location.href = paymentUrl;
+        window.open(paymentUrl, '_blank');
+        setTimeout(() => {
+          this.$router.push('/orders')
+        }, 1000); // Adjust the delay as needed
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
       }

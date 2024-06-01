@@ -3,6 +3,7 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
+import moment from 'moment';
 
 export default {
   components: {
@@ -11,8 +12,7 @@ export default {
   data() {
     return {
       overlay: false,
-
-    
+      orders: [],
     };
   },
   mounted() {
@@ -41,6 +41,9 @@ export default {
       this.store.state.showFooter = true;
       this.body.classList.add("bg-gray-100");
     },
+    formatDate(data_date) {
+      return moment.utc(data_date).format('YYYY-MM-DD')
+    },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
@@ -48,14 +51,13 @@ export default {
     async retrieveCart() {
       this.overlay = true;
       try {
-        const response = await axios.get(`${BASE_URL}/cart/get`, {
+        const response = await axios.get(`${BASE_URL}/order/get`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
 
-        this.orders = response.data.data
-        this.totalPayment = 0;
+        this.orders = response.data
       } catch (error) {
         console.error(error);
         this.$notify({
@@ -68,7 +70,33 @@ export default {
         this.overlay = false;
       }
     },
-
+    payNow(order) {
+      window.open(order.link, '_blank');
+    },
+    getStatusBadge(status) {
+      switch (status) {
+        case 'pending':
+          return 'badge-warning text-dark';
+        case 'paid':
+          return 'badge-success';
+        case 'failed':
+          return 'badge-danger';
+        default:
+          return 'badge-secondary';
+      }
+    },
+    getStatusText(status) {
+      switch (status) {
+        case 'pending':
+          return 'Menunggu Pembayaran';
+        case 'paid':
+          return 'Pembayaran Berhasil';
+        case 'failed':
+          return 'Pembayaran Gagal';
+        default:
+          return 'Tidak Diketahui';
+      }
+    },
   },
 };
 </script>
@@ -90,38 +118,38 @@ export default {
             </div>
           </div>
           <div class="col-md-9">
-            <div class="card mb-3">
+            <div class="card mb-3"  v-for="order in orders" :key="order.id">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
-                  <span>01 Juni 2024, 12:23:06</span>
+                  <span>{{ formatDate(order.created_at) }}</span>
                 </div>
                 <div>
-                  <span>No. Pemesanan HF012NFE3D7R57</span>
-                  <span class="badge badge-warning text-dark mx-2">Menunggu Pembayaran</span>
+                  <span>No. Pemesanan {{ order.id }}</span>
+                  <span class="mx-2" :class="['badge', getStatusBadge(order.status)]">{{ getStatusText(order.status) }}</span>
                 </div>
               </div>
               <div class="card-body">
-                <div class="d-flex mb-3">
-                  <img src="" alt="Store Logo" class="img-fluid"
+                <div v-for="item in order.items" :key="item.id" class="d-flex mb-3">
+                  <img :src="item.buku.foto" alt="Product Image" class="img-fluid"
                     style="width: 50px; margin-right: 20px;">
                   <div>
-                    <h5>Pasukan Mau Tahu Enid Blyton</h5>
-                    <p>1 Barang x harga barang</p>
+                    <h5>{{ item.buku.judul }}</h5>
+                    <p>{{ item.quantity }} Barang x Rp {{ formatPrice(item.price) }}</p>
                   </div>
                 </div>
-                <hr >
+                <hr>
                 <div class="row">
                   <div class="col-6">
                     <p><a href="#">Lihat Detail Pesanan</a></p>
                   </div>
                   <div class="col-6 text-end">
-                    <a>Total Pesanan: Rp. 10.000</a>
+                    <a>Total Pesanan: Rp {{ formatPrice(order.total_payment) }}</a>
                   </div>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
-                  <span><strong>Metode pembayaran</strong> : Midtrans</span>
-                  <button class="btn btn-primary">Bayar Sekarang</button>
+                  <span><strong>Metode pembayaran</strong>: Midtrans</span>
+                  <button class="btn btn-primary" @click="payNow(order)">Bayar Sekarang</button>
                 </div>
               </div>
             </div>
