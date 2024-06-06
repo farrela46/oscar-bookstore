@@ -13,10 +13,11 @@ export default {
     return {
       overlay: false,
       orders: [],
+      selectedFilter: ''
     };
   },
   mounted() {
-    this.retrieveCart();
+    this.retrieveOrders();
   },
   created() {
     this.store = this.$store;
@@ -48,22 +49,25 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
-    async retrieveCart() {
+    async retrieveOrders() {
       this.overlay = true;
       try {
         const response = await axios.get(`${BASE_URL}/order/get`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
+          },
+          params: {
+            status: this.selectedFilter
           }
         });
 
-        this.orders = response.data
+        this.orders = response.data;
       } catch (error) {
         console.error(error);
         this.$notify({
           type: 'danger',
           title: 'Notif',
-          text: 'Anda belum menambahkan barang',
+          text: 'Error retrieving orders',
           color: 'green'
         });
       } finally {
@@ -114,14 +118,26 @@ export default {
       </v-overlay>
       <div class="container">
         <div class="row">
-          <div class="col-md-3">
+          <!-- <div class="col-md-3">
             <div class="list-group">
               <a href="#" class="list-group-item list-group-item-action active">Pesanan Saya</a>
               <a href="/profile" class="list-group-item list-group-item-action">Profil Saya</a>
               <a href="/cart" class="list-group-item list-group-item-action">My Cart</a>
             </div>
-          </div>
-          <div class="col-md-9">
+          </div> -->
+          <div class="col-md-12">
+            <div class="row ps-3 mb-2">
+              Filter:
+              <div class="col-2">
+                <select class="form-select form-select-sm" aria-label="Small select example" v-model="selectedFilter"
+                  @change="retrieveOrders">
+                  <option value="" selected>Semua</option>
+                  <option value="pending">Pending</option>
+                  <option value="expired">Expired</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
             <div class="card mb-3" v-for="order in orders" :key="order.id">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <div>

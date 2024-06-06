@@ -78,17 +78,29 @@ class OrdersController extends Controller
     public function getUserOrders(Request $request)
     {
         $user = $request->user();
+        $statusFilter = $request->query('status');
+    
         $orders = Order::where('user_id', $user->id)
             ->with(['items.buku'])
+            ->orderBy('created_at', 'desc')
             ->get();
     
         $now = Carbon::now();
         foreach ($orders as $order) {
-            if ($now->diffInDays($order->created_at) > 1) {
+            if ($now->diffInDays($order->created_at) > 1 && $order->status !== 'expired') {
                 $order->status = 'expired';
+                $order->save();
             }
         }
     
-        return response()->json($orders);
+        if ($statusFilter) {
+            $orders = $orders->filter(function ($order) use ($statusFilter) {
+                return $order->status === $statusFilter;
+            });
+        }
+    
+        return response()->json($orders->values());
     }
+    
+
 }
