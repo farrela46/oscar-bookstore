@@ -74,15 +74,60 @@ export default {
         this.overlay = false;
       }
     },
-    payNow(order) {
-      window.open(order.link, '_blank');
+    async payNow(order) {
+      try {
+        const response = await axios.get(`${BASE_URL}/order/status`, {
+          params: {
+            order_id: order.transaction_id,
+          },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        const status = response.data;
+
+        if (status.status_code === "200") {
+          if (status.transaction_status === "capture") {
+            this.$notify({
+              type: 'success',
+              title: 'Payment Status',
+              text: 'Payment is captured. Order status is updated to "process".',
+              color: 'green'
+            });
+
+            this.retrieveOrders();
+          } else {
+            window.open(order.link, '_blank');
+          }
+        } else if (status.status_code === "404") {
+          window.open(order.link, '_blank');
+        } else {
+          this.$notify({
+            type: 'danger',
+            title: 'Payment Status',
+            text: `Error: ${status.status_message}`,
+            color: 'red'
+          });
+        }
+      } catch (error) {
+        console.error('Error checking order status:', error);
+        this.$notify({
+          type: 'danger',
+          title: 'Payment Status',
+          text: 'Unable to check order status. Please try again later.',
+          color: 'red'
+        });
+      }
     },
     getStatusBadge(status) {
       switch (status) {
         case 'pending':
-          return 'badge-warning text-dark';
+          return 'badge-danger text-dark';
         case 'paid':
           return 'badge-success';
+        case 'process':
+          return 'badge-warning text-dark';
         case 'expired':
           return 'badge-danger';
         case 'failed':
@@ -95,6 +140,8 @@ export default {
       switch (status) {
         case 'pending':
           return 'Menunggu Pembayaran';
+        case 'process':
+          return 'Pesanan Diproses';
         case 'paid':
           return 'Pembayaran Berhasil';
         case 'expired':

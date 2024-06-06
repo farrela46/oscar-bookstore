@@ -177,6 +177,7 @@ export default {
       };
     },
     async proceedToCheckout() {
+      this.overlay = true
       try {
         const response = await axios.post(`${BASE_URL}/order/checkout`, {
           amount: this.totalPayment,
@@ -204,6 +205,8 @@ export default {
         }, 1000); // Adjust the delay as needed
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
+      } finally {
+        this.overlay = false
       }
     },
     async fetchShippingRates() {

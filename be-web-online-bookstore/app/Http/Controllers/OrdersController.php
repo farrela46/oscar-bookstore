@@ -7,9 +7,11 @@ use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Item;
 use App\Models\Order;
+use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\MidtransService;
+use Illuminate\Support\Facades\Log;
 
 class OrdersController extends Controller
 {
@@ -79,12 +81,12 @@ class OrdersController extends Controller
     {
         $user = $request->user();
         $statusFilter = $request->query('status');
-    
+
         $orders = Order::where('user_id', $user->id)
             ->with(['items.buku'])
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $now = Carbon::now();
         foreach ($orders as $order) {
             if ($now->diffInDays($order->created_at) > 1 && $order->status !== 'expired') {
@@ -92,15 +94,49 @@ class OrdersController extends Controller
                 $order->save();
             }
         }
-    
+
         if ($statusFilter) {
             $orders = $orders->filter(function ($order) use ($statusFilter) {
                 return $order->status === $statusFilter;
             });
         }
-    
+
         return response()->json($orders->values());
     }
-    
+
+    public function getOrderStatus(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        if (!$orderId) {
+            return response()->json(['error' => 'Order ID is required'], 400);
+        }
+
+        $client = new Client();
+        $url = "https://api.sandbox.midtrans.com/v2/{$orderId}/status";
+
+        try {
+            $response = $client->request('GET', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Basic ' . base64_encode(env('MIDTRANS_SERVER_KEY') . ':'),
+                ]
+            ]);
+
+            $status = json_decode($response->getBody()->getContents(), true);
+
+            if ($status['status_code'] === "200" && $status['transaction_status'] === "capture") {
+                $order = Order::where('transaction_id', $status['order_id'])->first();
+                if ($order) {
+                    $order->status = 'process';
+                    $order->save();
+                }
+            }
+
+            return response()->json($status);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving Midtrans order status: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to retrieve order status'], 500);
+        }
+    }
 
 }
