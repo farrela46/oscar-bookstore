@@ -79,6 +79,8 @@ export default {
           return 'badge-warning text-dark';
         case 'paid':
           return 'badge-success';
+        case 'expired':
+          return 'badge-danger';
         case 'failed':
           return 'badge-danger';
         default:
@@ -91,6 +93,8 @@ export default {
           return 'Menunggu Pembayaran';
         case 'paid':
           return 'Pembayaran Berhasil';
+        case 'expired':
+          return 'Expired';
         case 'failed':
           return 'Pembayaran Gagal';
         default:
@@ -118,14 +122,15 @@ export default {
             </div>
           </div>
           <div class="col-md-9">
-            <div class="card mb-3"  v-for="order in orders" :key="order.id">
+            <div class="card mb-3" v-for="order in orders" :key="order.id">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                   <span>{{ formatDate(order.created_at) }}</span>
                 </div>
                 <div>
                   <span>No. Pemesanan {{ order.id }}</span>
-                  <span class="mx-2" :class="['badge', getStatusBadge(order.status)]">{{ getStatusText(order.status) }}</span>
+                  <span class="mx-2" :class="['badge', getStatusBadge(order.status)]">{{ getStatusText(order.status)
+                    }}</span>
                 </div>
               </div>
               <div class="card-body">

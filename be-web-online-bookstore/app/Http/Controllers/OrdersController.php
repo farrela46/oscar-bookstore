@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Item;
 use App\Models\Order;
@@ -80,7 +81,14 @@ class OrdersController extends Controller
         $orders = Order::where('user_id', $user->id)
             ->with(['items.buku'])
             ->get();
-
+    
+        $now = Carbon::now();
+        foreach ($orders as $order) {
+            if ($now->diffInDays($order->created_at) > 1) {
+                $order->status = 'expired';
+            }
+        }
+    
         return response()->json($orders);
     }
 }
