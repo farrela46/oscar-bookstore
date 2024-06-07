@@ -115,7 +115,7 @@ const routes = [
     component: MyOrder,
   },
   {
-    path: '/orders/detail',
+    path: '/orders/:id',
     name: 'Detail Order',
     component: DetailOrder,
   },

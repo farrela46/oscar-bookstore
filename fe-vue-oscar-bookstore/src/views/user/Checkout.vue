@@ -182,6 +182,7 @@ export default {
         const response = await axios.post(`${BASE_URL}/order/checkout`, {
           amount: this.totalPayment,
           selectedCourier: this.selectedCourier,
+          address_id: this.selectedAddressId,
           items: this.orders.map(order => ({
             buku_id: order.buku.id,
             quantity: order.quantity,
@@ -495,7 +496,9 @@ export default {
                     <p>: Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
                   </div>
                 </div>
-                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut untuk Membayar</button>
+                <button class="btn btn-primary w-100" 
+                @click="proceedToCheckout"
+                >Lanjut untuk Membayar</button>
               </div>
             </div>
           </div>

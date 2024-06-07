@@ -74,6 +74,9 @@ export default {
         this.overlay = false;
       }
     },
+    lihatDetail(order) {
+      this.$router.push('/orders/' + order.transaction_id)
+    },
     async payNow(order) {
       try {
         const response = await axios.get(`${BASE_URL}/order/status`, {
@@ -208,7 +211,7 @@ export default {
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <p><a href="#">Lihat Detail Pesanan</a></p>
+                    <h6 @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat Detail Pesanan</h6>
                   </div>
                   <div class="col-6 text-end">
                     <a>Total Pesanan: Rp {{ formatPrice(order.total_payment) }}</a>
@@ -217,7 +220,7 @@ export default {
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
-                  <button class="btn btn-primary" @click="payNow(order)">Bayar Sekarang</button>
+                  <button class="btn btn-primary" @click="lihatDetail(order)">Bayar Sekarang</button>
                 </div>
               </div>
             </div>

@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->string('address_id');
             $table->uuid('transaction_id')->unique();
             $table->decimal('total_payment', 10, 2);
             $table->decimal('shipping_cost', 10, 2);

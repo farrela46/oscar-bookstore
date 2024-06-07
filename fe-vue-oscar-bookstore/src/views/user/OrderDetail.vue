@@ -55,7 +55,7 @@ export default {
   },
 
   mounted() {
-    this.retrieveCart();
+    this.retrieveDetail();
     this.fetchUserAddresses();
   },
   created() {
@@ -115,10 +115,10 @@ export default {
       }
     },
 
-    async retrieveCart() {
+    async retrieveDetail() {
       this.overlay = true;
       try {
-        const response = await axios.get(`${BASE_URL}/cart/checkout`, {
+        const response = await axios.get(`${BASE_URL}/order/` + this.$route.params.id, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }

@@ -27,9 +27,11 @@ class OrdersController extends Controller
         $transactionId = (string) Str::uuid();
 
         $totalPayment = $request->input('amount') + $request->input('selectedCourier.price');
+
         $order = Order::create([
             'user_id' => auth()->id(),
             'total_payment' => $totalPayment,
+            'address_id' => $request->input('address_id'),  // Add address_id here
             'shipping_cost' => $request->input('selectedCourier.price'),
             'status' => 'pending',
             'courier_details' => json_encode($request->input('selectedCourier')),
@@ -50,11 +52,14 @@ class OrdersController extends Controller
                 'phone' => $request->input('phone'),
             ],
         ];
+
         try {
             $snapToken = $this->midtransService->createTransaction($orderDetails);
             $paymentUrl = $snapToken->redirect_url;
+
             $order->update(['link' => $paymentUrl]);
 
+            // Create order items
             foreach ($request->input('items') as $item) {
                 Item::create([
                     'order_id' => $order->id,
@@ -64,13 +69,12 @@ class OrdersController extends Controller
                 ]);
             }
 
-            $itemIds = array_column($request->input('items'), 'id');
-            \Log::info('Deleting cart items with IDs: ', $itemIds);
-
+            // Delete cart items after order creation
             Cart::where('user_id', auth()->id())
                 ->whereIn('buku_id', array_column($request->input('items'), 'buku_id'))
                 ->delete();
 
+            // Return the payment URL
             return response()->json(['paymentUrl' => $paymentUrl]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -136,6 +140,17 @@ class OrdersController extends Controller
         } catch (\Exception $e) {
             Log::error('Error retrieving Midtrans order status: ' . $e->getMessage());
             return response()->json(['error' => 'Unable to retrieve order status'], 500);
+        }
+    }
+
+    public function getOrderDetail($transaction_id)
+    {
+        $order = Order::with('items.buku')->where('transaction_id', $transaction_id)->first();
+
+        if ($order) {
+            return response()->json($order);
+        } else {
+            return response()->json(['error' => 'Order not found'], 404);
         }
     }
 
