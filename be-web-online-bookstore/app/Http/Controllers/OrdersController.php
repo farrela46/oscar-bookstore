@@ -145,7 +145,7 @@ class OrdersController extends Controller
 
     public function getOrderDetail($transaction_id)
     {
-        $order = Order::with('items.buku')->where('transaction_id', $transaction_id)->first();
+        $order = Order::with(['items.buku', 'address'])->where('transaction_id', $transaction_id)->first();
 
         if ($order) {
             return response()->json($order);

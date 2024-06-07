@@ -182,7 +182,7 @@ export default {
         const response = await axios.post(`${BASE_URL}/order/checkout`, {
           amount: this.totalPayment,
           selectedCourier: this.selectedCourier,
-          address_id: this.selectedAddressId,
+          address_id: this.selectedAddress.id,
           items: this.orders.map(order => ({
             buku_id: order.buku.id,
             quantity: order.quantity,
