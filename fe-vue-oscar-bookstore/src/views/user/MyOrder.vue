@@ -130,7 +130,7 @@ export default {
         case 'paid':
           return 'badge-success';
         case 'process':
-          return 'badge-warning text-dark';
+          return 'badge-info text-dark';
         case 'expired':
           return 'badge-danger';
         case 'failed':
@@ -205,7 +205,7 @@ export default {
                     style="width: 50px; margin-right: 20px;">
                   <div>
                     <h5>{{ item.buku.judul }}</h5>
-                    <p>{{ item.quantity }} Barang x Rp {{ formatPrice(item.price) }}</p>
+                    <p>{{ item.quantity }} Barang x Rp {{ formatPrice(item.buku.harga) }}</p>
                   </div>
                 </div>
                 <hr>

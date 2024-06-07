@@ -448,7 +448,7 @@ export default {
                     <div class="col-md-9 col-8">
                       <div class="row">
                         <div class="col-12">
-                          <h6>{{ order.buku.judul }}</h6>
+                          <h5 class="text-truncate">{{ order.buku.judul }}</h5>
                           <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{
         formatPrice(order.buku.harga) }}</p>
                         </div>

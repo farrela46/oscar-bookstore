@@ -2,6 +2,7 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
+import moment from 'moment';
 
 export default {
   components: {
@@ -10,45 +11,11 @@ export default {
   data() {
     return {
       overlay: false,
-      orders: [{
-        "buku": {
-          "id": 2,
-          "no_isbn": "91929312983",
-          "judul": "Misteri Rumah Tua",
-          "desc": "Pak Goon dan Eren mempunyai rumah tua dan harus ditelusuri hinga tamat",
-          "pengarang": "Enid Blyton",
-          "penerbit": "Gramedia Pustaka",
-          "tahun_terbit": "2024-05-26",
-          "foto": "hehe",
-          "stok": "10",
-          "harga": "47000",
-          "slug": "misteri-rumah-tua",
-          "created_at": "2024-06-01T12:27:41.000000Z",
-          "updated_at": "2024-06-01T12:27:41.000000Z"
-        }
-      }
-      ],
+      orders: [],
       totalPayment: '',
-      alamat: [],
+      items: [],
       loadingRegist: false,
-      address: {
-        provinsi: '',
-        city: '',
-        district: '',
-        postal_code: '',
-        penerima: '',
-        no_penerima: '',
-        label: '',
-        alamat_lengkap: ''
-      },
-      kirim: {
-        provinsi: '',
-        kota: '',
-        kecamatan: '',
-        postal_code: '',
-        penerima: '',
-        no_penerima: ''
-      },
+      address: {},
       dialog: false,
       selectedCourier: null,
     };
@@ -56,7 +23,6 @@ export default {
 
   mounted() {
     this.retrieveDetail();
-    this.fetchUserAddresses();
   },
   created() {
     this.store = this.$store;
@@ -86,6 +52,9 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
+    formatDate(data_date) {
+      return moment.utc(data_date).format('YYYY-MM-DD')
+    },
     updateTotalPayment() {
       this.totalPayment = this.orders.reduce((total, order) => {
         return order.selected ? total + order.totalPrice : total;
@@ -101,20 +70,37 @@ export default {
       }
       this.searchTimeout = setTimeout(this.searchAddress, 2000);
     },
-
-    async fetchUserAddresses() {
+    calculateTotalPrice() {
+      return this.items.reduce((total, item) => {
+        return total + parseFloat(item.price);
+      }, 0);
+    },
+    calculateTotalPayment() {
+      const totalPrice = this.calculateTotalPrice();
+      const shippingCost = parseFloat(this.orders.shipping_cost);
+      return totalPrice + shippingCost;
+    },
+    async payNow() {
       try {
-        const response = await axios.get(`${BASE_URL}/address/get`, {
+        const response = await axios.get(`${BASE_URL}/order/status`, {
+          params: {
+            order_id: this.orders.transaction_id,
+          },
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('access_token')
+            Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-        this.alamat = response.data.addresses;
+
+        if (response.status === 200) {
+          this.retrieveDetail();
+        } else {
+          window.open(this.orders.link, '_blank');
+        }
       } catch (error) {
-        console.error('Error fetching addresses:', error);
+        console.error("Error checking order status:", error);
+        window.open(this.orders.link, '_blank');
       }
     },
-
     async retrieveDetail() {
       this.overlay = true;
       try {
@@ -123,9 +109,10 @@ export default {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-
-        this.orders = response.data.data
-        this.totalPayment = response.data.totalPayment;
+        this.orders = response.data
+        this.address = response.data.address;
+        this.items = response.data.items;
+        this.courier = JSON.parse(response.data.courier_details);
       } catch (error) {
         console.error(error);
         this.$notify({
@@ -136,6 +123,38 @@ export default {
         });
       } finally {
         this.overlay = false;
+      }
+    },
+    getStatusBadge(status) {
+      switch (status) {
+        case 'pending':
+          return 'badge-warning text-dark';
+        case 'paid':
+          return 'badge-success';
+        case 'process':
+          return 'badge-info';
+        case 'expired':
+          return 'badge-danger';
+        case 'failed':
+          return 'badge-danger';
+        default:
+          return 'badge-secondary';
+      }
+    },
+    getStatusText(status) {
+      switch (status) {
+        case 'pending':
+          return 'Menunggu Pembayaran';
+        case 'process':
+          return 'Pesanan Diproses';
+        case 'paid':
+          return 'Pembayaran Berhasil';
+        case 'expired':
+          return 'Expired';
+        case 'failed':
+          return 'Pembayaran Gagal';
+        default:
+          return 'Tidak Diketahui';
       }
     },
   },
@@ -150,7 +169,7 @@ export default {
         <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
       </v-overlay>
       <div class="container">
-        <div class="row">
+        <div class="row" v-if="courier">
           <div class="col-lg-8">
             <div class="row mb-4">
               <div class="card">
@@ -164,13 +183,13 @@ export default {
                           Nama Penerima
                         </div>
                         <div class="col">
-                          : Vivi
+                          : {{ address.penerima }}
                         </div>
                         <div class="col">
                           Nomor Penerima
                         </div>
                         <div class="col">
-                          : 1023912839213
+                          : {{ address.no_penerima }}
                         </div>
                       </div>
                     </div>
@@ -180,13 +199,13 @@ export default {
                           Provinsi
                         </div>
                         <div class="col">
-                          : Jawa Timur
+                          : {{ address.provinsi }}
                         </div>
                         <div class="col">
                           Kota
                         </div>
                         <div class="col">
-                          : Surabaya
+                          : {{ address.kota }}
                         </div>
                       </div>
                     </div>
@@ -196,13 +215,13 @@ export default {
                           Kecamatan
                         </div>
                         <div class="col">
-                          : Lakarsantri
+                          : {{ address.kecamatan }}
                         </div>
                         <div class="col">
                           Kode Pos
                         </div>
                         <div class="col">
-                          : 60213
+                          : {{ address.postal_code }}
                         </div>
                       </div>
                     </div>
@@ -211,15 +230,18 @@ export default {
                         <div class="p-2">
                           <div class="row align-items-center py-2">
                             <div class="col-3 d-flex align-items-center">
-                              <img src="../../assets/img/jne.png" alt="jne" class="img-fluid"
-                                style="width: 50px; margin-right: 20px;" />
+                              <img v-if="courier.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
+                                class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                              <img v-if="courier.company === 'sicepat'" src="../../assets/img/sicepat.png" alt="sicepat"
+                                class="img-fluid" style="width: 50px; margin-right: 20px;" />
                             </div>
                             <div class="col-3">
                               <div class="row">
                                 <strong class="d-block d-sm-inline">Jenis Layanan</strong>
                               </div>
                               <div class="row">
-                                <a class="d-block d-sm-inline">JNE REG</a>
+                                <a class="d-block d-sm-inline">{{ courier.courier_name }} {{
+        courier.courier_service_name }}</a>
                               </div>
                             </div>
                             <div class="col-4">
@@ -227,7 +249,7 @@ export default {
                                 <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
                               </div>
                               <div class="row">
-                                <a class="d-block d-sm-inline">1 - 2 Hari</a>
+                                <a class="d-block d-sm-inline">{{ courier.duration }}</a>
                               </div>
                             </div>
                             <div class="col-2">
@@ -235,7 +257,7 @@ export default {
                                 <strong class="d-block d-sm-inline">Tarif</strong>
                               </div>
                               <div class="row">
-                                <a class="d-block d-sm-inline">Rp. 20.000</a>
+                                <a class="d-block d-sm-inline">Rp. {{ formatPrice(courier.price) }}</a>
                               </div>
                             </div>
                           </div>
@@ -246,27 +268,31 @@ export default {
                 </div>
               </div>
             </div>
-
             <div class="row">
-              <div  class="mb-4 card">
+              <div class="mb-4 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
                   <div class="row">
                     <div class="col-md-3 col-4">
                       <div class="row">
                         <div class="col">
-                          <img  class="img-fluid" alt="Book image">
+                          <img :src="item.buku.foto" class="img-fluid" alt="Book image">
                         </div>
                       </div>
                     </div>
                     <div class="col-md-9 col-8">
                       <div class="row">
                         <div class="col-12">
-                          <h6>Pasukan Mau Tempe</h6>
-                          <p class="d-inline"><span class="mx-2">4 barang</span> X Rp 20.000</p>
+                          <div class="row">
+                            <h5 class="text-truncate">{{ item.buku.judul }}</h5>
+                          </div>
+                          <div class="row">
+                            <a class="d-inline"><span class="mx-2">{{ item.quantity }} barang</span> X Rp {{
+        formatPrice(item.buku.harga) }}</a>
+                          </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
-                          <span><strong>Rp 80.000</strong></span>
+                          <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
                         </div>
                       </div>
                     </div>
@@ -280,55 +306,57 @@ export default {
             <div class="card">
               <div class="card-body">
                 <div class="py-2">
-                  <h4 class="card-title">Order etail</h4>
+                  <h4 class="card-title">Order Detail</h4>
                 </div>
                 <hr>
                 <a><strong>Status Transaksi</strong></a>
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
-                    <span class=" badge badge-warning text-dark">Menunggu Pembayaran</span>
+                    <span :class="['badge', getStatusBadge(orders.status)]">{{ getStatusText(orders.status) }}</span>
                   </div>
                 </div>
                 <a><strong>No. Transaksi</strong></a>
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
-                    <span>#182318723788-9123jh</span>
+                    <span>#{{ orders.transaction_id }}</span>
                   </div>
                 </div>
                 <a><strong>Tanggal Pemesanan</strong></a>
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
-                    <span>20-04-2024</span>
+                    <span>{{ formatDate(orders.created_at) }}</span>
                   </div>
                 </div>
                 <hr>
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Harga 
+                    Total Harga
                   </div>
                   <div class="col">
-                    <p>: Rp 80.000</p>
+                    <p>: Rp. {{ formatPrice(calculateTotalPrice()) }}</p>
                   </div>
                 </div>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total biaya pengiriman 
+                    Total biaya pengiriman
                   </div>
                   <div class="col">
-                    <p>: Rp. 20.000</p>
+                    <p>: Rp. {{ formatPrice(orders.shipping_cost) }}</p>
                   </div>
                 </div>
                 <hr>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Bayar 
+                    Total Bayar
                   </div>
                   <div class="col">
-                    <p>: Rp 100.000</p>
+                    <p>: Rp. {{ formatPrice(calculateTotalPayment()) }}</p>
                   </div>
                 </div>
-                <button class="btn btn-primary w-100" >Sudah Bayar</button>
+                <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
+                <button v-if="orders.status == 'pending'" class="btn btn-primary w-100"><i
+                    class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
               </div>
             </div>
           </div>
