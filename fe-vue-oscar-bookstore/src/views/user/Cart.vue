@@ -241,10 +241,13 @@ export default {
           </div>
 
           <!-- Card for Mobile -->
-          <div class="col-12 d-block d-lg-none position-fixed bottom-0 bg-white p-2 border-top">
-            <div class="d-flex justify-content-between align-items-center">
-              <p class="mb-0">Rp {{ formatPrice(totalPayment) }}</p>
-              <button class="btn btn-primary" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
+          <div class="col-12 d-block d-lg-none position-fixed bottom-0 bg-white"
+            style="margin-bottom:10px; padding-right: 35px;">
+            <div class="card shadow px-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Rp {{ formatPrice(totalPayment) }}</h6>
+                <button class="btn btn-primary mt-2" @click="proceedToCheckout">Checkout</button>
+              </div>
             </div>
           </div>
         </div>
