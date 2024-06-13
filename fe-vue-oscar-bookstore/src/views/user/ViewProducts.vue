@@ -3,11 +3,15 @@ import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
+import ArgonButton from "@/components/ArgonButton.vue";
+import ArgonInput from "@/components/ArgonInput.vue";
 
 export default {
   components: {
     Navbar,
-    Breadcrumbs
+    Breadcrumbs,
+    ArgonButton,
+    ArgonInput
   },
   data() {
     return {
@@ -26,6 +30,8 @@ export default {
       productsName: '',
       products: [],
       overlay: false,
+      showWhatsapp: false,
+      inputChat: ''
     };
   },
   mounted() {
@@ -53,6 +59,17 @@ export default {
       this.store.state.showSidenav = true;
       this.store.state.showFooter = true;
       this.body.classList.add("bg-gray-100");
+    },
+    toggleWhatsapp() {
+      this.showWhatsapp = !this.showWhatsapp;
+    },
+    sendWhatsapp() {
+      const baseUrl = 'https://wa.me/6285179684793';
+      const encodedText = encodeURIComponent(this.inputChat.trim());
+      const url = `${baseUrl}?text=${encodedText}`;
+      window.open(url, '_blank');
+      this.inputChat = '',
+        this.showWhatsapp = false
     },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
@@ -195,6 +212,32 @@ export default {
         </div>
       </div>
     </div>
+    <div class="fixed-plugin">
+      <a class="px-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
+        <i class=" py-2 fab fa-whatsapp"></i>
+      </a>
+    </div>
+    <div v-if="showWhatsapp" class="whatsapp-chat-window position-fixed">
+      <div class="whatsapp-header">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+        <button @click="toggleWhatsapp" class="close-button">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="whatsapp-body">
+        <p>Hai, Kak...</p>
+        <p>Ada yang bisa kami bantu?</p>
+      </div>
+      <div class="row ">
+        <div class="col-7">
+          <argon-input v-model="inputChat" class="ms-1" id="Text" type="text" placeholder="Tanya disini" name="email"
+            size="md" />
+        </div>
+        <div class="col-5">
+          <argon-button color="success" size="sm" variant="contained" @click="sendWhatsapp">Kirim</argon-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <style>
@@ -226,5 +269,49 @@ a {
 .title-deskripsi {
   font-size: 16px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.whatsapp-chat-window {
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  bottom: 90px;
+  right: 30px;
+}
+
+.whatsapp-header {
+  background-color: #25d366;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.whatsapp-body {
+  padding: 10px;
+  font-size: 14px;
+}
+
+
+
+.open-chat-button {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 </style>

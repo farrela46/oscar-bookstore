@@ -5,8 +5,8 @@ import Sidenav from "./examples/Sidenav";
 // import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/Footer.vue";
 // import Configurator from "@/examples/Configurator.vue";
-import ArgonInput from "@/components/ArgonInput.vue";
-import ArgonButton from "@/components/ArgonButton.vue";
+// import ArgonInput from "@/components/ArgonInput.vue";
+// import ArgonButton from "@/components/ArgonButton.vue";
 
 
 export default {
@@ -14,8 +14,8 @@ export default {
     Sidenav,
     // Navbar,
     AppFooter,
-    ArgonInput,
-    ArgonButton
+    // ArgonInput,
+    // ArgonButton
   },
   data() {
     return {
@@ -78,12 +78,12 @@ export default {
 
     <app-footer v-show="showFooter" />
 
-    <div class="fixed-plugin">
+    <!-- <div class="fixed-plugin">
       <a class="px-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
         <i class=" py-2 fab fa-whatsapp"></i>
       </a>
-    </div>
-    <div v-if="showWhatsapp" class="whatsapp-chat-window position-fixed">
+    </div> -->
+    <!-- <div v-if="showWhatsapp" class="whatsapp-chat-window position-fixed">
       <div class="whatsapp-header">
         <i class="fab fa-whatsapp"></i> WhatsApp
         <button @click="toggleWhatsapp" class="close-button">
@@ -103,7 +103,7 @@ export default {
           <argon-button color="success" size="sm" variant="contained" @click="sendWhatsapp">Kirim</argon-button>
         </div>
       </div>
-    </div>
+    </div> -->
   </main>
 </template>
 

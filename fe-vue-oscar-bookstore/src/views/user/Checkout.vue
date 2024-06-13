@@ -464,7 +464,7 @@ export default {
 
           </div>
           <div class="col-lg-4">
-            <div class="card">
+            <div class="card sticky-menu">
               <div class="card-body">
                 <div class="py-2">
                   <h3 class="card-title">Rincian Belanja</h3>
@@ -595,6 +595,13 @@ a {
 
 .ring-bayar {
   font-size: 14px;
+}
+
+.sticky-menu {
+  position: sticky;
+  top: 100px;
+  padding: 3px;
+  
 }
 
 @media (max-width: 576px) {

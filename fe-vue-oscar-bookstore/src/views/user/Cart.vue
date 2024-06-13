@@ -195,7 +195,7 @@ export default {
               <div class="card-body">
                 <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
                 <div class="row">
-                  <div class="col-md-3">
+                  <div class="col-3">
                     <div class="row">
                       <div class="col-1 align-items-center d-flex">
                         <input type="checkbox" class="large-checkbox" v-model="order.selected"
@@ -206,7 +206,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-9 sticky-menu">
+                  <div class="col-md-9">
                     <div class="row">
                       <div class="col">
                         <h6>{{ order.judul }}</h6>
@@ -229,14 +229,22 @@ export default {
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
-            <div class="card">
+          <div class="col-lg-4 d-none d-lg-block">
+            <div class="card sticky-top" style="top: 20px;">
               <div class="card-body">
                 <h5 class="card-title">Rincian Belanja</h5>
                 <p>Ringkasan Pembayaran</p>
                 <p>Rp {{ formatPrice(totalPayment) }}</p>
                 <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Card for Mobile -->
+          <div class="col-12 d-block d-lg-none position-fixed bottom-0 bg-white p-2 border-top">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="mb-0">Rp {{ formatPrice(totalPayment) }}</p>
+              <button class="btn btn-primary" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
             </div>
           </div>
         </div>
@@ -278,9 +286,19 @@ a {
 }
 
 .sticky-menu {
-  position: -webkit-sticky; /* for browser compatibility */
   position: sticky;
-  top: 20px;
+  top: 100px;
   padding: 3px;
+
+}
+
+
+@media (max-width: 576px) {
+
+
+  .row img {
+    width: 30px;
+    margin-right: 10px;
+  }
 }
 </style>
