@@ -47,6 +47,9 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
+    handlePinjamClick() {
+      this.$router.push('/');
+    },
     openDeleteConfirmation(index) {
       const orderId = this.orders[index].id;
       this.selectedProductId = orderId
@@ -172,7 +175,22 @@ export default {
       <div class="container">
         <div class="row">
           <div class="col-lg-8">
-            <h4 v-if="orders.length === 0">Anda belum memiliki barang</h4>
+            <div class="card" v-if="orders.length === 0">
+              <div class="row p-2">
+                <h4 class="text-center">Anda belum memiliki barang</h4>
+              </div>
+              <div class="row d-flex justify-content-center mb-4 mx-2">
+                <div class="col-md-4 d-flex align-items-center">
+                  <div class="card text-center border" style="width: 18rem; cursor: pointer; box-shadow: none;"
+                    @click="handlePinjamClick">
+                    <div class="card-body">
+                      <i class="fas fa-shopping-cart fa-5x text-primary mb-3"></i>
+                      <h5 class="card-title">BELANJA SEKARANG</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
               <div class="card-body">
                 <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
