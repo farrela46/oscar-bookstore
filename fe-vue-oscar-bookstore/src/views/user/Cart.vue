@@ -3,6 +3,7 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
+import * as bootstrap from 'bootstrap';
 
 export default {
   components: {
@@ -12,7 +13,8 @@ export default {
     return {
       overlay: false,
       orders: [],
-      totalPayment: {}
+      totalPayment: {},
+      selectedProductId: null
     };
   },
   mounted() {
@@ -44,6 +46,22 @@ export default {
     formatPrice(price) {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
+    },
+    openDeleteConfirmation(index) {
+      const orderId = this.orders[index].id;
+      this.selectedProductId = orderId
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
+      modal.show();
+    },
+    confirmDelete() {
+      if (this.selectedProductId) {
+        this.removeOrder(this.selectedProductId);
+        this.closeModalDelete();
+      }
+    },
+    closeModalDelete() {
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
+      modal.hide();
     },
     async updateQuantity(index, id, newQuantity) {
       if (newQuantity < 1) return;
@@ -114,6 +132,8 @@ export default {
 
         this.orders = response.data.data
         this.totalPayment = 0;
+
+
       } catch (error) {
         console.error(error);
         this.$notify({
@@ -126,15 +146,13 @@ export default {
         this.overlay = false;
       }
     },
-    async removeOrder(index) {
-      const orderId = this.orders[index].id;
+    async removeOrder(id) {
       try {
-        await axios.delete(`${BASE_URL}/cart/delete/` + orderId, {
+        await axios.delete(`${BASE_URL}/cart/delete/` + id, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-        this.orders.splice(index, 1);
         this.retrieveCart();
       } catch (error) {
         console.error(error);
@@ -154,6 +172,7 @@ export default {
       <div class="container">
         <div class="row">
           <div class="col-lg-8">
+            <h4 v-if="orders.length === 0">Anda belum memiliki barang</h4>
             <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
               <div class="card-body">
                 <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
@@ -180,7 +199,7 @@ export default {
                           <i class="fas fa-minus-circle" style="cursor: pointer;" @click="decrementQuantity(index)"></i>
                           <span class="mx-2">{{ order.quantity }}</span>
                           <i class="fas fa-plus-circle" style="cursor: pointer;" @click="incrementQuantity(index)"></i>
-                          <button class="btn btn-link text-danger ms-3" @click="removeOrder(index)">
+                          <button class="btn btn-link text-danger ms-3" @click="openDeleteConfirmation(index)">
                             <i class="bi bi-trash"></i> Hapus
                           </button>
                           <span class="ms-auto">Rp {{ formatPrice(order.totalPrice) }}</span>
@@ -192,7 +211,6 @@ export default {
               </div>
             </div>
           </div>
-
           <div class="col-lg-4">
             <div class="card">
               <div class="card-body">
@@ -201,6 +219,24 @@ export default {
                 <p>Rp {{ formatPrice(totalPayment) }}</p>
                 <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-black" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure you want to remove this product?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-danger" @click="confirmDelete">Remove</button>
             </div>
           </div>
         </div>

@@ -49,9 +49,9 @@ class CartsController extends Controller
         Cart::where('user_id', $user->id)->update(['selected' => false]);
         $cartItems = $user->carts()->with('buku')->get();
 
-        if ($cartItems->isEmpty()) {
-            return response()->json(['error' => 'Anda belum menambahkan barang'], 200);
-        }
+        // if ($cartItems->isEmpty()) {
+        //     return response()->json(['error' => 'Anda belum menambahkan barang'], 200);
+        // }
 
         $books = $cartItems->map(function ($cartItem) {
             return [
