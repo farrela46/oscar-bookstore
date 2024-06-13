@@ -206,7 +206,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-9">
+                  <div class="col-md-9 sticky-menu">
                     <div class="row">
                       <div class="col">
                         <h6>{{ order.judul }}</h6>
@@ -275,5 +275,12 @@ a {
 .large-checkbox {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.sticky-menu {
+  position: -webkit-sticky; /* for browser compatibility */
+  position: sticky;
+  top: 20px;
+  padding: 3px;
 }
 </style>
