@@ -223,9 +223,9 @@ export default {
           description: order.buku.desc,
           value: order.buku.harga,
           length: 30,
-          width: 15,
+          width: 2,
           height: 20,
-          weight: 200,
+          weight: 150,
           quantity: order.quantity,
         })),
       };

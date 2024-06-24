@@ -355,7 +355,7 @@ export default {
                   </div>
                 </div>
                 <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
-                <button v-if="orders.status == 'pending'" class="btn btn-primary w-100"><i
+                <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
               </div>
             </div>
