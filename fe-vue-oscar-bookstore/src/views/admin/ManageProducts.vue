@@ -307,7 +307,11 @@ export default {
                     <v-card-text>
                       <argon-input type="text" placeholder="No ISBN" v-model="buku.no_isbn" />
                       <argon-input type="text" placeholder="Judul Buku" v-model="buku.judul" />
-                      <argon-input type="text-area" placeholder="Deskripsi Buku" v-model="buku.desc" />
+                      <div class="form-floating mb-3">
+                        <textarea class="form-control" v-model="buku.desc" placeholder="Deskripsi Buku"
+                          id="floatingTextarea2" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Deskripsi Buku</label>
+                      </div>
                       <argon-input type="text" placeholder="Pengarang" v-model="buku.pengarang" />
                       <argon-input type="text" placeholder="Penerbit" v-model="buku.penerbit" />
                       <argon-input type="date" placeholder="Tahun Terbit" v-model="buku.tahun_terbit" />
@@ -449,29 +453,6 @@ export default {
             </div>
           </div>
         </div>
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title text-black" id="userModalLabel">Edit User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                  id="closeModal"></button>
-              </div>
-              <form role="form" @submit.prevent="userUpdate">
-                <div class="modal-body">
-                  <argon-input type="text" placeholder="Name" v-model="users_edit.name" />
-                  <argon-input type="email" placeholder="Email" v-model="users_edit.email" />
-                  <argon-input type="password" placeholder="Password" v-model="users_edit.password" />
-                </div>
-                <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
         <div class="modal fade text-black" id="showProduct" tabindex="-1" aria-labelledby="exampleModalLabel"
           aria-hidden="true">
           <div class="modal-dialog modal-lg">
@@ -487,10 +468,8 @@ export default {
                 </div>
                 <hr>
                 <div class="row d-flex justify-content-center align-items-center">
-                  <div class="col-12 " style="width: 400px">
-                    <v-carousel show-arrows="hover" height="auto">
-                      <v-carousel-item :src="selectedProduct.foto" cover></v-carousel-item>
-                    </v-carousel>
+                  <div class="col-12 d-flex justify-content-center align-items-center" style="width: 400px">
+                    <img :src="selectedProduct.foto" alt="Buku" style="max-width: 200px;">
                   </div>
                 </div>
                 <div class="row mt-2">
