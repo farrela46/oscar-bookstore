@@ -233,24 +233,6 @@ class BukusController extends Controller
     }
 
 
-    // public function delete($id)
-    // {
-    //     $buku = Buku::find($id);
-
-    //     if (!$buku) {
-    //         return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
-    //     }
-
-    //     // Delete the associated file
-    //     if (Storage::exists($buku->foto)) {
-    //         Storage::delete($buku->foto);
-    //     }
-
-    //     $buku->delete();
-
-    //     return response()->json(['success' => true, 'message' => 'Buku deleted successfully'], 200);
-    // }
-
     public function delete($id)
     {
         $buku = Buku::find($id);
@@ -259,10 +241,8 @@ class BukusController extends Controller
             return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
         }
 
-        $fotoPath = $buku->getOriginal('foto');
-
-        if ($fotoPath && Storage::disk('public')->exists($fotoPath)) {
-            Storage::disk('public')->delete($fotoPath);
+        if (Storage::exists($buku->foto)) {
+            Storage::delete($buku->foto);
         }
 
         $buku->delete();
@@ -271,5 +251,5 @@ class BukusController extends Controller
     }
 
 
-
+    
 }
