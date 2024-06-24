@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('no_isbn');
             $table->string('judul');
-            $table->string('desc');
+            $table->longText('desc');
             $table->string('pengarang');
             $table->string('penerbit');
             $table->string('tahun_terbit');
