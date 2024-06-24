@@ -9,6 +9,8 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BukusController extends Controller
@@ -157,10 +159,6 @@ class BukusController extends Controller
     {
         $buku = Buku::with('categories')->get();
 
-        if ($buku->isEmpty()) {
-            return response()->json(['error' => 'Buku tidak ditemukan'], 404);
-        }
-
         $bukuData = $buku->map(function ($item) {
             $categoryNames = $item->categories->pluck('nama')->toArray();
 
@@ -210,29 +208,29 @@ class BukusController extends Controller
     // }
 
     public function getDetailBuku(Request $request, $slug)
-{
-    $buku = Buku::with('categories')->where('slug', $slug)->first();
+    {
+        $buku = Buku::with('categories')->where('slug', $slug)->first();
 
-    if (!$buku) {
-        return response()->json(['error' => 'Buku not found'], 404);
+        if (!$buku) {
+            return response()->json(['error' => 'Buku not found'], 404);
+        }
+        $categoryNames = $buku->categories->pluck('nama')->implode(', ');
+
+        $bukuData = [
+            'id' => $buku->id,
+            'no_isbn' => $buku->no_isbn,
+            'judul' => $buku->judul,
+            'desc' => $buku->desc,
+            'pengarang' => $buku->pengarang,
+            'penerbit' => $buku->penerbit,
+            'tahun_terbit' => $buku->tahun_terbit,
+            'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
+            'stok' => $buku->stok,
+            'harga' => $buku->harga,
+            'category' => $categoryNames
+        ];
+        return response()->json($bukuData);
     }
-    $categoryNames = $buku->categories->pluck('nama')->implode(', ');
-
-    $bukuData = [
-        'id' => $buku->id,
-        'no_isbn' => $buku->no_isbn,
-        'judul' => $buku->judul,
-        'desc' => $buku->desc,
-        'pengarang' => $buku->pengarang,
-        'penerbit' => $buku->penerbit,
-        'tahun_terbit' => $buku->tahun_terbit,
-        'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
-        'stok' => $buku->stok,
-        'harga' => $buku->harga,
-        'category' => $categoryNames 
-    ];
-    return response()->json($bukuData);
-}
 
 
     // public function delete($id)
@@ -255,18 +253,24 @@ class BukusController extends Controller
 
     public function delete($id)
     {
-        $buku = Buku::find($id);
+        try {
+            $buku = Buku::findOrFail($id);
 
-        if (!$buku) {
-            return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
+            if ($buku->foto) {
+                $storagePath = storage_path($buku->foto); 
+            }
+
+            $buku->delete();
+            BukuCategory::where('buku_id', $id)->delete();
+
+            return response()->json([
+                'message' => 'Successfully Deleted Buku!',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage(),
+                'stack' => $e->getTraceAsString()
+            ], 500);
         }
-
-        if (Storage::exists($buku->foto)) {
-            Storage::delete($buku->foto);
-        }
-        $buku->categories()->detach();
-        $buku->delete();
-
-        return response()->json(['success' => true, 'message' => 'Buku deleted successfully'], 200);
     }
 }
