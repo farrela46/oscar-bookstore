@@ -224,7 +224,7 @@ class BukusController extends Controller
             'pengarang' => $buku->pengarang,
             'penerbit' => $buku->penerbit,
             'tahun_terbit' => $buku->tahun_terbit,
-            'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
+            'foto' => asset('storage/foto_buku/' . basename($buku->foto)),
             'stok' => $buku->stok,
             'harga' => $buku->harga,
             'category' => $categoryNames
