@@ -35,7 +35,7 @@ class BukusController extends Controller
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
                 $fileName = time() . '_' . Str::slug($file->getClientOriginalName(), '-') . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('public/buku_photos', $fileName);
+                $filePath = $file->storeAs('public/foto_buku', $fileName); // Save to storage/app/public/foto_buku
             }
 
             $buku = Buku::create([
@@ -52,12 +52,10 @@ class BukusController extends Controller
             ]);
 
             foreach ($request->input('categoryId') as $key => $category) {
-                BukuCategory::insert(
-                    [
-                        'category_id' => $category,
-                        'buku_id' => $buku->id
-                    ]
-                );
+                BukuCategory::insert([
+                    'category_id' => $category,
+                    'buku_id' => $buku->id
+                ]);
             }
 
             return response()->json([
@@ -70,6 +68,7 @@ class BukusController extends Controller
             ], 500);
         }
     }
+
 
     private function saveImage(array|UploadedFile $file, int $id): void
     {
@@ -108,7 +107,7 @@ class BukusController extends Controller
 
             $file = $request->file('foto');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('public/buku_photos', $fileName);
+            $filePath = $file->storeAs('public/foto_buku', $fileName);
 
             $buku->foto = $filePath;
         }
@@ -170,7 +169,7 @@ class BukusController extends Controller
                 'pengarang' => $item->pengarang,
                 'penerbit' => $item->penerbit,
                 'tahun_terbit' => $item->tahun_terbit,
-                'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
+                'foto' => asset('storage/foto_buku/' . basename($item->foto)),
                 'stok' => $item->stok,
                 'harga' => $item->harga,
                 'slug' => $item->slug,
@@ -180,6 +179,7 @@ class BukusController extends Controller
 
         return response()->json($bukuData);
     }
+
 
     // public function getDetailBuku(Request $request, $slug)
     // {
@@ -241,7 +241,6 @@ class BukusController extends Controller
     //         return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
     //     }
 
-    //     // Delete the associated file
     //     if (Storage::exists($buku->foto)) {
     //         Storage::delete($buku->foto);
     //     }
@@ -253,24 +252,18 @@ class BukusController extends Controller
 
     public function delete($id)
     {
-        try {
-            $buku = Buku::findOrFail($id);
+        $buku = Buku::find($id);
 
-            if ($buku->foto) {
-                $storagePath = storage_path($buku->foto); 
-            }
-
-            $buku->delete();
-            BukuCategory::where('buku_id', $id)->delete();
-
-            return response()->json([
-                'message' => 'Successfully Deleted Buku!',
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error: ' . $e->getMessage(),
-                'stack' => $e->getTraceAsString()
-            ], 500);
+        if (!$buku) {
+            return response()->json(['success' => false, 'message' => 'Buku not found'], 404);
         }
+
+        if (Storage::exists($buku->foto)) {
+            Storage::delete($buku->foto);
+        }
+
+        $buku->delete();
+
+        return response()->json(['success' => true, 'message' => 'Buku deleted successfully'], 200);
     }
 }

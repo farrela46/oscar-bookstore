@@ -23,10 +23,16 @@ class Buku extends Model
         'slug',
     ];
 
-    public function getFotoAttribute($value)
+    // Buku.php
+
+    // Buku.php
+
+    public function getFotoUrlAttribute()
     {
-        return url('storage/buku_photos/' . basename($value));
+        return $this->foto ? asset('storage/' . $this->foto) : null;
     }
+
+
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'buku_categories', 'buku_id', 'category_id');
@@ -35,6 +41,4 @@ class Buku extends Model
     {
         return $this->hasMany(Cart::class);
     }
-
-
 }
