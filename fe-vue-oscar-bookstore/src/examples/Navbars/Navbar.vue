@@ -155,7 +155,7 @@ export default {
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end me-sm-n4" :class="showMenu ? 'show' : ''"
               aria-labelledby="dropdownMenuButton">
 
-              <li v-if="role === 'ADMIN'" class="mb-2">
+              <!-- <li v-if="role === 'ADMIN'" class="mb-2">
                 <a class="dropdown-item border-radius-md" @click="goAdminDashboard">
                   <div class="py-1 d-flex">
                     <div class="my-auto mx-3">
@@ -172,8 +172,8 @@ export default {
                     </div>
                   </div>
                 </a>
-              </li>
-              <li v-if="role === 'ADMIN'" class="mb-2">
+              </li> -->
+              <!-- <li v-if="role === 'ADMIN'" class="mb-2">
                 <a class="dropdown-item border-radius-md" @click="goManageProducts">
                   <div class="py-1 d-flex">
                     <div class="my-auto mx-3">
@@ -208,7 +208,7 @@ export default {
                     </div>
                   </div>
                 </a>
-              </li>
+              </li> -->
 
               <li v-if="role === 'USER'" class="mb-2">
                 <a class="dropdown-item border-radius-md" @click="goCarts">
