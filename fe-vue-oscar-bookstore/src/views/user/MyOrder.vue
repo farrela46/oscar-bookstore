@@ -3,7 +3,7 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
-import moment from 'moment';
+// import moment from 'moment';
 
 export default {
   components: {
@@ -43,7 +43,9 @@ export default {
       this.body.classList.add("bg-gray-100");
     },
     formatDate(data_date) {
-      return moment.utc(data_date).format('YYYY-MM-DD')
+      const date = new Date(data_date);
+      const options = { year: 'numeric', month: 'long', day: '2-digit' };
+      return date.toLocaleDateString('id-ID', options);
     },
     formatPrice(price) {
       const numericPrice = parseFloat(price);
@@ -75,7 +77,7 @@ export default {
       }
     },
     lihatDetail(order) {
-      this.$router.push('/orders/' + order.transaction_id)
+      this.$router.push('/admin/orders/' + order.transaction_id)
     },
     async payNow(order) {
       try {
@@ -168,13 +170,6 @@ export default {
       </v-overlay>
       <div class="container">
         <div class="row">
-          <!-- <div class="col-md-3">
-            <div class="list-group">
-              <a href="#" class="list-group-item list-group-item-action active">Pesanan Saya</a>
-              <a href="/profile" class="list-group-item list-group-item-action">Profil Saya</a>
-              <a href="/cart" class="list-group-item list-group-item-action">My Cart</a>
-            </div>
-          </div> -->
           <div class="col-md-12">
             <div class="row ps-3 mb-2">
               Filter:
@@ -189,9 +184,10 @@ export default {
               </div>
             </div>
             <div class="card mb-3" v-for="order in orders" :key="order.id">
-              <div class="card-header d-flex justify-content-between align-items-center">
+              <div class="card-header p-0 px-4 d-flex justify-content-between align-items-center">
                 <div>
-                  <span>{{ formatDate(order.created_at) }}</span>
+                  <span><a style="font-size: 12px;"> {{ formatDate(order.created_at) }} </a></span>
+                  <p class="text-bold" style="font-size: 14px; color: black;"> <i class="fas fa-user"></i> {{ order.user.name }}</p>
                 </div>
                 <div>
                   <span>No. Pemesanan {{ order.id }}</span>
@@ -199,19 +195,19 @@ export default {
                     }}</span>
                 </div>
               </div>
-              <div class="card-body">
+              <div class="card-body px-4 py-0">
                 <div v-for="item in order.items" :key="item.id" class="d-flex mb-3">
                   <img :src="item.buku.foto" alt="Product Image" class="img-fluid"
                     style="width: 50px; margin-right: 20px;">
                   <div>
-                    <h5>{{ item.buku.judul }}</h5>
+                    <h6>{{ item.buku.judul }}</h6>
                     <p>{{ item.quantity }} Barang x Rp {{ formatPrice(item.buku.harga) }}</p>
                   </div>
                 </div>
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <h6 @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat Detail Pesanan</h6>
+                    <a class="text-bold" @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat Detail Pesanan</a>
                   </div>
                   <div class="col-6 text-end">
                     <a>Total Pesanan: Rp {{ formatPrice(order.total_payment) }}</a>
@@ -220,7 +216,7 @@ export default {
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
-                  <button class="btn btn-primary" @click="lihatDetail(order)" v-if="order.status === 'pending'">Bayar Sekarang</button>
+                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)" v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>
               </div>
             </div>
