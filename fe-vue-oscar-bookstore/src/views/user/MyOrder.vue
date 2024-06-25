@@ -77,7 +77,7 @@ export default {
       }
     },
     lihatDetail(order) {
-      this.$router.push('/admin/orders/' + order.transaction_id)
+      this.$router.push('/orders/' + order.transaction_id)
     },
     async payNow(order) {
       try {
@@ -187,7 +187,6 @@ export default {
               <div class="card-header p-0 px-4 d-flex justify-content-between align-items-center">
                 <div>
                   <span><a style="font-size: 12px;"> {{ formatDate(order.created_at) }} </a></span>
-                  <p class="text-bold" style="font-size: 14px; color: black;"> <i class="fas fa-user"></i> {{ order.user.name }}</p>
                 </div>
                 <div>
                   <span>No. Pemesanan {{ order.id }}</span>

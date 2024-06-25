@@ -173,7 +173,7 @@ export default {
           <div class="col-lg-8">
             <div class="row mb-4">
               <div class="card">
-                <a class="mt-4" style="font-size: 20px; font-weight: bold"> Alamat </a>
+                <a class="mt-4" style="font-size: 20px; font-weight: bold; color:black"> Alamat </a>
                 <div style="font-size: 14px;">
                   <hr class="horizontal dark">
                   <div class="row">

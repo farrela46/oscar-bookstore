@@ -42,4 +42,20 @@ class BiteshipService
 
         throw new \Exception('Error fetching shipping rates from Biteship: ' . $response->body());
     }
+
+    public function createOrder($payload)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Content-Type' => 'application/json',
+        ])->post('https://api.biteship.com/v1/orders', $payload);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        throw new \Exception('Error creating order on Biteship: ' . $response->body());
+    }
 }
+
+

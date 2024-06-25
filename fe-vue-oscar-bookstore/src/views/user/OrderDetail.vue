@@ -37,14 +37,14 @@ export default {
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = true;
-      this.store.state.showSidenav = true;
+      this.store.state.showSidenav = false;
       this.store.state.showFooter = false;
       this.body.classList.remove("bg-gray-100");
     },
     restorePage() {
       this.store.state.hideConfigButton = false;
       this.store.state.showNavbar = true;
-      this.store.state.showSidenav = true;
+      this.store.state.showSidenav = false;
       this.store.state.showFooter = true;
       this.body.classList.add("bg-gray-100");
     },
