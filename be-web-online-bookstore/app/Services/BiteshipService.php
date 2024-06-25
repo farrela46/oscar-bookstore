@@ -54,7 +54,7 @@ class BiteshipService
             return $response->json();
         }
 
-        throw new \Exception('Error creating order on Biteship: ' . $response->body());
+        throw new \Exception('Error creating order in Biteship: ' . $response->body());
     }
 }
 

@@ -80,25 +80,56 @@ export default {
       const shippingCost = parseFloat(this.orders.shipping_cost);
       return totalPrice + shippingCost;
     },
-    async payNow() {
+    async createOrder() {
+      const orderData = {
+        origin_contact_name: "Farrel", 
+        origin_contact_phone: "085179684772",
+        origin_address: "Jl. Ahmad Yani No.85, Tepus, Sukorejo, Kec. Ngasem, Kabupaten Kediri, Jawa Timur 64129",
+        origin_note: "Toko Buku Oscar",
+        origin_postal_code: 64129,
+        origin_area_id: "IDNP11IDNC172IDND1288IDZ64129",
+        destination_contact_name: this.address.penerima,
+        destination_contact_phone: this.address.no_penerima,
+        destination_address: this.address.alamat_lengkap,
+        destination_postal_code: parseInt(this.address.postal_code),
+        destination_area_id: this.address.selected_address_id,
+        courier_company: this.courier.company,
+        courier_type: this.courier.courier_service_code,
+        delivery_type: "now",
+        metadata: {},
+        items: this.items.map(item => ({
+          name: item.buku.judul,
+          description: item.buku.desc,
+          value: parseInt(item.price),
+          quantity: item.quantity,
+          length: 30,
+          width: 2,
+          height: 20,
+          weight: 150,
+        }))
+      };
+
       try {
-        const response = await axios.get(`${BASE_URL}/order/status`, {
-          params: {
-            order_id: this.orders.transaction_id,
-          },
+        const response = await axios.post(`${BASE_URL}/order/create`, orderData, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-
-        if (response.status === 200) {
-          this.retrieveDetail();
-        } else {
-          window.open(this.orders.link, '_blank');
-        }
+        console.log('Order created:', response.data);
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Order successfully created!',
+          color: 'green'
+        });
       } catch (error) {
-        console.error("Error checking order status:", error);
-        window.open(this.orders.link, '_blank');
+        console.error('Error creating order:', error);
+        this.$notify({
+          type: 'error',
+          title: 'Error',
+          text: 'Failed to create order!',
+          color: 'red'
+        });
       }
     },
     async retrieveDetail() {
@@ -224,7 +255,7 @@ export default {
                       </div>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4 p-2" >
+                  <div class="row mb-2 mt-4 p-2">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
@@ -266,7 +297,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="row" >
+            <div class="row">
               <div class="mb-4 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
@@ -282,10 +313,12 @@ export default {
                       <div class="row">
                         <div class="col-12">
                           <div class="row">
-                            <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul }}</a>
+                            <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul
+                              }}</a>
                           </div>
                           <div class="row">
-                            <a class="d-inline" style="font-size: 12px;"><span class="mx-2">{{ item.quantity }} barang</span> X Rp {{
+                            <a class="d-inline" style="font-size: 12px;"><span class="mx-2">{{ item.quantity }}
+                                barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>
                         </div>
@@ -352,7 +385,8 @@ export default {
                     <p>: Rp. {{ formatPrice(calculateTotalPayment()) }}</p>
                   </div>
                 </div>
-                <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
+                <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100" @click="createOrder">Proses
+                  Pesanan</button>
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
               </div>

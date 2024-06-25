@@ -10,16 +10,20 @@ use App\Models\Order;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\BiteshipService;
 use App\Services\MidtransService;
 use Illuminate\Support\Facades\Log;
 
 class OrdersController extends Controller
 {
     protected $midtransService;
+    protected $biteshipService;
 
-    public function __construct(MidtransService $midtransService)
+
+    public function __construct(MidtransService $midtransService, BiteshipService $biteshipService)
     {
         $this->midtransService = $midtransService;
+        $this->biteshipService = $biteshipService;
     }
 
     public function createOrder(Request $request)
@@ -122,7 +126,7 @@ class OrdersController extends Controller
             });
         }
 
-        
+
 
         return response()->json($orders->values());
     }
@@ -175,6 +179,43 @@ class OrdersController extends Controller
         }
     }
 
-    
+    //ORDERS
+
+    public function makeOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'origin_contact_name' => 'required|string',
+            'origin_contact_phone' => 'required|string',
+            'origin_address' => 'required|string',
+            'origin_note' => 'nullable|string',
+            'origin_postal_code' => 'required|integer',
+            'origin_area_id' => 'required|string',
+            'destination_contact_name' => 'required|string',
+            'destination_contact_phone' => 'required|string',
+            'destination_address' => 'required|string',
+            'destination_postal_code' => 'required|integer',
+            'destination_area_id' => 'required|string',
+            'courier_company' => 'required|string',
+            'courier_type' => 'required|string',
+            'delivery_type' => 'required|string',
+            'metadata' => 'nullable|array',
+            'items' => 'required|array',
+            'items.*.name' => 'required|string',
+            'items.*.description' => 'nullable|string',
+            'items.*.value' => 'required|numeric',
+            'items.*.quantity' => 'required|integer',
+            'items.*.height' => 'nullable|numeric',
+            'items.*.length' => 'nullable|numeric',
+            'items.*.weight' => 'required|numeric',
+            'items.*.width' => 'nullable|numeric',
+        ]);
+
+        try {
+            $response = $this->biteshipService->createOrder($validated);
+            return response()->json($response, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 }
