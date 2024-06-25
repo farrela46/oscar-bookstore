@@ -112,12 +112,10 @@ class OrdersController extends Controller
     {
         $statusFilter = $request->query('status');
 
-        // Ambil semua pesanan dengan informasi pengguna dan buku
         $orders = Order::with(['user', 'items.buku'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Terapkan filter status jika ada
         if ($statusFilter) {
             $orders = $orders->filter(function ($order) use ($statusFilter) {
                 return $order->status === $statusFilter;
@@ -176,5 +174,7 @@ class OrdersController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
     }
+
+    
 
 }

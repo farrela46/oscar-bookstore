@@ -77,7 +77,7 @@ export default {
       }
     },
     lihatDetail(order) {
-      this.$router.push('/orders/' + order.transaction_id)
+      this.$router.push('/admin/orders/' + order.transaction_id)
     },
     async payNow(order) {
       try {
@@ -216,8 +216,7 @@ export default {
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
-                  <button class="btn btn-primary" @click="lihatDetail(order)" v-if="order.status === 'pending'">Bayar
-                    Sekarang</button>
+                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)" v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>
               </div>
             </div>
