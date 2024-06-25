@@ -266,7 +266,7 @@ export default {
   },
   mounted() {
     const store = useStore();
-    store.commit('toggleSidenav', false);
+    store.commit('toggleSidenav', true);
     this.retrieveBuku();
     this.retrieveCat();
   },

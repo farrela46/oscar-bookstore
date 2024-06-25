@@ -8,6 +8,7 @@ import ManageUsers from "../views/admin/ManageUsers.vue";
 import ManageProducts from "../views/admin/ManageProducts.vue";
 import EditProducts from "../views/admin/EditProducts.vue";
 import ManageCategories from "../views/admin/ManageCategories.vue";
+import ManageOrders from "../views/admin/ManageOrders.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";
 
@@ -81,6 +82,11 @@ const routes = [
     path: "/admin/categories",
     name: "Manage Categories",
     component: ManageCategories,
+  },
+  {
+    path: "/admin/orders",
+    name: "Manage Orders",
+    component: ManageOrders,
   },
   {
     path: "/tables",

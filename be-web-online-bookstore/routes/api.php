@@ -72,6 +72,7 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
 Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [OrdersController::class, 'createOrder']);
     Route::get('/get', [OrdersController::class, 'getUserOrders']);
+    Route::get('/getadmin', [OrdersController::class, 'getAdminOrders']);
     Route::get('/status', [OrdersController::class, 'getOrderStatus']);
     Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
 });

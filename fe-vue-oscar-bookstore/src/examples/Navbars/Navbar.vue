@@ -122,7 +122,7 @@ export default {
         <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
         </div>
         <ul class="navbar-nav justify-content-end">
-          <!-- <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+          <li class="nav-item d-xl-none ps-3 d-flex align-items-center" v-if="role === 'ADMIN'">
             <a @click="minimizeSidebar" class="p-0 nav-link text-black" id="iconNavbarSidenav">
               <div class="sidenav-toggler-inner">
                 <i class="sidenav-toggler-line bg-black"></i>
@@ -130,7 +130,7 @@ export default {
                 <i class="sidenav-toggler-line bg-black"></i>
               </div>
             </a>
-          </li> -->
+          </li>
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
             <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
