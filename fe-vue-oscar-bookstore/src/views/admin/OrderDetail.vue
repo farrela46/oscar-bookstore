@@ -82,21 +82,24 @@ export default {
     },
     async createOrder() {
       const orderData = {
+        // Data kontak dan alamat pengirim
         origin_contact_name: "Farrel",
         origin_contact_phone: "085179684772",
         origin_address: "Jl. Ahmad Yani No.85, Tepus, Sukorejo, Kec. Ngasem, Kabupaten Kediri, Jawa Timur 64129",
         origin_note: "Toko Buku Oscar",
         origin_postal_code: 64129,
         origin_area_id: "IDNP11IDNC172IDND1288IDZ64129",
+        // Data kontak dan alamat penerima
         destination_contact_name: this.address.penerima,
         destination_contact_phone: this.address.no_penerima,
         destination_address: this.address.alamat_lengkap,
         destination_postal_code: parseInt(this.address.postal_code),
         destination_area_id: this.address.selected_address_id,
+        // Detail kurir
         courier_company: this.courier.company,
         courier_type: this.courier.courier_service_code,
         delivery_type: "now",
-        metadata: {},
+        metadata: {}, // Metadata jika diperlukan
         items: this.items.map(item => ({
           name: item.buku.judul,
           description: item.buku.desc,
@@ -106,6 +109,12 @@ export default {
           width: 2,
           height: 20,
           weight: 150,
+        })),
+        // Tambahkan order_id dan item_ids untuk backend
+        order_id: this.orders.id,
+        item_ids: this.items.map(item => ({ // Mengumpulkan item_id dan quantity
+          item_id: item.buku.id,
+          quantity: item.quantity
         }))
       };
 
@@ -122,6 +131,7 @@ export default {
           text: 'Order successfully created!',
           color: 'green'
         });
+        this.retrieveDetail();
       } catch (error) {
         console.error('Error creating order:', error);
         this.$notify({
@@ -132,6 +142,7 @@ export default {
         });
       }
     },
+
     async retrieveDetail() {
       this.overlay = true;
       try {

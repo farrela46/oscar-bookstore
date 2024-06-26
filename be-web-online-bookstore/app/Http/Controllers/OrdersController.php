@@ -247,34 +247,37 @@ class OrdersController extends Controller
             'items.*.length' => 'nullable|numeric',
             'items.*.weight' => 'required|numeric',
             'items.*.width' => 'nullable|numeric',
+            'order_id' => 'required|integer',
+            'item_ids' => 'required|array',
+            'item_ids.*.item_id' => 'required|integer',
+            'item_ids.*.quantity' => 'required|integer'
         ]);
 
-        DB::beginTransaction(); 
+        DB::beginTransaction();
 
         try {
             $response = $this->biteshipService->createOrder($validated);
 
             if (isset($response['id'])) {
-                $order = Order::findOrFail($request->order_id); 
+                $order = Order::findOrFail($request->order_id);
                 $order->bsorder_id = $response['id'];
                 $order->waybill_id = $response['courier']['waybill_id'];
                 $order->status = 'delivery';
                 $order->save();
 
-               
-                foreach ($validated['items'] as $item) {
-                    $buku = Buku::where('judul', $item['id'])->firstOrFail(); // Sesuaikan cara mengambil buku
+                foreach ($request->item_ids as $item) {
+                    $buku = Buku::findOrFail($item['item_id']);
                     $buku->stok -= $item['quantity'];
                     $buku->save();
                 }
 
-                DB::commit(); 
+                DB::commit();
                 return response()->json($order, 201);
             } else {
                 throw new \Exception('Invalid response from Biteship');
             }
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
