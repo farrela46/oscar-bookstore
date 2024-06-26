@@ -372,6 +372,9 @@ export default {
                           Harga
                         </th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                          Stok
+                        </th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                           Aksi</th>
                       </tr>
                     </thead>
@@ -409,6 +412,9 @@ export default {
                         </td>
                         <td>
                           <p class="text-xs text-secondary mb-0 text-center">Rp. {{ formatPrice(item.harga) }}</p>
+                        </td>
+                        <td>
+                          <p class="text-xs text-secondary mb-0 text-center">{{ item.stok }}</p>
                         </td>
                         <td class="align-middle">
                           <span class="" style="font-size: 1rem; cursor: pointer;" @click="showProduct(item.slug)">

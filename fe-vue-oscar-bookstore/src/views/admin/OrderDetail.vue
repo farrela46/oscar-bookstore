@@ -82,7 +82,7 @@ export default {
     },
     async createOrder() {
       const orderData = {
-        origin_contact_name: "Farrel", 
+        origin_contact_name: "Farrel",
         origin_contact_phone: "085179684772",
         origin_address: "Jl. Ahmad Yani No.85, Tepus, Sukorejo, Kec. Ngasem, Kabupaten Kediri, Jawa Timur 64129",
         origin_note: "Toko Buku Oscar",
@@ -164,6 +164,8 @@ export default {
           return 'badge-success';
         case 'process':
           return 'badge-info';
+        case 'delivery':
+          return 'badge-warning text-dark';
         case 'expired':
           return 'badge-danger';
         case 'failed':
@@ -178,6 +180,8 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
+        case 'delivery':
+          return 'Dalam Pengiriman';
         case 'paid':
           return 'Pembayaran Berhasil';
         case 'expired':
@@ -352,6 +356,13 @@ export default {
                     <span>#{{ orders.transaction_id }}</span>
                   </div>
                 </div>
+                <a><strong>Nomor Resi</strong></a>
+                <div class="row ring-bayar mb-2">
+                  <div class="col-12">
+                    <span v-if="orders.waybill_id">{{ orders.waybill_id }}</span>
+                    <span else>-</span>
+                  </div>
+                </div>
                 <a><strong>Tanggal Pemesanan</strong></a>
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
@@ -385,7 +396,8 @@ export default {
                     <p>: Rp. {{ formatPrice(calculateTotalPayment()) }}</p>
                   </div>
                 </div>
-                <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100" @click="createOrder">Proses
+                <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100"
+                  @click="createOrder">Proses
                   Pesanan</button>
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>

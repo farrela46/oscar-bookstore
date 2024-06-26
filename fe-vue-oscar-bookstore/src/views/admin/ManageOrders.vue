@@ -133,6 +133,8 @@ export default {
           return 'badge-success';
         case 'process':
           return 'badge-info text-dark';
+        case 'delivery':
+          return 'badge-warning text-dark';
         case 'expired':
           return 'badge-danger';
         case 'failed':
@@ -147,6 +149,8 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
+        case 'delivery':
+          return 'On Delivery';
         case 'paid':
           return 'Pembayaran Berhasil';
         case 'expired':
@@ -178,6 +182,7 @@ export default {
                   @change="retrieveOrders">
                   <option value="" selected>Semua</option>
                   <option value="pending">Pending</option>
+                  <option value="delivery">On Delivery</option>
                   <option value="expired">Expired</option>
                   <option value="completed">Completed</option>
                 </select>
@@ -187,7 +192,8 @@ export default {
               <div class="card-header p-0 px-4 d-flex justify-content-between align-items-center">
                 <div>
                   <span><a style="font-size: 12px;"> {{ formatDate(order.created_at) }} </a></span>
-                  <p class="text-bold" style="font-size: 14px; color: black;"> <i class="fas fa-user"></i> {{ order.user.name }}</p>
+                  <p class="text-bold" style="font-size: 14px; color: black;"> <i class="fas fa-user"></i> {{
+        order.user.name }}</p>
                 </div>
                 <div>
                   <span>No. Pemesanan {{ order.id }}</span>
@@ -207,7 +213,8 @@ export default {
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <a class="text-bold" @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat Detail Pesanan</a>
+                    <a class="text-bold" @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat
+                      Detail Pesanan</a>
                   </div>
                   <div class="col-6 text-end">
                     <a>Total Pesanan: Rp {{ formatPrice(order.total_payment) }}</a>
@@ -216,7 +223,8 @@ export default {
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
-                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)" v-if="order.status === 'process'">Buat Pesanan</button>
+                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)"
+                    v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>
               </div>
             </div>

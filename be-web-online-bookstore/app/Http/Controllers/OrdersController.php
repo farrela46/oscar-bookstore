@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\Buku;
 use App\Models\Cart;
 use App\Models\Item;
 use App\Models\Order;
@@ -12,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BiteshipService;
 use App\Services\MidtransService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrdersController extends Controller
@@ -181,6 +183,43 @@ class OrdersController extends Controller
 
     //ORDERS
 
+    // public function makeOrder(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'origin_contact_name' => 'required|string',
+    //         'origin_contact_phone' => 'required|string',
+    //         'origin_address' => 'required|string',
+    //         'origin_note' => 'nullable|string',
+    //         'origin_postal_code' => 'required|integer',
+    //         'origin_area_id' => 'required|string',
+    //         'destination_contact_name' => 'required|string',
+    //         'destination_contact_phone' => 'required|string',
+    //         'destination_address' => 'required|string',
+    //         'destination_postal_code' => 'required|integer',
+    //         'destination_area_id' => 'required|string',
+    //         'courier_company' => 'required|string',
+    //         'courier_type' => 'required|string',
+    //         'delivery_type' => 'required|string',
+    //         'metadata' => 'nullable|array',
+    //         'items' => 'required|array',
+    //         'items.*.name' => 'required|string',
+    //         'items.*.description' => 'nullable|string',
+    //         'items.*.value' => 'required|numeric',
+    //         'items.*.quantity' => 'required|integer',
+    //         'items.*.height' => 'nullable|numeric',
+    //         'items.*.length' => 'nullable|numeric',
+    //         'items.*.weight' => 'required|numeric',
+    //         'items.*.width' => 'nullable|numeric',
+    //     ]);
+
+    //     try {
+    //         $response = $this->biteshipService->createOrder($validated);
+    //         return response()->json($response, 201);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
+
     public function makeOrder(Request $request)
     {
         $validated = $request->validate([
@@ -210,10 +249,32 @@ class OrdersController extends Controller
             'items.*.width' => 'nullable|numeric',
         ]);
 
+        DB::beginTransaction(); 
+
         try {
             $response = $this->biteshipService->createOrder($validated);
-            return response()->json($response, 201);
+
+            if (isset($response['id'])) {
+                $order = Order::findOrFail($request->order_id); 
+                $order->bsorder_id = $response['id'];
+                $order->waybill_id = $response['courier']['waybill_id'];
+                $order->status = 'delivery';
+                $order->save();
+
+               
+                foreach ($validated['items'] as $item) {
+                    $buku = Buku::where('judul', $item['id'])->firstOrFail(); // Sesuaikan cara mengambil buku
+                    $buku->stok -= $item['quantity'];
+                    $buku->save();
+                }
+
+                DB::commit(); 
+                return response()->json($order, 201);
+            } else {
+                throw new \Exception('Invalid response from Biteship');
+            }
         } catch (\Exception $e) {
+            DB::rollBack(); 
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

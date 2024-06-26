@@ -15,8 +15,10 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->string('address_id');
             $table->uuid('transaction_id')->unique();
+            $table->string('bsorder_id');
             $table->decimal('total_payment', 10, 2);
             $table->decimal('shipping_cost', 10, 2);
+            $table->string('waybill_id');
             $table->string('status')->default('pending');
             $table->json('courier_details');
             $table->json('items');
