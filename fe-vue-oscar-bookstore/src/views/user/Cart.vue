@@ -273,7 +273,7 @@ export default {
     </div>
   </div>
 </template>
-<style>
+<style scoped>
 .user-select-none {
   user-select: none;
 }

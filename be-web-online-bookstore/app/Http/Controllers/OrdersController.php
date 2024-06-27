@@ -99,7 +99,7 @@ class OrdersController extends Controller
 
         $now = Carbon::now();
         foreach ($orders as $order) {
-            if ($now->diffInDays($order->created_at) > 1 && $order->status !== 'expired') {
+            if ($order->status === 'pending' && $now->diffInHours($order->created_at) > 24) {
                 $order->status = 'expired';
                 $order->save();
             }
