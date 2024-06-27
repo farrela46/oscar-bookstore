@@ -18,6 +18,8 @@ export default {
       address: {},
       dialog: false,
       selectedCourier: null,
+      dialogTrack: false,
+      riwayat: []
     };
   },
 
@@ -25,6 +27,7 @@ export default {
     await this.retrieveDetail();
     if (this.orders && this.orders.bsorder_id) {
       await this.retrieveBsOrder();
+      this.overlay = false;
     }
   },
   created() {
@@ -58,6 +61,11 @@ export default {
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
+    formatDateCourier(date) {
+      if (!date) return "";
+      const options = {  day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(date).toLocaleDateString('id-ID', options);
+    },
     updateTotalPayment() {
       this.totalPayment = this.orders.reduce((total, order) => {
         return order.selected ? total + order.totalPrice : total;
@@ -85,14 +93,12 @@ export default {
     },
     async createOrder() {
       const orderData = {
-        // Data kontak dan alamat pengirim
         origin_contact_name: "Farrel",
         origin_contact_phone: "085179684772",
         origin_address: "Jl. Ahmad Yani No.85, Tepus, Sukorejo, Kec. Ngasem, Kabupaten Kediri, Jawa Timur 64129",
         origin_note: "Toko Buku Oscar",
         origin_postal_code: 64129,
         origin_area_id: "IDNP11IDNC172IDND1288IDZ64129",
-        // Data kontak dan alamat penerima
         destination_contact_name: this.address.penerima,
         destination_contact_phone: this.address.no_penerima,
         destination_address: this.address.alamat_lengkap,
@@ -102,7 +108,7 @@ export default {
         courier_company: this.courier.company,
         courier_type: this.courier.courier_service_code,
         delivery_type: "now",
-        metadata: {}, // Metadata jika diperlukan
+        metadata: {}, 
         items: this.items.map(item => ({
           name: item.buku.judul,
           description: item.buku.desc,
@@ -113,9 +119,9 @@ export default {
           height: 20,
           weight: 150,
         })),
-        // Tambahkan order_id dan item_ids untuk backend
+
         order_id: this.orders.id,
-        item_ids: this.items.map(item => ({ // Mengumpulkan item_id dan quantity
+        item_ids: this.items.map(item => ({ 
           item_id: item.buku.id,
           quantity: item.quantity
         }))
@@ -181,6 +187,7 @@ export default {
         });
 
         this.orderDetails = response.data;
+        this.riwayat = response.data.courier.history
       } catch (error) {
         console.error('Error retrieving order details:', error);
         this.$notify({
@@ -229,6 +236,20 @@ export default {
           return 'Tidak Diketahui';
       }
     },
+    getStatusCourier(status) {
+      switch (status) {
+        case 'allocated':
+          return 'Allocated';
+        case 'picking_up':
+          return 'Picking Up';
+        case 'picked':
+          return 'Picked';
+        case 'dropping_off':
+          return 'Dropping Off';
+        default:
+          return 'Belum Diproses';
+      }
+    }
   },
 };
 </script>
@@ -436,10 +457,53 @@ export default {
                 <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100"
                   @click="createOrder">Proses
                   Pesanan</button>
-                <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
-                    class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
+                <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
+                    class="fas fa-info-circle mx-2"></i>
+                  Riwayat Pengiriman </button>
               </div>
             </div>
+            <v-dialog v-model="dialogTrack" max-width="788px">
+              <v-card style="border-radius: 10px;">
+                <v-card-title>
+                  <span><a class="text-bold">Riwayat Pengiriman </a></span>
+                </v-card-title>
+                <v-card-text>
+                  <div class="container" style="font-family: sans-serif">
+                    <div class="wrapper">
+                      <a class="text-black" style="font-size: 16px;">Status Pengiriman</a>
+                      <div class="row p-2">
+                        <div class="col-12 border p-2" style="border-radius: 20px;">
+                          <div class="row text-end" v-for="item in riwayat" :key="item.note">
+                            <div class="col-md-6">
+                              {{ formatDateCourier(item.updated_at) }} &#x2022;
+                            </div>
+                            <div class="col-md-6">
+                              <div class="row text-bold">
+                                {{ getStatusCourier(item.status) }}
+                              </div>
+                              <div class="row">
+                                {{ item.note }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
+
+
+            <!-- <div class="card mt-2">
+              <div class="card-body">
+                <div class="row">
+                  <a class="text-bold text-dark ps-3" style="font-size: 16px;">Riwayat Pengiriman</a>
+                </div>
+                <hr>
+              </div>
+
+            </div> -->
           </div>
         </div>
       </div>
