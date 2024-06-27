@@ -282,4 +282,16 @@ class OrdersController extends Controller
         }
     }
 
+    public function retrieveAdminOrder($bsorderId)
+    {
+        try {
+            
+            $orderDetails = $this->biteshipService->retrieveOrder($bsorderId);
+            
+            return response()->json($orderDetails, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

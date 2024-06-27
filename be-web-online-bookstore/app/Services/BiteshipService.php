@@ -17,10 +17,10 @@ class BiteshipService
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $this->apiKey,
         ])->get('https://api.biteship.com/v1/maps/areas', [
-            'countries' => 'ID',
-            'input' => $input,
-            'type' => 'single',
-        ]);
+                    'countries' => 'ID',
+                    'input' => $input,
+                    'type' => 'single',
+                ]);
 
         if ($response->successful()) {
             return $response->json();
@@ -55,6 +55,20 @@ class BiteshipService
         }
 
         throw new \Exception('Error creating order in Biteship: ' . $response->body());
+    }
+
+    public function retrieveOrder($orderId)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $this->apiKey,
+            'Content-Type' => 'application/json',
+        ])->get("https://api.biteship.com/v1/orders/{$orderId}");
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        throw new \Exception('Error retrieving order from Biteship: ' . $response->body());
     }
 }
 

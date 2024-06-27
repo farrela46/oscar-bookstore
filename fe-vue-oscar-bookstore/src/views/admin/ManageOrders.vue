@@ -13,11 +13,13 @@ export default {
     return {
       overlay: false,
       orders: [],
-      selectedFilter: ''
+      selectedFilter: '',
+      orderDetails:''
     };
   },
   mounted() {
     this.retrieveOrders();
+    // this.retrieveBsOrder();
   },
   created() {
     this.store = this.$store;
@@ -76,6 +78,7 @@ export default {
         this.overlay = false;
       }
     },
+    
     lihatDetail(order) {
       this.$router.push('/admin/orders/' + order.transaction_id)
     },

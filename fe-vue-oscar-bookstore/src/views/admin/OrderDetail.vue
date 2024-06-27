@@ -21,8 +21,11 @@ export default {
     };
   },
 
-  mounted() {
-    this.retrieveDetail();
+  async mounted() {
+    await this.retrieveDetail();
+    if (this.orders && this.orders.bsorder_id) {
+      await this.retrieveBsOrder();
+    }
   },
   created() {
     this.store = this.$store;
@@ -162,6 +165,29 @@ export default {
           title: 'Notif',
           text: 'Anda belum menambahkan barang',
           color: 'green'
+        });
+      } finally {
+        this.overlay = false;
+      }
+    },
+    async retrieveBsOrder() {
+      this.overlay = true;
+      console.log(this.orders.bsorder_id)
+      try {
+        const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.orderDetails = response.data;
+      } catch (error) {
+        console.error('Error retrieving order details:', error);
+        this.$notify({
+          type: 'danger',
+          title: 'Error',
+          text: 'Failed to retrieve order details!',
+          color: 'red'
         });
       } finally {
         this.overlay = false;

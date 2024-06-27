@@ -76,6 +76,7 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
     Route::get('/status', [OrdersController::class, 'getOrderStatus']);
     Route::post('/create', [OrdersController::class, 'makeOrder']);
     Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
+    Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
 });
 
 Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
