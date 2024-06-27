@@ -19,7 +19,8 @@ export default {
       dialog: false,
       selectedCourier: null,
       dialogTrack: false,
-      riwayat: []
+      riwayat: [],
+      courierTrack: ''
     };
   },
 
@@ -63,7 +64,7 @@ export default {
     },
     formatDateCourier(date) {
       if (!date) return "";
-      const options = {  day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
       return new Date(date).toLocaleDateString('id-ID', options);
     },
     updateTotalPayment() {
@@ -108,7 +109,7 @@ export default {
         courier_company: this.courier.company,
         courier_type: this.courier.courier_service_code,
         delivery_type: "now",
-        metadata: {}, 
+        metadata: {},
         items: this.items.map(item => ({
           name: item.buku.judul,
           description: item.buku.desc,
@@ -121,7 +122,7 @@ export default {
         })),
 
         order_id: this.orders.id,
-        item_ids: this.items.map(item => ({ 
+        item_ids: this.items.map(item => ({
           item_id: item.buku.id,
           quantity: item.quantity
         }))
@@ -188,6 +189,7 @@ export default {
 
         this.orderDetails = response.data;
         this.riwayat = response.data.courier.history
+        this.courierTrack = response.data.courier
       } catch (error) {
         console.error('Error retrieving order details:', error);
         this.$notify({
@@ -246,10 +248,59 @@ export default {
           return 'Picked';
         case 'dropping_off':
           return 'Dropping Off';
+        case 'return_in_transit':
+          return 'Return In Transit';
+        case 'delivered':
+          return 'Delivered';
+        case 'on_hold':
+          return 'On Hold';
+        case 'rejected':
+          return 'Rejected';
+        case 'courier_not_found':
+          return 'Courier Not Found';
+        case 'returned':
+          return 'Returned';
+        case 'cancelled':
+          return 'Cancelled';
+        case 'disposed':
+          return 'Disposed';
         default:
           return 'Belum Diproses';
       }
+    },
+    getNoteDescription(status) {
+      switch (status) {
+        case 'confirmed':
+          return 'Pesanan telah dikonfirmasi. Mencari driver terdekat untuk pick up.';
+        case 'allocated':
+          return 'Kurir telah dialokasikan, menunggu pick up.';
+        case 'picking_up':
+          return 'Kurir menuju lokasi pick up.';
+        case 'picked':
+          return 'Pesanan telah diambil dan siap dikemas.';
+        case 'dropping_off':
+          return 'Pesanan Anda dalam proses pengiriman.';
+        case 'return_in_transit':
+          return 'Pesanan dalam perjalanan kembali ke pengirim.';
+        case 'delivered':
+          return 'Pesanan telah terkirim.';
+        case 'on_hold':
+          return 'Pengiriman Anda sedang ditahan sementara. Kami akan mengirim item Anda setelah masalah terselesaikan.';
+        case 'rejected':
+          return 'Pengiriman Anda telah ditolak. Silakan hubungi Biteship untuk informasi lebih lanjut.';
+        case 'courier_not_found':
+          return 'Pengiriman Anda dibatalkan karena tidak ada kurir yang tersedia saat ini.';
+        case 'returned':
+          return 'Pesanan berhasil dikembalikan.';
+        case 'cancelled':
+          return 'Pesanan dibatalkan.';
+        case 'disposed':
+          return 'Pesanan berhasil dibuang.';
+        default:
+          return 'Status tidak dikenal.';
+      }
     }
+
   },
 };
 </script>
@@ -272,55 +323,71 @@ export default {
                   <div class="row">
                     <div class="row">
                       <div class="col">
-                        <a>Nama Penerima</a>
+                        <a class="text-truncate text-bold">Penerima</a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.penerima }} </a>
+                        <a> {{ address.penerima }} </a>
                       </div>
                       <div class="col">
-                        <a>Nomor Penerima </a>
+                        <a class="text-truncate text-bold">No. Penerima </a>
                       </div>
                       <div class="col">
-                        <a>: {{ address.no_penerima }}</a>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="row">
-                      <div class="col">
-                        <a> Provinsi </a>
-                      </div>
-                      <div class="col">
-                        <a> : {{ address.provinsi }} </a>
-                      </div>
-                      <div class="col">
-                        Kota
-                      </div>
-                      <div class="col">
-                        <a> : {{ address.kota }} </a>
+                        <a>{{ address.no_penerima }}</a>
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="row">
                       <div class="col">
-                        <a> Kecamatan </a>
+                        <a class="text-bold"> Alamat Lengkap </a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.kecamatan }} </a>
+                        <a> {{ address.alamat_lengkap }} </a>
                       </div>
                       <div class="col">
-                        <a> Kode Pos </a>
+                        <a class="text-bold">Kota</a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.postal_code }} </a>
+                        <a> {{ address.kota }} </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="row">
+                      <div class="col">
+                        <a class="text-bold"> Provinsi </a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.provinsi }} </a>
+                      </div>
+                      <div class="col">
+                        <a class="text-bold">Kode Pos</a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.postal_code }} </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="row">
+                      <div class="col">
+                        <a class="text-bold"> Kecamatan </a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.kecamatan }} </a>
+                      </div>
+                      <div class="col">
+                        <a class="text-bold"> Label </a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.label }} </a>
                       </div>
                     </div>
                   </div>
                   <div class="row mb-2 mt-4 p-2">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
-                        <div class="row align-items-center py-2">
+                        <div class="row align-items-center py-2" >
                           <div class="col-3 d-flex align-items-center">
                             <img v-if="courier.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
                               class="img-fluid" style="width: 50px; margin-right: 20px;" />
@@ -332,7 +399,8 @@ export default {
                               <strong class="d-block d-sm-inline">Jenis Layanan</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">{{ courier.courier_name }} {{
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.courier_name }} {{
         courier.courier_service_name }}</a>
                             </div>
                           </div>
@@ -341,7 +409,8 @@ export default {
                               <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">{{ courier.duration }}</a>
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.duration }}</a>
                             </div>
                           </div>
                           <div class="col-2">
@@ -349,7 +418,8 @@ export default {
                               <strong class="d-block d-sm-inline">Tarif</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">Rp. {{ formatPrice(courier.price) }}</a>
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">Rp. {{ formatPrice(courier.price) }}</a>
                             </div>
                           </div>
                         </div>
@@ -379,7 +449,7 @@ export default {
                               }}</a>
                           </div>
                           <div class="row">
-                            <a class="d-inline" style="font-size: 12px;"><span class="mx-2">{{ item.quantity }}
+                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{ item.quantity }}
                                 barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>
@@ -459,30 +529,74 @@ export default {
                   Pesanan</button>
                 <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
                     class="fas fa-info-circle mx-2"></i>
-                  Riwayat Pengiriman </button>
+                  Lacak Pengiriman </button>
               </div>
             </div>
             <v-dialog v-model="dialogTrack" max-width="788px">
               <v-card style="border-radius: 10px;">
                 <v-card-title>
-                  <span><a class="text-bold">Riwayat Pengiriman </a></span>
+                  <span><a class="text-bold">Lacak Pengiriman </a></span>
                 </v-card-title>
                 <v-card-text>
                   <div class="container" style="font-family: sans-serif">
                     <div class="wrapper">
+                      <div class="row p-2">
+                        <div class="col-sm-12 border" style="border-radius: 10px;">
+                          <div>
+                            <div class="row align-items-center py-2">
+                              <div class="col-3 d-flex align-items-center">
+                                <img v-if="courierTrack.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
+                                  class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                                <img v-if="courierTrack.company === 'sicepat'" src="../../assets/img/sicepat.png"
+                                  alt="sicepat" class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                              </div>
+                              <div class="col-3 text-dark">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Kurir</strong>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courierTrack.name }} </a>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courierTrack.phone }}</a>
+                                </div>
+                              </div>
+                              <div class="col-4">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.duration }}</a>
+                                </div>
+                              </div>
+                              <div class="col-2">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Foto</strong>
+                                </div>
+                                <div class="row">
+                                  <img class="d-block d-sm-inline" style="max-width: 80px" :src="courierTrack.driver_photo_url">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <a class="text-black" style="font-size: 16px;">Status Pengiriman</a>
                       <div class="row p-2">
-                        <div class="col-12 border p-2" style="border-radius: 20px;">
-                          <div class="row text-end" v-for="item in riwayat" :key="item.note">
-                            <div class="col-md-6">
+                        <div class="col-12 border py-2 px-2" style="border-radius: 20px;">
+                          <div class="row text-end text-mobile" v-for="item in riwayat" :key="item.note">
+                            <div class="col-md-6 col-6">
                               {{ formatDateCourier(item.updated_at) }} &#x2022;
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-6">
                               <div class="row text-bold">
                                 {{ getStatusCourier(item.status) }}
                               </div>
-                              <div class="row">
-                                {{ item.note }}
+                              <div class="row text-start">
+                                {{ getNoteDescription(item.status) }}
                               </div>
                             </div>
                           </div>
@@ -547,6 +661,10 @@ a {
   .row img {
     width: 60px;
     margin-right: 10px;
+  }
+
+  .text-mobile {
+    font-size: 12px;
   }
 }
 </style>

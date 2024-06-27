@@ -179,52 +179,68 @@ export default {
                   <div class="row">
                     <div class="row">
                       <div class="col">
-                        <a>Nama Penerima</a>
+                        <a class="text-truncate text-bold">Penerima</a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.penerima }} </a>
+                        <a> {{ address.penerima }} </a>
                       </div>
                       <div class="col">
-                        <a>Nomor Penerima </a>
+                        <a class="text-truncate text-bold">No. Penerima </a>
                       </div>
                       <div class="col">
-                        <a>: {{ address.no_penerima }}</a>
+                        <a>{{ address.no_penerima }}</a>
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="row">
                       <div class="col">
-                        <a> Provinsi </a>
+                        <a class="text-bold"> Alamat Lengkap </a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.provinsi }} </a>
+                        <a> {{ address.alamat_lengkap }} </a>
                       </div>
                       <div class="col">
-                        Kota
+                        <a class="text-bold">Kota</a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.kota }} </a>
+                        <a> {{ address.kota }} </a>
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="row">
                       <div class="col">
-                        <a> Kecamatan </a>
+                        <a class="text-bold"> Provinsi </a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.kecamatan }} </a>
+                        <a> {{ address.provinsi }} </a>
                       </div>
                       <div class="col">
-                        <a> Kode Pos </a>
+                        <a class="text-bold">Kode Pos</a>
                       </div>
                       <div class="col">
-                        <a> : {{ address.postal_code }} </a>
+                        <a> {{ address.postal_code }} </a>
                       </div>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4 p-2" >
+                  <div class="row">
+                    <div class="row">
+                      <div class="col">
+                        <a class="text-bold"> Kecamatan </a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.kecamatan }} </a>
+                      </div>
+                      <div class="col">
+                        <a class="text-bold"> Label </a>
+                      </div>
+                      <div class="col">
+                        <a> {{ address.label }} </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mb-2 mt-4 p-2">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
@@ -239,7 +255,8 @@ export default {
                               <strong class="d-block d-sm-inline">Jenis Layanan</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">{{ courier.courier_name }} {{
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.courier_name }} {{
         courier.courier_service_name }}</a>
                             </div>
                           </div>
@@ -248,7 +265,8 @@ export default {
                               <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">{{ courier.duration }}</a>
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.duration }}</a>
                             </div>
                           </div>
                           <div class="col-2">
@@ -256,7 +274,8 @@ export default {
                               <strong class="d-block d-sm-inline">Tarif</strong>
                             </div>
                             <div class="row">
-                              <a class="d-block d-sm-inline">Rp. {{ formatPrice(courier.price) }}</a>
+                              <a class="d-block d-sm-inline" style="
+                        color: black;">Rp. {{ formatPrice(courier.price) }}</a>
                             </div>
                           </div>
                         </div>
@@ -266,7 +285,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="row" >
+            <div class="row">
               <div class="mb-4 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
@@ -282,10 +301,12 @@ export default {
                       <div class="row">
                         <div class="col-12">
                           <div class="row">
-                            <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul }}</a>
+                            <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul
+                              }}</a>
                           </div>
                           <div class="row">
-                            <a class="d-inline" style="font-size: 12px;"><span class="mx-2">{{ item.quantity }} barang</span> X Rp {{
+                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{ item.quantity }}
+                                barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>
                         </div>
@@ -371,6 +392,7 @@ export default {
 a {
   text-decoration: none;
   color: unset;
+
 }
 
 .large-checkbox {
@@ -400,6 +422,10 @@ a {
   .row img {
     width: 60px;
     margin-right: 10px;
+  }
+
+  .text-mobile {
+    font-size: 12px;
   }
 }
 </style>
