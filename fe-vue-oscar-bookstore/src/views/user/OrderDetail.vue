@@ -579,7 +579,7 @@ export default {
                 </v-card-title>
                 <v-card-text>
                   <div style="font-family: sans-serif">
-                    <div class="wrapper" v-if="couricompanyerTrack && courierTrack.company && riwayat.length > 0">
+                    <div class="wrapper" v-if="courierTrack && courierTrack.company && riwayat.length > 0">
                       <div class="row p-2">
                         <div class="col-sm-12 border" style="border-radius: 10px;">
                           <div>
