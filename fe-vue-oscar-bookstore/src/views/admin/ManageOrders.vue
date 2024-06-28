@@ -193,9 +193,13 @@ export default {
                   @change="retrieveOrders">
                   <option value="" selected>Semua</option>
                   <option value="pending">Pending</option>
-                  <option value="delivery">On Delivery</option>
+                  <option value="process">Process</option>
+                  <option value="packing">Dikemas</option>
+                  <option value="delivery">Sedang Dikirim</option>
+                  <option value="delivered">Terkirim</option>
+                  <option value="finished">Selesai</option>
                   <option value="expired">Expired</option>
-                  <option value="completed">Completed</option>
+             
                 </select>
               </div>
             </div>

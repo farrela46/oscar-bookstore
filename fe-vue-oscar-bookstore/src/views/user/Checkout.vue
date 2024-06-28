@@ -314,7 +314,7 @@ export default {
       <div class="container">
         <div class="row">
           <div class="col-lg-8">
-            <div class="row mb-4">
+            <div class="row mb-2">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Pilih Alamat <i class="fas fa-plus fa-md mx-4"
@@ -382,7 +382,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="row mb-4" v-if="selectedAddressId">
+            <div class="row mb-2" v-if="selectedAddressId">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Pilih Kurir</h5>
@@ -434,7 +434,7 @@ export default {
               </div>
             </div>
             <div class="row">
-              <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
+              <div v-for="(order, index) in orders" :key="index" class="mb-2 card">
                 <div class="card-body">
                   <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
                   <div class="row">

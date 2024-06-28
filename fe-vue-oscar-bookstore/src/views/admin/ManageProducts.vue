@@ -375,6 +375,9 @@ export default {
                           Stok
                         </th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                          Sold
+                        </th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                           Aksi</th>
                       </tr>
                     </thead>
@@ -415,6 +418,9 @@ export default {
                         </td>
                         <td>
                           <p class="text-xs text-secondary mb-0 text-center">{{ item.stok }}</p>
+                        </td>
+                        <td>
+                          <p class="text-xs text-secondary mb-0 text-center">{{ item.sold }}</p>
                         </td>
                         <td class="align-middle">
                           <span class="" style="font-size: 1rem; cursor: pointer;" @click="showProduct(item.slug)">

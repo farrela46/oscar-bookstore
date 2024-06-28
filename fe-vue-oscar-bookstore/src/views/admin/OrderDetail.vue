@@ -562,7 +562,8 @@ export default {
                 <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100"
                   @click="createOrder">Proses
                   Pesanan</button>
-                <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
+                <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"
+                  v-if="orders.status != 'pending' && orders.status != 'process'"><i
                     class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
               </div>
@@ -574,7 +575,7 @@ export default {
                 </v-card-title>
                 <v-card-text>
                   <div style="font-family: sans-serif">
-                    <div class="wrapper">
+                    <div class="wrapper" v-if="couricompanyerTrack && courierTrack.company && riwayat.length > 0">
                       <div class="row p-2">
                         <div class="col-sm-12 border" style="border-radius: 10px;">
                           <div>
@@ -638,6 +639,10 @@ export default {
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div v-else class="col-sm-12 text-center"
+                      style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                      <p class="text-dark" style="margin: 0; font-size: 18px;">Pesananmu sedang di proses</p>
                     </div>
                   </div>
                 </v-card-text>

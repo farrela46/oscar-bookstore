@@ -566,8 +566,9 @@ export default {
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
                   Ulas & Konfirmasi </button>
-                <button v-if="orders.status != 'pending'" class="btn btn-primary btn-sm w-100"
-                  @click="dialogTrack = true"><i class="fas fa-info-circle mx-2"></i>
+                <button v-if="orders.status != 'pending' && orders.status != 'process'"
+                  class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
+                    class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
               </div>
             </div>
@@ -578,7 +579,7 @@ export default {
                 </v-card-title>
                 <v-card-text>
                   <div style="font-family: sans-serif">
-                    <div class="wrapper">
+                    <div class="wrapper" v-if="couricompanyerTrack && courierTrack.company && riwayat.length > 0">
                       <div class="row p-2">
                         <div class="col-sm-12 border" style="border-radius: 10px;">
                           <div>
@@ -643,6 +644,10 @@ export default {
                         </div>
                       </div>
                     </div>
+                    <div v-else class="col-sm-12 text-center"
+                      style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                      <p class="text-dark" style="margin: 0; font-size: 18px;">Pesananmu sedang di proses</p>
+                    </div>
                   </div>
                 </v-card-text>
                 <v-card-actions>
@@ -677,7 +682,7 @@ export default {
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
         item.buku.judul
-                                      }}</a>
+      }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">
@@ -699,13 +704,12 @@ export default {
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
-                    s @click="dialogReview = false">Close
+                    @click="dialogReview = false">Close
                   </button>
                   <button type="button" class="btn btn-sm btn-primary" @click="submitReviews"><i
                       class="far fa-star"></i> Confirm Review

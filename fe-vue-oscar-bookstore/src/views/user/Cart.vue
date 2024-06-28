@@ -230,7 +230,7 @@ export default {
             </div>
           </div>
           <div class="col-lg-4 d-none d-lg-block">
-            <div class="card sticky-top" style="top: 20px; z-index: -1;">
+            <div class="card sticky-top" style="top: 20px; z-index: 1;">
               <div class="card-body">
                 <h5 class="card-title">Rincian Belanja</h5>
                 <p>Ringkasan Pembayaran</p>
