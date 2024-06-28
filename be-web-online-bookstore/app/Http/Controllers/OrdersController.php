@@ -293,23 +293,22 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    public function makeDelivery(Request $request)
+    public function updateOrderStatus(Request $request)
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:orders,id',
+            'status' => 'required|string|in:delivery,delivered,finished'
         ]);
 
         try {
-           
             $order = Order::findOrFail($validated['order_id']);
 
-            $order->status = 'delivery';
+            $order->status = $validated['status'];
             $order->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order status updated to delivery',
+                'message' => 'Order status updated to ' . $validated['status'],
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

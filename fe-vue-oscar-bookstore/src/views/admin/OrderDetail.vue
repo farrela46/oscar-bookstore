@@ -191,9 +191,13 @@ export default {
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
 
-        const latestStatus = this.orderDetails.courier.history.slice(-1)[0];
-        if (latestStatus && latestStatus.status === 'dropping_off') {
-          await this.updateOrderStatusToDelivery(this.orders.id);
+        const latestStatus = this.riwayat.slice(-1)[0];
+        if (latestStatus) {
+          if (latestStatus.status === 'dropping_off') {
+            await this.updateOrderStatus(this.orders.id, 'delivery');
+          } else if (latestStatus.status === 'delivered') {
+            await this.updateOrderStatus(this.orders.id, 'delivered');
+          }
         }
 
       } catch (error) {
@@ -208,25 +212,24 @@ export default {
         this.overlay = false;
       }
     },
-    async updateOrderStatusToDelivery(orderId) {
+    async updateOrderStatus(orderId, status) {
       try {
-        const response = await axios.post(`${BASE_URL}/order/delivery`, {
-          order_id: orderId
+        const response = await axios.post(`${BASE_URL}/order/update-status`, {
+          order_id: orderId,
+          status: status
         }, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
-        console.log(response)
-        this.retrieveDetail();
-        
-        
+        console.log(response);
+        this.retrieveDetail(); 
       } catch (error) {
-        console.error('Error updating order status to delivery:', error);
+        console.error(`Error updating order status to ${status}:`, error);
         this.$notify({
           type: 'danger',
           title: 'Error',
-          text: 'Failed to update order status to delivery!',
+          text: `Failed to update order status to ${status}!`,
           color: 'red'
         });
       }
@@ -350,7 +353,7 @@ export default {
       <div class="container">
         <div class="row" v-if="courier">
           <div class="col-lg-8">
-            <div class="row mb-4">
+            <div class="row mb-2">
               <div class="card">
                 <a class="mt-4" style="font-size: 20px; font-weight: bold; color:black"> Alamat </a>
                 <div style="font-size: 14px;">
@@ -465,7 +468,7 @@ export default {
               </div>
             </div>
             <div class="row">
-              <div class="mb-4 card" v-for="(item, index) in items" :key="index">
+              <div class="mb-2 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
                   <div class="row">
