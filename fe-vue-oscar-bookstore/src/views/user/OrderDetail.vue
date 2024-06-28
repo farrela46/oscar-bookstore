@@ -128,14 +128,18 @@ export default {
     getStatusBadge(status) {
       switch (status) {
         case 'pending':
-          return 'badge-warning text-dark';
+          return 'badge-danger text-dark';
         case 'paid':
           return 'badge-success';
         case 'process':
-          return 'badge-info';
+          return 'badge-info text-dark';
+        case 'packing':
+          return 'badge-info text-dark';
+        case 'delivery':
+          return 'badge-warning text-dark';
+        case 'delivered':
+          return 'badge-success text-dark';
         case 'expired':
-          return 'badge-danger';
-        case 'failed':
           return 'badge-danger';
         default:
           return 'badge-secondary';
@@ -147,8 +151,14 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
-        case 'paid':
-          return 'Pembayaran Berhasil';
+        case 'packing':
+          return 'Pesanan Dikemas';
+        case 'delivery':
+          return 'Sedang Dikirim';
+        case 'delivered':
+          return 'Telah Terikirim';
+        case 'finish':
+          return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
         case 'failed':
@@ -305,7 +315,8 @@ export default {
                               }}</a>
                           </div>
                           <div class="row">
-                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{ item.quantity }}
+                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
+        item.quantity }}
                                 barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>

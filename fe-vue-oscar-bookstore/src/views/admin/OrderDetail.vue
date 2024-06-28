@@ -93,6 +93,7 @@ export default {
       return totalPrice + shippingCost;
     },
     async createOrder() {
+      this.overlay = true;
       const orderData = {
         origin_contact_name: "Farrel",
         origin_contact_phone: "085179684772",
@@ -150,6 +151,8 @@ export default {
           text: 'Failed to create order!',
           color: 'red'
         });
+      } finally {
+        this.overlay = false;
       }
     },
 
