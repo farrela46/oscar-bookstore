@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\OrdersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukusController;
 use App\Http\Controllers\CartsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
@@ -78,6 +79,10 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
     Route::post('/update-status', [OrdersController::class, 'UpdateOrderStatus']);
     Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
     Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
+});
+
+Route::prefix('/review')->middleware('auth:sanctum')->group(function () {
+    Route::post('/store', [ReviewsController::class, 'store']);
 });
 
 Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
