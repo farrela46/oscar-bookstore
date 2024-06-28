@@ -72,16 +72,6 @@ export default {
         return order.selected ? total + order.totalPrice : total;
       }, 0);
     },
-    selectCourier(rate) {
-      this.selectedCourier = rate;
-    },
-    searchWithDelay() {
-      this.loadingRegist = true;
-      if (this.searchTimeout) {
-        clearTimeout(this.searchTimeout);
-      }
-      this.searchTimeout = setTimeout(this.searchAddress, 2000);
-    },
     calculateTotalPrice() {
       return this.items.reduce((total, item) => {
         return total + parseFloat(item.price);
@@ -268,7 +258,7 @@ export default {
         case 'delivery':
           return 'Sedang Dikirim';
         case 'delivered':
-          return 'Telah Terikirim';
+          return 'Telah Terkirim';
         case 'finish':
           return 'Pesanan Selesai';
         case 'expired':
@@ -341,7 +331,6 @@ export default {
           return 'Status tidak dikenal.';
       }
     }
-
   },
 };
 </script>
@@ -577,7 +566,7 @@ export default {
             <v-dialog v-model="dialogTrack" max-width="788px">
               <v-card style="border-radius: 10px;">
                 <v-card-title>
-                  <span><a class="text-bold">Lacak Pengiriman </a></span>
+                  <span><a class="text-bold text-dark">Lacak Pengiriman </a></span>
                 </v-card-title>
                 <v-card-text>
                   <div class="container" style="font-family: sans-serif">
@@ -627,7 +616,7 @@ export default {
                           </div>
                         </div>
                       </div>
-                      <a class="text-black" style="font-size: 16px;">Status Pengiriman</a>
+                      <a class="text-dark" style="font-size: 16px;">Status Pengiriman</a>
                       <div class="row p-2">
                         <div class="col-12 border py-2 px-2" style="border-radius: 20px;">
                           <div class="row text-end text-mobile" v-for="item in riwayat" :key="item.note">

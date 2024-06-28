@@ -18,11 +18,19 @@ export default {
       address: {},
       dialog: false,
       selectedCourier: null,
+      dialogTrack: false,
+      orderDetails: '',
+      riwayat: [],
+      courierTrack: ''
     };
   },
 
-  mounted() {
-    this.retrieveDetail();
+  async mounted() {
+    await this.retrieveDetail();
+    if (this.orders && this.orders.bsorder_id) {
+      await this.retrieveBsOrder();
+      this.overlay = false;
+    }
   },
   created() {
     this.store = this.$store;
@@ -55,20 +63,15 @@ export default {
     formatDate(data_date) {
       return moment.utc(data_date).format('YYYY-MM-DD')
     },
+    formatDateCourier(date) {
+      if (!date) return "";
+      const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(date).toLocaleDateString('id-ID', options);
+    },
     updateTotalPayment() {
       this.totalPayment = this.orders.reduce((total, order) => {
         return order.selected ? total + order.totalPrice : total;
       }, 0);
-    },
-    selectCourier(rate) {
-      this.selectedCourier = rate;
-    },
-    searchWithDelay() {
-      this.loadingRegist = true;
-      if (this.searchTimeout) {
-        clearTimeout(this.searchTimeout);
-      }
-      this.searchTimeout = setTimeout(this.searchAddress, 2000);
     },
     calculateTotalPrice() {
       return this.items.reduce((total, item) => {
@@ -125,6 +128,63 @@ export default {
         this.overlay = false;
       }
     },
+    async retrieveBsOrder() {
+      this.overlay = true;
+      console.log(this.orders.bsorder_id)
+      try {
+        const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.orderDetails = response.data;
+        this.riwayat = response.data.courier.history
+        this.courierTrack = response.data.courier
+
+        const latestStatus = this.riwayat.slice(-1)[0];
+        if (latestStatus) {
+          if (latestStatus.status === 'dropping_off') {
+            await this.updateOrderStatus(this.orders.id, 'delivery');
+          } else if (latestStatus.status === 'delivered') {
+            await this.updateOrderStatus(this.orders.id, 'delivered');
+          }
+        }
+
+      } catch (error) {
+        console.error('Error retrieving order details:', error);
+        this.$notify({
+          type: 'danger',
+          title: 'Error',
+          text: 'Failed to retrieve order details!',
+          color: 'red'
+        });
+      } finally {
+        this.overlay = false;
+      }
+    },
+    async updateOrderStatus(orderId, status) {
+      try {
+        const response = await axios.post(`${BASE_URL}/order/update-status`, {
+          order_id: orderId,
+          status: status
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        console.log(response);
+        this.retrieveDetail();
+      } catch (error) {
+        console.error(`Error updating order status to ${status}:`, error);
+        this.$notify({
+          type: 'danger',
+          title: 'Error',
+          text: `Failed to update order status to ${status}!`,
+          color: 'red'
+        });
+      }
+    },
     getStatusBadge(status) {
       switch (status) {
         case 'pending':
@@ -156,7 +216,7 @@ export default {
         case 'delivery':
           return 'Sedang Dikirim';
         case 'delivered':
-          return 'Telah Terikirim';
+          return 'Telah Terkirim';
         case 'finish':
           return 'Pesanan Selesai';
         case 'expired':
@@ -167,7 +227,70 @@ export default {
           return 'Tidak Diketahui';
       }
     },
+    getStatusCourier(status) {
+      switch (status) {
+        case 'allocated':
+          return 'Allocated';
+        case 'picking_up':
+          return 'Picking Up';
+        case 'picked':
+          return 'Picked';
+        case 'dropping_off':
+          return 'Dropping Off';
+        case 'return_in_transit':
+          return 'Return In Transit';
+        case 'delivered':
+          return 'Delivered';
+        case 'on_hold':
+          return 'On Hold';
+        case 'rejected':
+          return 'Rejected';
+        case 'courier_not_found':
+          return 'Courier Not Found';
+        case 'returned':
+          return 'Returned';
+        case 'cancelled':
+          return 'Cancelled';
+        case 'disposed':
+          return 'Disposed';
+        default:
+          return 'Belum Diproses';
+      }
+    },
+    getNoteDescription(status) {
+      switch (status) {
+        case 'confirmed':
+          return 'Pesanan telah dikonfirmasi. Mencari driver terdekat untuk pick up.';
+        case 'allocated':
+          return 'Kurir telah dialokasikan, menunggu pick up.';
+        case 'picking_up':
+          return 'Kurir menuju lokasi pick up.';
+        case 'picked':
+          return 'Pesanan telah diambil dan siap dikemas.';
+        case 'dropping_off':
+          return 'Pesanan Anda dalam proses pengiriman.';
+        case 'return_in_transit':
+          return 'Pesanan dalam perjalanan kembali ke pengirim.';
+        case 'delivered':
+          return 'Pesanan telah terkirim.';
+        case 'on_hold':
+          return 'Pengiriman Anda sedang ditahan sementara. Kami akan mengirim item Anda setelah masalah terselesaikan.';
+        case 'rejected':
+          return 'Pengiriman Anda telah ditolak. Silakan hubungi Biteship untuk informasi lebih lanjut.';
+        case 'courier_not_found':
+          return 'Pengiriman Anda dibatalkan karena tidak ada kurir yang tersedia saat ini.';
+        case 'returned':
+          return 'Pesanan berhasil dikembalikan.';
+        case 'cancelled':
+          return 'Pesanan dibatalkan.';
+        case 'disposed':
+          return 'Pesanan berhasil dibuang.';
+        default:
+          return 'Status tidak dikenal.';
+      }
+    }
   },
+
 };
 </script>
 
@@ -181,7 +304,7 @@ export default {
       <div class="container">
         <div class="row" v-if="courier">
           <div class="col-lg-8">
-            <div class="row mb-4">
+            <div class="row mb-2">
               <div class="card">
                 <a class="mt-4" style="font-size: 20px; font-weight: bold"> Alamat </a>
                 <div style="font-size: 14px;">
@@ -296,7 +419,7 @@ export default {
               </div>
             </div>
             <div class="row">
-              <div class="mb-4 card" v-for="(item, index) in items" :key="index">
+              <div class="mb-2 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
                   <div class="row">
@@ -351,6 +474,13 @@ export default {
                     <span>#{{ orders.transaction_id }}</span>
                   </div>
                 </div>
+                <a><strong>Nomor Resi</strong></a>
+                <div class="row ring-bayar mb-2">
+                  <div class="col-12">
+                    <span v-if="orders.waybill_id">{{ orders.waybill_id }}</span>
+                    <span else>-</span>
+                  </div>
+                </div>
                 <a><strong>Tanggal Pemesanan</strong></a>
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
@@ -387,8 +517,87 @@ export default {
                 <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
+                <button v-if="orders.status != 'pending'" class="btn btn-primary btn-sm w-100"
+                  @click="dialogTrack = true"><i class="fas fa-info-circle mx-2"></i>
+                  Lacak Pengiriman </button>
               </div>
             </div>
+            <v-dialog v-model="dialogTrack" max-width="788px">
+              <v-card style="border-radius: 10px;">
+                <v-card-title>
+                  <span><a class="text-bold text-dark">Lacak Pengiriman </a></span>
+                </v-card-title>
+                <v-card-text>
+                  <div class="container" style="font-family: sans-serif">
+                    <div class="wrapper">
+                      <div class="row p-2">
+                        <div class="col-sm-12 border" style="border-radius: 10px;">
+                          <div>
+                            <div class="row align-items-center py-2">
+                              <div class="col-3 d-flex align-items-center">
+                                <img v-if="courierTrack.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
+                                  class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                                <img v-if="courierTrack.company === 'sicepat'" src="../../assets/img/sicepat.png"
+                                  alt="sicepat" class="img-fluid" style="width: 50px; margin-right: 20px;" />
+                              </div>
+                              <div class="col-3 text-dark">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Kurir</strong>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courierTrack.name }} </a>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courierTrack.phone }}</a>
+                                </div>
+                              </div>
+                              <div class="col-4">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
+                                </div>
+                                <div class="row">
+                                  <a class="d-block d-sm-inline" style="
+                        color: black;">{{ courier.duration }}</a>
+                                </div>
+                              </div>
+                              <div class="col-2">
+                                <div class="row">
+                                  <strong class="d-block d-sm-inline">Foto</strong>
+                                </div>
+                                <div class="row">
+                                  <img class="d-block d-sm-inline" style="max-width: 80px"
+                                    :src="courierTrack.driver_photo_url">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <a class="text-dark" style="font-size: 16px;">Status Pengiriman</a>
+                      <div class="row p-2">
+                        <div class="col-12 border py-2 px-2" style="border-radius: 20px;">
+                          <div class="row text-end text-mobile" v-for="item in riwayat" :key="item.note">
+                            <div class="col-md-6 col-6">
+                              {{ formatDateCourier(item.updated_at) }} &#x2022;
+                            </div>
+                            <div class="col-md-6 col-6">
+                              <div class="row text-bold">
+                                {{ getStatusCourier(item.status) }}
+                              </div>
+                              <div class="row text-start">
+                                {{ getNoteDescription(item.status) }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
           </div>
         </div>
       </div>
