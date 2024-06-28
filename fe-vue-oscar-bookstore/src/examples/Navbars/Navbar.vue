@@ -113,7 +113,7 @@ export default {
 </script>
 
 <template>
-  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-2 shadow border-radius-md" v-bind="$attrs"
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-2 shadow border-radius-md z-999" v-bind="$attrs"
     id="navbarBlur" data-scroll="true">
     <div class="px-3 py-1 container-fluid">
       <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"

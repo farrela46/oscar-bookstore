@@ -216,7 +216,7 @@ export default {
           }
         });
         console.log(response);
-        this.retrieveDetail(); 
+        this.retrieveDetail();
       } catch (error) {
         console.error(`Error updating order status to ${status}:`, error);
         this.$notify({
@@ -569,7 +569,7 @@ export default {
                   <span><a class="text-bold text-dark">Lacak Pengiriman </a></span>
                 </v-card-title>
                 <v-card-text>
-                  <div class="container" style="font-family: sans-serif">
+                  <div style="font-family: sans-serif">
                     <div class="wrapper">
                       <div class="row p-2">
                         <div class="col-sm-12 border" style="border-radius: 10px;">
@@ -637,6 +637,12 @@ export default {
                     </div>
                   </div>
                 </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
+                    s @click="dialogTrack = false">Close
+                  </button>
+                </v-card-actions>
               </v-card>
             </v-dialog>
 

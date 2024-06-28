@@ -194,7 +194,7 @@ export default {
               </div>
             </div>
             <div class="card mb-3" v-for="order in orders" :key="order.id">
-              <div class="card-header p-0 px-4 d-flex justify-content-between align-items-center">
+              <div class="card-header p-0 px-4 d-flex justify-content-between align-items-center p-1">
                 <div>
                   <span><a style="font-size: 12px;"> {{ formatDate(order.created_at) }} </a></span>
                 </div>
@@ -224,7 +224,7 @@ export default {
                   </div>
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between mb-2">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
                   <button class="btn btn-sm btn-primary" @click="lihatDetail(order)"
                     v-if="order.status === 'process'">Buat Pesanan</button>

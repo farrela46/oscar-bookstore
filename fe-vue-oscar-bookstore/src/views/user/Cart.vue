@@ -230,7 +230,7 @@ export default {
             </div>
           </div>
           <div class="col-lg-4 d-none d-lg-block">
-            <div class="card sticky-top" style="top: 20px;">
+            <div class="card sticky-top" style="top: 20px; z-index: -1;">
               <div class="card-body">
                 <h5 class="card-title">Rincian Belanja</h5>
                 <p>Ringkasan Pembayaran</p>
@@ -241,7 +241,7 @@ export default {
           </div>
 
           <!-- Card for Mobile -->
-          <div class="col-12 d-block d-lg-none position-fixed bottom-0 bg-white"
+          <div class="col-12 d-block d-lg-none position-fixed bottom-0 "
             style="margin-bottom:10px; padding-right: 35px;">
             <div class="card shadow px-2">
               <div class="d-flex justify-content-between align-items-center">

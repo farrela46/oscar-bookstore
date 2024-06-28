@@ -21,7 +21,9 @@ export default {
       dialogTrack: false,
       orderDetails: '',
       riwayat: [],
-      courierTrack: ''
+      courierTrack: '',
+      dialogReview: false,
+      rating: ''
     };
   },
 
@@ -517,6 +519,10 @@ export default {
                 <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
+                <button v-if="orders.status == 'delivered'" style="border-color: black;"
+                  class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
+                    class="fas fa-star"></i><a> </a>
+                  Ulas & Konfirmasi </button>
                 <button v-if="orders.status != 'pending'" class="btn btn-primary btn-sm w-100"
                   @click="dialogTrack = true"><i class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
@@ -528,7 +534,7 @@ export default {
                   <span><a class="text-bold text-dark">Lacak Pengiriman </a></span>
                 </v-card-title>
                 <v-card-text>
-                  <div class="container" style="font-family: sans-serif">
+                  <div style="font-family: sans-serif">
                     <div class="wrapper">
                       <div class="row p-2">
                         <div class="col-sm-12 border" style="border-radius: 10px;">
@@ -596,6 +602,68 @@ export default {
                     </div>
                   </div>
                 </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;" s @click="dialogTrack = false">Close
+                  </button>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogReview" max-width="788px">
+              <v-card style="border-radius: 10px;">
+                <v-card-title>
+                  <span><a class="text-bold text-dark">Ulas dan Review </a></span>
+                </v-card-title>
+                <v-card-text>
+                  <div style="font-family: sans-serif">
+                    <div class="wrapper">
+                      <div class="row p-2" v-for="(item, index) in items" :key="index">
+                        <div class="col-sm-12 border p-2" style="border-radius: 10px;">
+                          <div class="row">
+                            <div class="col-md-3 col-4">
+                              <div class="row">
+                                <div class="col">
+                                  <img :src="item.buku.foto" class="img-fluid" alt="Book image" style="width: 100%;">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-9 col-8">
+                              <div class="row">
+                                <div class="col-12">
+                                  <div class="row">
+                                    <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
+                                      item.buku.judul
+                                      }}</a>
+                                  </div>
+                                  <div class="row" style="max-width: 100px;">
+                                    <div class="col">
+                                      <v-rating density="compact" v-model="rating" active-color="blue"
+                                        color="orange-lighten-1"></v-rating>
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="form-floating mb-3">
+                                      <textarea class="form-control" v-model="review" placeholder="Deskripsi Buku"
+                                        id="floatingTextarea2" style="height: 100px"></textarea>
+                                      <label for="floatingTextarea2">Deskripsi Buku</label>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;" s @click="dialogReview = false">Close
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary"><i class="far fa-star"></i> Confirm Review
+                  </button>
+                </v-card-actions>
               </v-card>
             </v-dialog>
           </div>
