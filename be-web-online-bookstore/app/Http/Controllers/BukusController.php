@@ -172,6 +172,7 @@ class BukusController extends Controller
                 'tahun_terbit' => $item->tahun_terbit,
                 'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
                 'stok' => $item->stok,
+                'sold' => $item->sold,
                 'harga' => $item->harga,
                 'slug' => $item->slug,
                 'category' => $categoryNames,
@@ -226,6 +227,7 @@ class BukusController extends Controller
             'tahun_terbit' => $buku->tahun_terbit,
             'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
             'stok' => $buku->stok,
+            'sold'=> $buku->sold,
             'harga' => $buku->harga,
             'category' => $categoryNames
         ];
