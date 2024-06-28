@@ -37,7 +37,7 @@ class OrdersController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'total_payment' => $totalPayment,
-            'address_id' => $request->input('address_id'),  // Add address_id here
+            'address_id' => $request->input('address_id'),  
             'shipping_cost' => $request->input('selectedCourier.price'),
             'status' => 'pending',
             'courier_details' => json_encode($request->input('selectedCourier')),
