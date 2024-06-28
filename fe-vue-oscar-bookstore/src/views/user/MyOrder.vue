@@ -133,9 +133,13 @@ export default {
           return 'badge-success';
         case 'process':
           return 'badge-info text-dark';
+        case 'packing':
+          return 'badge-info text-dark';
+        case 'delivery':
+          return 'badge-warning text-dark';
+        case 'delivered':
+          return 'badge-success text-dark';
         case 'expired':
-          return 'badge-danger';
-        case 'failed':
           return 'badge-danger';
         default:
           return 'badge-secondary';
@@ -147,8 +151,14 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
-        case 'paid':
-          return 'Pembayaran Berhasil';
+          case 'packing':
+          return 'Pesanan Dikemas';
+        case 'delivery':
+          return 'Sedang Dikirim';
+          case 'delivered':
+          return 'Telah Terikirim';
+        case 'finish':
+          return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
         case 'failed':
@@ -206,7 +216,8 @@ export default {
                 <hr>
                 <div class="row">
                   <div class="col-6">
-                    <a class="text-bold" @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat Detail Pesanan</a>
+                    <a class="text-bold" @click="lihatDetail(order)" style="color: #5E72E4; cursor: pointer ">Lihat
+                      Detail Pesanan</a>
                   </div>
                   <div class="col-6 text-end">
                     <a>Total Pesanan: Rp {{ formatPrice(order.total_payment) }}</a>
@@ -215,7 +226,8 @@ export default {
                 <hr>
                 <div class="d-flex justify-content-between">
                   <span><strong>Metode pembayaran</strong>: Midtrans</span>
-                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)" v-if="order.status === 'process'">Buat Pesanan</button>
+                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)"
+                    v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>
               </div>
             </div>

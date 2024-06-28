@@ -136,11 +136,13 @@ export default {
           return 'badge-success';
         case 'process':
           return 'badge-info text-dark';
+        case 'packing':
+          return 'badge-info text-dark';
         case 'delivery':
           return 'badge-warning text-dark';
+        case 'delivered':
+          return 'badge-success text-dark';
         case 'expired':
-          return 'badge-danger';
-        case 'failed':
           return 'badge-danger';
         default:
           return 'badge-secondary';
@@ -152,10 +154,14 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
+          case 'packing':
+          return 'Pesanan Dikemas';
         case 'delivery':
-          return 'On Delivery';
-        case 'paid':
-          return 'Pembayaran Berhasil';
+          return 'Sedang Dikirim';
+          case 'delivered':
+          return 'Telah Terikirim';
+        case 'finish':
+          return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
         case 'failed':

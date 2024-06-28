@@ -190,6 +190,12 @@ export default {
         this.orderDetails = response.data;
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
+
+        const latestStatus = this.orderDetails.courier.history.slice(-1)[0];
+        if (latestStatus && latestStatus.status === 'dropping_off') {
+          await this.updateOrderStatusToDelivery(this.orders.id);
+        }
+
       } catch (error) {
         console.error('Error retrieving order details:', error);
         this.$notify({
@@ -202,19 +208,44 @@ export default {
         this.overlay = false;
       }
     },
+    async updateOrderStatusToDelivery(orderId) {
+      try {
+        const response = await axios.post(`${BASE_URL}/order/delivery`, {
+          order_id: orderId
+        }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        console.log(response)
+        this.retrieveDetail();
+        
+        
+      } catch (error) {
+        console.error('Error updating order status to delivery:', error);
+        this.$notify({
+          type: 'danger',
+          title: 'Error',
+          text: 'Failed to update order status to delivery!',
+          color: 'red'
+        });
+      }
+    },
     getStatusBadge(status) {
       switch (status) {
         case 'pending':
-          return 'badge-warning text-dark';
+          return 'badge-danger text-dark';
         case 'paid':
           return 'badge-success';
         case 'process':
-          return 'badge-info';
+          return 'badge-info text-dark';
+        case 'packing':
+          return 'badge-info text-dark';
         case 'delivery':
           return 'badge-warning text-dark';
+        case 'delivered':
+          return 'badge-success text-dark';
         case 'expired':
-          return 'badge-danger';
-        case 'failed':
           return 'badge-danger';
         default:
           return 'badge-secondary';
@@ -226,10 +257,14 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
+        case 'packing':
+          return 'Pesanan Dikemas';
         case 'delivery':
-          return 'Dalam Pengiriman';
-        case 'paid':
-          return 'Pembayaran Berhasil';
+          return 'Sedang Dikirim';
+        case 'delivered':
+          return 'Telah Terikirim';
+        case 'finish':
+          return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
         case 'failed':
@@ -387,7 +422,7 @@ export default {
                   <div class="row mb-2 mt-4 p-2">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
-                        <div class="row align-items-center py-2" >
+                        <div class="row align-items-center py-2">
                           <div class="col-3 d-flex align-items-center">
                             <img v-if="courier.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
                               class="img-fluid" style="width: 50px; margin-right: 20px;" />
@@ -449,7 +484,8 @@ export default {
                               }}</a>
                           </div>
                           <div class="row">
-                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{ item.quantity }}
+                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
+        item.quantity }}
                                 barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>
@@ -577,7 +613,8 @@ export default {
                                   <strong class="d-block d-sm-inline">Foto</strong>
                                 </div>
                                 <div class="row">
-                                  <img class="d-block d-sm-inline" style="max-width: 80px" :src="courierTrack.driver_photo_url">
+                                  <img class="d-block d-sm-inline" style="max-width: 80px"
+                                    :src="courierTrack.driver_photo_url">
                                 </div>
                               </div>
                             </div>

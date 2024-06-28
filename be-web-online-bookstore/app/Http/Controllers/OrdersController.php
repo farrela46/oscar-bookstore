@@ -262,7 +262,7 @@ class OrdersController extends Controller
                 $order = Order::findOrFail($request->order_id);
                 $order->bsorder_id = $response['id'];
                 $order->waybill_id = $response['courier']['waybill_id'];
-                $order->status = 'delivery';
+                $order->status = 'packing';
                 $order->save();
 
                 foreach ($request->item_ids as $item) {
@@ -285,12 +285,38 @@ class OrdersController extends Controller
     public function retrieveAdminOrder($bsorderId)
     {
         try {
-            
+
             $orderDetails = $this->biteshipService->retrieveOrder($bsorderId);
-            
+
             return response()->json($orderDetails, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function makeDelivery(Request $request)
+    {
+        $validated = $request->validate([
+            'order_id' => 'required|exists:orders,id',
+        ]);
+
+        try {
+           
+            $order = Order::findOrFail($validated['order_id']);
+
+            $order->status = 'delivery';
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order status updated to delivery',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update order status',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
