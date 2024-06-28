@@ -15,11 +15,11 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('buku_id');
             $table->unsignedBigInteger('order_id');
-            $table->unsignedTinyInteger('rating'); // 1-5 rating
-            $table->text('comment')->nullable(); // Review comment
+            $table->unsignedTinyInteger('rating'); 
+            $table->longtext('comment')->nullable(); 
             $table->timestamps();
 
-            // Foreign keys
+           
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('buku_id')->references('id')->on('bukus')->onDelete('cascade');
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');

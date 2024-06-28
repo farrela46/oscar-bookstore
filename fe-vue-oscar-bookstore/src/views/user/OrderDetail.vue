@@ -23,7 +23,6 @@ export default {
       riwayat: [],
       courierTrack: '',
       dialogReview: false,
-      rating: ''
     };
   },
 
@@ -116,7 +115,11 @@ export default {
         });
         this.orders = response.data
         this.address = response.data.address;
-        this.items = response.data.items;
+        this.items = response.data.items.map(item => ({
+          ...item,
+          rating: 0,
+          comment: ''
+        }));
         this.courier = JSON.parse(response.data.courier_details);
       } catch (error) {
         console.error(error);
@@ -132,7 +135,7 @@ export default {
     },
     async retrieveBsOrder() {
       this.overlay = true;
-      console.log(this.orders.bsorder_id)
+      const isFinished = this.orders.status === 'finished';
       try {
         const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
           headers: {
@@ -144,12 +147,14 @@ export default {
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
 
-        const latestStatus = this.riwayat.slice(-1)[0];
-        if (latestStatus) {
-          if (latestStatus.status === 'dropping_off') {
-            await this.updateOrderStatus(this.orders.id, 'delivery');
-          } else if (latestStatus.status === 'delivered') {
-            await this.updateOrderStatus(this.orders.id, 'delivered');
+        if (!isFinished) {
+          const latestStatus = this.riwayat.slice(-1)[0];
+          if (latestStatus) {
+            if (latestStatus.status === 'dropping_off') {
+              await this.updateOrderStatus(this.orders.id, 'delivery');
+            } else if (latestStatus.status === 'delivered') {
+              await this.updateOrderStatus(this.orders.id, 'delivered');
+            }
           }
         }
 
@@ -163,6 +168,42 @@ export default {
         });
       } finally {
         this.overlay = false;
+      }
+    },
+    async submitReviews() {
+      this.loadingRegist = true;
+      try {
+        for (const item of this.items) {
+          const reviewData = {
+            user_id: this.orders.user_id,
+            buku_id: item.buku.id,
+            order_id: this.orders.id,
+            rating: item.rating,
+            comment: item.comment
+          };
+
+          await axios.post(`${BASE_URL}/review/store`, reviewData, {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem('access_token')
+            }
+          });
+        }
+        this.$notify({
+          type: 'success',
+          title: 'Notif',
+          text: 'Review berhasil dilakukan.'
+        });
+        this.retrieveDetail();
+        this.dialogReview = false;
+      } catch (error) {
+        console.error(error);
+        this.$notify({
+          type: 'danger',
+          title: 'Notif',
+          text: 'Failed to submit reviews.'
+        });
+      } finally {
+        this.loadingRegist = false;
       }
     },
     async updateOrderStatus(orderId, status) {
@@ -201,6 +242,8 @@ export default {
           return 'badge-warning text-dark';
         case 'delivered':
           return 'badge-success text-dark';
+        case 'finished':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -219,7 +262,7 @@ export default {
           return 'Sedang Dikirim';
         case 'delivered':
           return 'Telah Terkirim';
-        case 'finish':
+        case 'finished':
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
@@ -604,7 +647,8 @@ export default {
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;" s @click="dialogTrack = false">Close
+                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
+                    s @click="dialogTrack = false">Close
                   </button>
                 </v-card-actions>
               </v-card>
@@ -632,20 +676,20 @@ export default {
                                 <div class="col-12">
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
-                                      item.buku.judul
+        item.buku.judul
                                       }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">
-                                      <v-rating density="compact" v-model="rating" active-color="blue"
+                                      <v-rating density="compact" v-model="item.rating" active-color="blue"
                                         color="orange-lighten-1"></v-rating>
                                     </div>
                                   </div>
                                   <div class="row">
                                     <div class="form-floating mb-3">
-                                      <textarea class="form-control" v-model="review" placeholder="Deskripsi Buku"
+                                      <textarea class="form-control" v-model="item.comment" placeholder="Review Buku"
                                         id="floatingTextarea2" style="height: 100px"></textarea>
-                                      <label for="floatingTextarea2">Deskripsi Buku</label>
+                                      <label for="floatingTextarea2">Review Buku</label>
                                     </div>
                                   </div>
                                 </div>
@@ -655,15 +699,19 @@ export default {
                         </div>
                       </div>
                     </div>
+
                   </div>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;" s @click="dialogReview = false">Close
+                  <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
+                    s @click="dialogReview = false">Close
                   </button>
-                  <button type="button" class="btn btn-sm btn-primary"><i class="far fa-star"></i> Confirm Review
+                  <button type="button" class="btn btn-sm btn-primary" @click="submitReviews"><i
+                      class="far fa-star"></i> Confirm Review
                   </button>
                 </v-card-actions>
+                <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
               </v-card>
             </v-dialog>
           </div>

@@ -172,7 +172,7 @@ export default {
     },
     async retrieveBsOrder() {
       this.overlay = true;
-      console.log(this.orders.bsorder_id)
+      const isFinished = this.orders.status === 'finished';
       try {
         const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
           headers: {
@@ -184,12 +184,14 @@ export default {
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
 
-        const latestStatus = this.riwayat.slice(-1)[0];
-        if (latestStatus) {
-          if (latestStatus.status === 'dropping_off') {
-            await this.updateOrderStatus(this.orders.id, 'delivery');
-          } else if (latestStatus.status === 'delivered') {
-            await this.updateOrderStatus(this.orders.id, 'delivered');
+        if (!isFinished) {
+          const latestStatus = this.riwayat.slice(-1)[0];
+          if (latestStatus) {
+            if (latestStatus.status === 'dropping_off') {
+              await this.updateOrderStatus(this.orders.id, 'delivery');
+            } else if (latestStatus.status === 'delivered') {
+              await this.updateOrderStatus(this.orders.id, 'delivered');
+            }
           }
         }
 
@@ -241,6 +243,8 @@ export default {
           return 'badge-warning text-dark';
         case 'delivered':
           return 'badge-success text-dark';
+        case 'finished':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -259,7 +263,7 @@ export default {
           return 'Sedang Dikirim';
         case 'delivered':
           return 'Telah Terkirim';
-        case 'finish':
+        case 'finished':
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\Review;
 use Illuminate\Http\Request;
 
@@ -9,6 +10,7 @@ class ReviewsController extends Controller
 {
     public function store(Request $request)
     {
+        // Validasi input
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'buku_id' => 'required|exists:bukus,id',
@@ -18,6 +20,9 @@ class ReviewsController extends Controller
         ]);
 
         $review = Review::create($validated);
+        $order = Order::findOrFail($validated['order_id']);
+        $order->status = 'finished';
+        $order->save();
 
         return response()->json([
             'success' => true,
@@ -25,6 +30,7 @@ class ReviewsController extends Controller
             'data' => $review
         ], 201);
     }
+
 
     public function index($bukuId)
     {

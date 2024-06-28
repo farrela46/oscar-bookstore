@@ -268,6 +268,7 @@ class OrdersController extends Controller
                 foreach ($request->item_ids as $item) {
                     $buku = Buku::findOrFail($item['item_id']);
                     $buku->stok -= $item['quantity'];
+                    $buku->sold += $item['quantity']; 
                     $buku->save();
                 }
 
@@ -281,6 +282,7 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function retrieveAdminOrder($bsorderId)
     {

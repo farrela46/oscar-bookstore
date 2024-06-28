@@ -60,7 +60,7 @@ export default {
         <sidenav-item to="/admin/products" :class="getRoute() === 'manage products' ? 'active' : ''"
           navText="Manage Products">
           <template v-slot:icon>
-            <i class="fa fa-book text-success text-sm opacity-10"></i>
+            <i class="fa fa-book text-warning text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
@@ -68,7 +68,7 @@ export default {
         <sidenav-item to="/admin/orders" :class="getRoute() === 'manage orders' ? 'active' : ''"
           navText="Manage Orders">
           <template v-slot:icon>
-            <i class="fas fa-shopping-cart text-success text-sm opacity-10"></i>
+            <i class="fas fa-shopping-cart text-info text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>

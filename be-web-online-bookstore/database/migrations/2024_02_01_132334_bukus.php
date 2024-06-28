@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('penerbit');
             $table->string('tahun_terbit');
             $table->string('foto')->nullable();
-            $table->string('stok');
-            $table->string('harga');
+            $table->bigInteger('stok');
+            $table->bigInteger('sold');
+            $table->bigInteger('harga');
             $table->string('slug')->unique()->nullable();
             $table->timestamps();
         });

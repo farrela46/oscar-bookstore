@@ -14,7 +14,7 @@ export default {
       overlay: false,
       orders: [],
       selectedFilter: '',
-      orderDetails:''
+      orderDetails: ''
     };
   },
   mounted() {
@@ -78,7 +78,7 @@ export default {
         this.overlay = false;
       }
     },
-    
+
     lihatDetail(order) {
       this.$router.push('/admin/orders/' + order.transaction_id)
     },
@@ -142,6 +142,8 @@ export default {
           return 'badge-warning text-dark';
         case 'delivered':
           return 'badge-success text-dark';
+        case 'finished':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -154,13 +156,13 @@ export default {
           return 'Menunggu Pembayaran';
         case 'process':
           return 'Pesanan Diproses';
-          case 'packing':
+        case 'packing':
           return 'Pesanan Dikemas';
         case 'delivery':
           return 'Sedang Dikirim';
-          case 'delivered':
-          return 'Telah Terikirim';
-        case 'finish':
+        case 'delivered':
+          return 'Telah Terkirim';
+        case 'finished':
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
