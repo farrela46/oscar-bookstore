@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('pengarang');
             $table->string('penerbit');
             $table->string('tahun_terbit');
-            $table->string('foto')->nullable();
+            $table->string('foto');
             $table->bigInteger('stok');
-            $table->bigInteger('sold');
+            $table->bigInteger('sold')->default(0);
             $table->bigInteger('harga');
             $table->string('slug')->unique()->nullable();
             $table->timestamps();

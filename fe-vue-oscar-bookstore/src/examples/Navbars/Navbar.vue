@@ -101,7 +101,8 @@ export default {
 
         localStorage.removeItem('access_token');
         localStorage.removeItem('username');
-        this.$router.push('/login');
+        // this.$router.push('/login');
+        window.location.href = '/';
         this.checkLoginStatus();
       } catch (error) {
         console.error('Logout failed:', error);

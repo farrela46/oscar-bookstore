@@ -653,7 +653,7 @@ export default {
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
-                    s @click="dialogTrack = false">Close
+                     @click="dialogTrack = false">Close
                   </button>
                 </v-card-actions>
               </v-card>

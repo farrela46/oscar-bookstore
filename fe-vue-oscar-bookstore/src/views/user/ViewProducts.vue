@@ -249,6 +249,11 @@ export default {
                         <p>{{ products.stok }}</p>
                       </span>
                     </div>
+                    <div class="col-md-4 col">
+                      <span><strong>Terjual</strong>
+                        <p>{{ products.sold }}</p>
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div class="row">
@@ -275,27 +280,33 @@ export default {
               </div>
             </div>
             <div class="card-body">
-              <div v-for="item in reviews" :key="item.id" style="color: black">
-                <div class="row mt-2">
-                  <div class="col-12">
-                    <div class="px-4">
-                      <div class="row">
-                        <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
-                          color="grey"></v-rating>
-                        <div class="d-flex align-items-center">
-                          <div class="mt-2">
-                            <a class="text-black">{{ item.user.name }}</a>
-                            <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+              <div v-if="reviews.length > 0">
+                <div v-for="item in reviews" :key="item.id" style="color: black">
+                  <div class="row mt-2">
+                    <div class="col-12">
+                      <div class="px-4">
+                        <div class="row">
+                          <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
+                            color="grey"></v-rating>
+                          <div class="d-flex align-items-center">
+                            <div class="mt-2">
+                              <a class="text-black">{{ item.user.name }}</a>
+                              <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+                            </div>
+                          </div>
+                          <div class="row mt-2">
+                            <p class="text-black">{{ item.comment }}</p>
                           </div>
                         </div>
-                        <div class="row mt-2">
-                          <p class="text-black">{{ item.comment }}</p>
-                        </div>
+                        <hr>
                       </div>
-                      <hr>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div v-else class="col-12 text-center"
+                style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada Review</p>
               </div>
             </div>
           </div>
@@ -384,27 +395,33 @@ export default {
               </div>
             </div>
             <div class="card-body">
-              <div v-for="item in reviews" :key="item.id" style="color: black">
-                <div class="row mt-2">
-                  <div class="col-12">
-                    <div class="px-4">
-                      <div class="row">
-                        <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
-                          color="grey"></v-rating>
-                        <div class="d-flex align-items-center">
-                          <div class="mt-2">
-                            <a class="text-black">{{ item.user.name }}</a>
-                            <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+              <div v-if="reviews.length > 0">
+                <div v-for="item in reviews" :key="item.id" style="color: black">
+                  <div class="row mt-2">
+                    <div class="col-12">
+                      <div class="px-4">
+                        <div class="row">
+                          <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
+                            color="grey"></v-rating>
+                          <div class="d-flex align-items-center">
+                            <div class="mt-2">
+                              <a class="text-black">{{ item.user.name }}</a>
+                              <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+                            </div>
+                          </div>
+                          <div class="row mt-2" style="font-size: 14px">
+                            <a class="text-black">{{ item.comment }}</a>
                           </div>
                         </div>
-                        <div class="row mt-2" style="font-size: 14px">
-                          <a class="text-black">{{ item.comment }}</a>
-                        </div>
+                        <hr>
                       </div>
-                      <hr>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div v-else class="col-12 text-center"
+                style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada Review</p>
               </div>
             </div>
           </div>
