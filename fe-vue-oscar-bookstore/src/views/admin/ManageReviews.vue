@@ -181,6 +181,9 @@ export default {
                     </a>
                   </div>
                   <div class="row">
+                    <a :class="{ 'author-text': isMobile }">{{ item.buku.pengarang }}</a>
+                  </div>
+                  <div class="row">
                     <div style="color: black">
                       <div class="row mt-2">
                         <div class="col-12 border" style="border-radius: 10px;">
@@ -238,12 +241,21 @@ export default {
 </template>
 <style scoped>
 .mobile-text {
+  font-size: 16px;
+}
+
+.author-text {
   font-size: 12px;
+  font-weight: 300;
 }
 
 @media (max-width: 768px) {
   .mobile-text {
+    font-size: 16px !important;
+  }
+  .author-text {
     font-size: 12px !important;
+    font-weight: 300 !important;
   }
 }
 </style>
