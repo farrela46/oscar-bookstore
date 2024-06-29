@@ -37,7 +37,9 @@ export default {
     };
   },
   mounted() {
-    this.getDetailProducts();
+    import('vuetify/styles').then(() => {
+      this.getDetailProducts();
+    })
   },
   created() {
     this.store = this.$store;
@@ -53,6 +55,11 @@ export default {
     window.removeEventListener('resize', this.checkScreenSize);
   },
   methods: {
+    formatDate(date) {
+      if (!date) return "";
+      const options = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(date).toLocaleDateString('id-ID', options);
+    },
     checkScreenSize() {
       this.isMobile = window.innerWidth < 768; // Bootstrap's mobile breakpoint
     },
@@ -158,7 +165,7 @@ export default {
           }
         });
 
-        this.reviews = reviewData.data;
+        this.reviews = reviewData.data.data;
 
         setTimeout(() => {
           this.dialog1 = false;
@@ -249,7 +256,44 @@ export default {
                     <h2>Rp. {{ formatPrice(products.harga) }}</h2>
                   </div>
                   <div class="col-md-3">
-                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"> <i class="fas fa-shopping-cart"></i> Beli</button>
+                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"> <i
+                        class="fas fa-shopping-cart"></i> Beli</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="d-flex align-items-center">
+                <h4 class="mb-0">Reviews</h4>
+              </div>
+            </div>
+            <div class="card-body">
+              <div v-for="item in reviews" :key="item.id" style="color: black">
+                <div class="row mt-2">
+                  <div class="col-12">
+                    <div class="px-4">
+                      <div class="row">
+                        <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
+                          color="grey"></v-rating>
+                        <div class="d-flex align-items-center">
+                          <div class="mt-2">
+                            <a class="text-black">{{ item.user.name }}</a>
+                            <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+                          </div>
+                        </div>
+                        <div class="row mt-2">
+                          <p class="text-black">{{ item.comment }}</p>
+                        </div>
+                      </div>
+                      <hr>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -322,7 +366,43 @@ export default {
                     <h2>Rp. {{ formatPrice(products.harga) }}</h2>
                   </div>
                   <div class="col-md-3">
-                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"><i class="fas fa-shopping-cart"></i> Beli</button>
+                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"><i
+                        class="fas fa-shopping-cart"></i> Beli</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="d-flex align-items-center">
+                <h4 class="mb-0">Reviews</h4>
+              </div>
+            </div>
+            <div class="card-body">
+              <div v-for="item in reviews" :key="item.id" style="color: black">
+                <div class="row mt-2">
+                  <div class="col-12">
+                    <div class="px-4">
+                      <div class="row">
+                        <v-rating class="mt-2" density="compact" readonly v-model="item.rating" active-color="yellow"
+                          color="grey"></v-rating>
+                        <div class="d-flex align-items-center">
+                          <div class="mt-2">
+                            <a class="text-black">{{ item.user.name }}</a>
+                            <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
+                          </div>
+                        </div>
+                        <div class="row mt-2" style="font-size: 14px">
+                          <a class="text-black">{{ item.comment }}</a>
+                        </div>
+                      </div>
+                      <hr>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -332,7 +412,7 @@ export default {
       </div>
     </div>
     <div class="fixed-plugin">
-      <a class="px-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
+      <a class="p-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
         <i class=" py-2 fab fa-whatsapp"></i>
       </a>
     </div>
@@ -436,6 +516,7 @@ a {
 
 .book-image-mobile {
   max-width: 150px;
-  margin: 0 auto; /* Center the image */
+  margin: 0 auto;
+  /* Center the image */
 }
 </style>
