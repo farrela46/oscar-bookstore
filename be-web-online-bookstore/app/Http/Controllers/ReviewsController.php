@@ -32,13 +32,16 @@ class ReviewsController extends Controller
     }
 
 
-    public function index($bukuId)
+    public function getReviewBook($buku_id)
     {
-        $reviews = Review::where('buku_id', $bukuId)->with('user')->get();
+        $reviews = Review::where('buku_id', $buku_id)
+            ->with('user') 
+            ->get();
 
+        // Return reviews with user information
         return response()->json([
             'success' => true,
             'data' => $reviews
-        ], 200);
+        ]);
     }
 }

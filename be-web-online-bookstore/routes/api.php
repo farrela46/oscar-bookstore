@@ -83,6 +83,7 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('/review')->middleware('auth:sanctum')->group(function () {
     Route::post('/store', [ReviewsController::class, 'store']);
+    Route::get('/{buku_id}', [ReviewsController::class, 'getReviewBook']);
 });
 
 Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
