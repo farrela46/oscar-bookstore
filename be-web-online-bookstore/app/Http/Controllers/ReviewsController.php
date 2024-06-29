@@ -31,10 +31,9 @@ class ReviewsController extends Controller
     }
 
 
-    public function getReviewBook($buku_id)
+    public function getAllReviews()
     {
-        $reviews = Review::where('buku_id', $buku_id)
-            ->with('user')
+        $reviews = Review::with(['user', 'buku'])
             ->orderBy('created_at', 'desc')
             ->get();
 

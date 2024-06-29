@@ -10,6 +10,7 @@ import EditProducts from "../views/admin/EditProducts.vue";
 import ManageCategories from "../views/admin/ManageCategories.vue";
 import ManageOrders from "../views/admin/ManageOrders.vue";
 import ManageDetailOrders from "../views/admin/OrderDetail.vue";
+import ManageReviews from "../views/admin/ManageReviews.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";
 
@@ -68,6 +69,11 @@ const routes = [
     path: "/admin/users",
     name: "Manage Users",
     component: ManageUsers,
+  },
+  {
+    path: "/admin/reviews",
+    name: "Manage Reviews",
+    component: ManageReviews,
   },
   {
     path: "/admin/products",

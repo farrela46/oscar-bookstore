@@ -84,6 +84,7 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
 Route::prefix('/review')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/store', [ReviewsController::class, 'store']);
+        Route::get('/all', [ReviewsController::class, 'getAllReviews']);
     });
     Route::get('/{buku_id}', [ReviewsController::class, 'getReviewBook']);
 });
