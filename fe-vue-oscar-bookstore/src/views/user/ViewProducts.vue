@@ -31,7 +31,9 @@ export default {
       products: [],
       overlay: false,
       showWhatsapp: false,
-      inputChat: ''
+      inputChat: '',
+      reviews: [],
+      isMobile: false,
     };
   },
   mounted() {
@@ -41,11 +43,19 @@ export default {
     this.store = this.$store;
     this.body = document.getElementsByTagName("body")[0];
     this.setupPage();
+    this.checkScreenSize();
+    window.addEventListener('resize', this.checkScreenSize);
   },
   beforeUnmount() {
     this.restorePage();
   },
+  unMounted() {
+    window.removeEventListener('resize', this.checkScreenSize);
+  },
   methods: {
+    checkScreenSize() {
+      this.isMobile = window.innerWidth < 768; // Bootstrap's mobile breakpoint
+    },
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = true;
@@ -123,6 +133,14 @@ export default {
         this.products.images = response.data.images;
         this.breadcrumbsItems[1].title = this.products.judul;
 
+        const reviewData = await axios.get(`${BASE_URL}/review/${this.products.id}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+
+        this.reviews = reviewData.data;
+
         setTimeout(() => {
           this.dialog1 = false;
           this.loading = false;
@@ -153,20 +171,89 @@ export default {
     <v-overlay v-if="overlay" :model-value="overlay" class="d-flex align-items-center justify-content-center">
       <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
     </v-overlay>
-    <div class="container" v-else>
-      <Breadcrumbs class="d-flex align-items-center mt-2 text-black" :items="breadcrumbsItems" />
+
+    <!-- Desktop Version -->
+    <div v-if="!isMobile && !overlay" class="container">
+      <Breadcrumbs class="d-flex align-items-center mt-2 text-dark" :items="breadcrumbsItems" />
       <div class="row mt-3 px-2">
-        <div class="card border-0 " v-if="!loading">
+        <div class="card border-0">
           <div class="row p-2 pt-4">
-            <div class="col-md-3 ">
+            <div class="col-md-3">
               <img :src="products.foto" class="rounded img-fluid" alt="Book Image">
             </div>
             <div class="col-md-9 d-flex flex-column justify-content-between">
-              <a class="title-author mt-1">{{ products.pengarang }}</a>
+              <a class="title-author mt-1 text-dark">{{ products.pengarang }}</a>
               <h2 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ products.judul }}</h2>
-              <h4> Rp. {{ formatPrice(products.harga) }} </h4>
               <hr>
               <h3 class="title-deskripsi">Deskripsi Buku</h3>
+              <div>
+                <a style="color: black;">{{ products.desc }}</a>
+              </div>
+              <br>
+              <div class="mt-auto pb-2">
+                <h3 class="title-deskripsi">Detail</h3>
+                <div class="row">
+                  <div class="row">
+                    <div class="col-md-4 col">
+                      <span><strong>ISBN</strong>
+                        <p>{{ products.no_isbn }}</p>
+                      </span>
+                    </div>
+                    <div class="col-md-4 col">
+                      <span><strong>Penerbit</strong>
+                        <p>{{ products.penerbit }}</p>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 col">
+                      <span><strong>Tanggal Terbit</strong>
+                        <p>{{ products.tahun_terbit }}</p>
+                      </span>
+                    </div>
+                    <div class="col-md-4 col">
+                      <span><strong>Kategori</strong>
+                        <p>{{ products.category }}</p>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 col">
+                      <span><strong>Stok</strong>
+                        <p>{{ products.stok }}</p>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <h2>Rp. {{ formatPrice(products.harga) }}</h2>
+                  </div>
+                  <div class="col-md-3">
+                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"> <i class="fas fa-shopping-cart"></i> Beli</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Version -->
+    <div v-else-if="isMobile && !overlay" class="d-block d-md-none">
+      <Breadcrumbs class="d-flex align-items-center mt-2 text-black" :items="breadcrumbsItems" />
+      <div class="row mt-3 px-2">
+        <div class="card border-0">
+          <div class="row p-2 pt-4">
+            <div class="col-12 d-flex justify-content-center align-items-center">
+              <img :src="products.foto" class="rounded book-image-mobile" alt="Book Image">
+            </div>
+            <div class="col-12 d-flex flex-column justify-content-between" style="font-size: 12px">
+              <a class="title-author mt-1 text-dark">{{ products.pengarang }}</a>
+              <h4 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ products.judul }}</h4>
+              <hr>
+              <h5 class="title-deskripsi">Deskripsi Buku</h5>
               <div>
                 <a style="color: black;"> {{ products.desc }} </a>
               </div>
@@ -176,23 +263,38 @@ export default {
                 <div class="row">
                   <div class="row">
                     <div class="col-md-4 col">
-                      <span>ISBN <p>{{ products.no_isbn }}</p></span>
+                      <span><strong>ISBN</strong>
+                        <p>{{ products.no_isbn }}</p>
+                      </span>
                     </div>
                     <div class="col-md-4 col">
-                      <span>Penerbit <p>{{ products.penerbit }}</p></span>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-4 col">
-                      <span>Tanggal Terbit <p>{{ products.tahun_terbit }}</p></span>
-                    </div>
-                    <div class="col-md-4 col">
-                      <span>Kategori <p>{{ products.category }}</p></span>
+                      <span><strong>Penerbit</strong>
+                        <p>{{ products.penerbit }}</p>
+                      </span>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-md-4 col">
-                      <span>Stok <p>{{ products.stok }}</p></span>
+                      <span><strong>Tanggal Terbit</strong>
+                        <p>{{ products.tahun_terbit }}</p>
+                      </span>
+                    </div>
+                    <div class="col-md-4 col">
+                      <span><strong>Kategori</strong>
+                        <p>{{ products.category }}</p>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 col">
+                      <span><strong>Stok</strong>
+                        <p>{{ products.stok }}</p>
+                      </span>
+                    </div>
+                    <div class="col-md-4 col">
+                      <span><strong>Terjual</strong>
+                        <p>{{ products.sold }}</p>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -201,8 +303,7 @@ export default {
                     <h2>Rp. {{ formatPrice(products.harga) }}</h2>
                   </div>
                   <div class="col-md-3">
-                    <button class="btn addBtn btn-block mt-2 btn-primary" @click="addToCart(products.id)">Add to
-                      cart</button>
+                    <button class="btn btn-sm btn-block mt-2 btn-primary" @click="addToCart(products.id)"><i class="fas fa-shopping-cart"></i> Beli</button>
                   </div>
                 </div>
               </div>
@@ -312,5 +413,10 @@ a {
   color: white;
   font-size: 20px;
   cursor: pointer;
+}
+
+.book-image-mobile {
+  max-width: 150px;
+  margin: 0 auto; /* Center the image */
 }
 </style>

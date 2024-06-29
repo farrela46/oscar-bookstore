@@ -81,10 +81,13 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
     Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
 });
 
-Route::prefix('/review')->middleware('auth:sanctum')->group(function () {
-    Route::post('/store', [ReviewsController::class, 'store']);
+Route::prefix('/review')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/store', [ReviewsController::class, 'store']);
+    });
     Route::get('/{buku_id}', [ReviewsController::class, 'getReviewBook']);
 });
+
 
 Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
     Route::post('/notification', [MidtransController::class, 'handleNotification']);
@@ -92,6 +95,6 @@ Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('/loc')->group(function () {
     Route::get('/areas', [AddressesController::class, 'getAreas']);
-    
+
 });
 
