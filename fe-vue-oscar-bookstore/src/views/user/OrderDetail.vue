@@ -506,6 +506,12 @@ export default {
                               </div>
                             </div>
                           </div>
+                          <div class="row" v-else>
+                            <div class="col-12 text-center"
+                              style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                              <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada review</p>
+                            </div>
+                          </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
                           <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
@@ -579,6 +585,10 @@ export default {
                 <button v-if="orders.status === 'pending'" class="btn btn-primary w-100" @click="payNow">Bayar</button>
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
+                <button v-if="orders.status == 'finished' && this.orders.items.some(item => item.buku.reviews.length === 0)" style="border-color: black;"
+                  class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
+                    class="fas fa-star"></i><a> </a>
+                  Berikan Ulasan </button>
                 <button v-if="orders.status == 'delivered'" style="border-color: black;"
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
@@ -699,7 +709,7 @@ export default {
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
         item.buku.judul
-                                      }}</a>
+      }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">

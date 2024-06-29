@@ -10,7 +10,6 @@ class ReviewsController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'buku_id' => 'required|exists:bukus,id',
@@ -35,13 +34,14 @@ class ReviewsController extends Controller
     public function getReviewBook($buku_id)
     {
         $reviews = Review::where('buku_id', $buku_id)
-            ->with('user') 
+            ->with('user')
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        // Return reviews with user information
         return response()->json([
             'success' => true,
             'data' => $reviews
         ]);
     }
+
 }

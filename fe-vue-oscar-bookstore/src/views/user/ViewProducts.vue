@@ -290,12 +290,12 @@ export default {
                             color="grey"></v-rating>
                           <div class="d-flex align-items-center">
                             <div class="mt-2">
-                              <a class="text-black">{{ item.user.name }}</a>
+                              <a class="text-black"><strong> {{ item.user.name }}</strong></a>
                               <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
                             </div>
                           </div>
                           <div class="row mt-2">
-                            <p class="text-black">{{ item.comment }}</p>
+                            <p class="text-black" style="font-size: 14px;">{{ item.comment }}</p>
                           </div>
                         </div>
                         <hr>
@@ -405,12 +405,12 @@ export default {
                             color="grey"></v-rating>
                           <div class="d-flex align-items-center">
                             <div class="mt-2">
-                              <a class="text-black">{{ item.user.name }}</a>
+                              <a class="text-black" style="font-size: 18px"><strong> {{ item.user.name }}</strong></a>
                               <a class="ms-3 text-black" style="font-size: 12px;">{{ formatDate(item.created_at) }}</a>
                             </div>
                           </div>
-                          <div class="row mt-2" style="font-size: 14px">
-                            <a class="text-black">{{ item.comment }}</a>
+                          <div class="row mt-2">
+                            <a class="text-black" style="font-size: 12px;">{{ item.comment }}</a>
                           </div>
                         </div>
                         <hr>

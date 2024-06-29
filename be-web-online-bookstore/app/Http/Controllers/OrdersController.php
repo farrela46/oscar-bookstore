@@ -210,33 +210,31 @@ class OrdersController extends Controller
     // }
 
     public function getOrderDetail($transaction_id)
-{
-    // Check if the authenticated user is an admin
-    $isAdmin = auth()->user()->role === 'ADMIN';
+    {
+        $isAdmin = auth()->user()->role === 'ADMIN';
 
-    $order = Order::with([
-        'items.buku.reviews' => function ($query) use ($isAdmin, $transaction_id) {
-            $query->whereIn('order_id', function ($subquery) use ($transaction_id) {
-                $subquery->select('orders.id')
-                         ->from('orders')
-                         ->join('items', 'orders.id', '=', 'items.order_id')
-                         ->where('orders.transaction_id', $transaction_id);
-            });
+        $order = Order::with([
+            'items.buku.reviews' => function ($query) use ($isAdmin, $transaction_id) {
+                $query->whereIn('order_id', function ($subquery) use ($transaction_id) {
+                    $subquery->select('orders.id')
+                        ->from('orders')
+                        ->join('items', 'orders.id', '=', 'items.order_id')
+                        ->where('orders.transaction_id', $transaction_id);
+                });
 
-            // If not admin, add additional filter for user_id
-            if (!$isAdmin) {
-                $query->where('user_id', auth()->id());
-            }
-        },
-        'address'
-    ])->where('transaction_id', $transaction_id)->first();
+                if (!$isAdmin) {
+                    $query->where('user_id', auth()->id());
+                }
+            },
+            'address'
+        ])->where('transaction_id', $transaction_id)->first();
 
-    if ($order) {
-        return response()->json($order);
-    } else {
-        return response()->json(['error' => 'Order not found'], 404);
+        if ($order) {
+            return response()->json($order);
+        } else {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
     }
-}
 
 
     //ORDERS

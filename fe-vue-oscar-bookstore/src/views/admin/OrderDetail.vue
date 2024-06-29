@@ -510,7 +510,12 @@ export default {
                           </div>
                         </div>
                       </div>
-                      
+                      <div class="row" v-else>
+                        <div  class="col-12 text-center"
+                          style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                          <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada review</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
