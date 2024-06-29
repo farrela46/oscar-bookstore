@@ -87,11 +87,23 @@ export default {
     },
     async addToCart(id) {
       try {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+          this.$notify({
+            type: 'error',
+            title: 'Notif',
+            text: 'Anda belum login. Silakan login terlebih dahulu.',
+            color: 'red'
+          });
+
+          this.$router.push('/login');
+          return;
+        }
         const response = await axios.post(`${BASE_URL}/cart/add`, {
           buku_id: id,
         }, {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
+            Authorization: "Bearer " + token
           }
         });
 
@@ -112,6 +124,13 @@ export default {
             type: 'error',
             title: 'Error',
             text: errorMessage,
+            color: 'red'
+          });
+        } else {
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: 'An error occurred while adding the product to the cart.',
             color: 'red'
           });
         }
