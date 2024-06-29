@@ -488,6 +488,24 @@ export default {
                                 barang</span> X Rp {{
         formatPrice(item.buku.harga) }}</a>
                           </div>
+                          <div class="row" v-if="item.buku.reviews.length > 0">
+                            <div style="color: black">
+                              <div class="row mt-2">
+                                <div class="col-12 border" style="border-radius: 10px;">
+                                  <div class="px-4" v-for="(review, reviewIndex) in item.buku.reviews"
+                                    :key="reviewIndex">
+                                    <div class="row">
+                                      <v-rating class="mt-2" density="compact" readonly v-model="review.rating"
+                                        active-color="yellow" color="grey"></v-rating>
+                                      <div class="row mt-2">
+                                        <p class="text-black">{{ review.comment }}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
                           <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
@@ -498,7 +516,6 @@ export default {
                 </div>
               </div>
             </div>
-
           </div>
           <div class="col-lg-4">
             <div class="card">
@@ -653,7 +670,7 @@ export default {
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <button type="button" class="btn btn-sm btn-outline-light mx-2 text-dark" style="border-color: black;"
-                     @click="dialogTrack = false">Close
+                    @click="dialogTrack = false">Close
                   </button>
                 </v-card-actions>
               </v-card>
@@ -682,7 +699,7 @@ export default {
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
         item.buku.judul
-      }}</a>
+                                      }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">

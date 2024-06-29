@@ -493,6 +493,24 @@ export default {
                           <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
                         </div>
                       </div>
+                      <div class="row" v-if="item.buku.reviews.length > 0">
+                        <div style="color: black">
+                          <div class="row mt-2">
+                            <div class="col-12 border" style="border-radius: 10px;">
+                              <div class="px-4" v-for="(review, reviewIndex) in item.buku.reviews" :key="reviewIndex">
+                                <div class="row">
+                                  <v-rating class="mt-2" density="compact" readonly v-model="review.rating"
+                                    active-color="yellow" color="grey"></v-rating>
+                                  <div class="row mt-2">
+                                    <p class="text-black">{{ review.comment }}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
