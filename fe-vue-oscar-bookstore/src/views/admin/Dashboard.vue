@@ -2,21 +2,17 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
-import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
-import Carousel from "@/views/components/Carousel.vue";
+// import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
+// import Carousel from "@/views/components/Carousel.vue";
 // import CategoriesList from "@/views/components/CategoriesList.vue";
 import Navbar from "@/examples/Navbars/Navbar.vue";
-import US from "@/assets/img/icons/flags/US.png";
-import DE from "@/assets/img/icons/flags/DE.png";
-import GB from "@/assets/img/icons/flags/GB.png";
-import BR from "@/assets/img/icons/flags/BR.png";
 
 
 export default {
   components: {
     MiniStatisticsCard,
-    GradientLineChart,
-    Carousel,
+    // GradientLineChart,
+    // Carousel,
     // CategoriesList,
     Navbar
   },
@@ -26,39 +22,73 @@ export default {
     return {
       overlay: false,
       dashboard: false,
-      dashboardData: {},
+      dashboardData: {
+        monthly_sales: [],
+      },
       cards: [],
       selectedYear: currentYear,
       selectedMonth: currentMonth,
       availableYears: [],
       monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      sales: {
-        us: {
-          country: "United States",
-          sales: 2500,
-          value: "$230,900",
-          flag: US,
+      sales: [],
+      lineoptions: {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2",
+        title: {
+          text: "UPI Transactions in India"
         },
-        germany: {
-          country: "Germany",
-          sales: "3.900",
-          value: "$440,000",
-          flag: DE,
+        axisX: {
+          valueFormatString: "YYYY",
+          labelTextAlign: "center",
+          labelAngle: 0
         },
-        britain: {
-          country: "Great Britain",
-          sales: "1.400",
-          value: "$190,700",
-          flag: GB,
+        axisY: {
+          title: "Amount (in ₹ Crore)",
+          valueFormatString: "₹##,##,##0cr"
         },
-        brasil: {
-          country: "Brasil",
-          sales: "562",
-          value: "$143,960",
-          flag: BR,
-        },
+        data: [{
+          type: "line",
+          yValueFormatString: "₹##,##,##0.## crores",
+          dataPoints: [
+            { label: "2016", y: 893.07 },
+            { label: "2017", y: 57020.87 },
+            { label: "2018", y: 585710.45 },
+            { label: "2019", y: 1836638.18 },
+            { label: "2020", y: 3387744.72 },
+            { label: "2021", y: 7159285.80 },
+            { label: "2022 (Jan-Oct)", y: 10122170.33 }
+          ]
+        }]
       },
+      options: {
+        animationEnabled: true,
+        title: {
+          text: "Overview Penjualan Buku"
+        },
+        axisY: {
+          includeZero: true,
+          suffix: "%"
+        },
+        data: [{
+          yValueFormatString: "#,###.##'%'",
+          dataPoints: [
+            { label: "10-19", y: 25 },
+            { label: "20-29", y: 22.4 },
+            { label: "30-39", y: 21.7 },
+            { label: "40-49", y: 20.3 },
+            { label: "50+", y: 11 }
+          ]
+        }]
+      },
+      salesLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     };
+  },
+  watch: {
+    'dashboardData.monthly_sales': function (newVal) {
+      // Update chart data here
+      this.updateChartData(newVal);
+    }
   },
   created() {
     this.store = this.$store;
@@ -74,6 +104,13 @@ export default {
     this.retrieveBookStatistics();
   },
   methods: {
+    updateChartData(newData) {
+      this.options.data[0].dataPoints = this.salesLabels.map((label, index) => ({
+        label: label,
+        y: parseFloat(newData[index]) || 0
+      }));
+      this.$forceUpdate();
+    },
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = true;
@@ -228,33 +265,41 @@ export default {
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-7 mb-lg">
-            <!-- line chart -->
-            <div class="card z-index-2">
-              <gradient-line-chart id="chart-line" title="Sales Overview" description="<i class='fa fa-arrow-up text-success'></i>
-      <span class='font-weight-bold'>4% more</span> in 2021" :chart="{
-      labels: [
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ],
-      datasets: [
-        {
-          label: 'Mobile Apps',
-          data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-        },
-      ],
+          <div class="col-lg-6 mb-lg">
+            <div class="card card-chart p-2" style="height: 100%; border-radius: 10px;">
+              <CanvasJSChart :options="{
+      animationEnabled: true,
+      theme: 'light2',
+      title: {
+        text: 'Pendapatan Bulanan'
+      },
+      axisY: {
+        title: 'Pendapatan'
+      },
+      data: [{
+        type: 'line',
+        dataPoints: this.dashboardData.monthly_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
+      }]
     }" />
             </div>
           </div>
-          <div class="col-lg-5">
-            <carousel />
+          <div class="col-lg-6">
+            <div class="card card-chart p-2 " style="height: 100%; border-radius: 10px;">
+              <CanvasJSChart :options="{
+      animationEnabled: true,
+      theme: 'light2',
+      title: {
+        text: 'Penjualan Buku Bulanan'
+      },
+      axisY: {
+        title: 'Books Terjual'
+      },
+      data: [{
+        type: 'column',
+        dataPoints: this.dashboardData.monthly_book_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
+      }]
+    }" />
+            </div>
           </div>
         </div>
         <div class="row mt-4">
@@ -334,3 +379,17 @@ export default {
     </div>
   </div>
 </template>
+
+<style>
+.card-chart {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .card-chart {
+    height: 300px;
+    margin-top: 20px;
+  }
+}
+</style>

@@ -12,6 +12,8 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
+import CanvasJSChart from '@canvasjs/vue-charts';
+
 
 const appInstance = createApp(App);
 
@@ -25,4 +27,5 @@ appInstance.use(router);
 appInstance.use(Notifications);
 appInstance.use(vuetify);
 appInstance.use(ArgonDashboard);
+appInstance.use(CanvasJSChart);
 appInstance.mount("#app");
