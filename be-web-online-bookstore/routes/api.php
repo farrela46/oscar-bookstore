@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -99,3 +100,8 @@ Route::prefix('/loc')->group(function () {
 
 });
 
+
+Route::prefix('/dashboard')->middleware('auth:sanctum')->group(function () {
+    Route::get('/get', [DashboardsController::class, 'getDashboardData']);
+    Route::get('/book', [DashboardsController::class, 'getBookStatistics']);
+});
