@@ -1,0 +1,82 @@
+version: '3'
+
+networks:
+  oscar_bookstore:
+    driver: bridge
+
+volumes:
+  mysql:
+
+services:
+  nginx_be:
+    image: nginx:alpine
+    container_name: nginx_oscarbook_be
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8000:80"
+    volumes:
+      - ./be-web-online-bookstore:/var/www/app
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - oscar_bookstore
+
+  mysql:
+    platform: linux/amd64
+    image: mysql
+    container_name: mysql_oscarbook
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${MYSQL_HOST_PORT}:${MYSQL_DOCKER_CONTAINER_PORT}"
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: oscarbook
+      MYSQL_USER: ${MYSQL_DB_USER}
+      MYSQL_PASSWORD: ${MYSQL_DB_USER_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - oscar_bookstore
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    container_name: phpmyadmin_oscarbook
+    ports:
+      - "8888:80"
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - oscar_bookstore
+
+  php:
+    image: vixiloc/vcashier-php:1.0.3
+    container_name: php_oscarbook
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./be-web-online-bookstore:/var/www/app
+    networks:
+      - oscar_bookstore
+
+  vue:
+    build:
+      context: ./fe-vue-oscar-bookstore
+      dockerfile: Dockerfile
+    container_name: vue_oscarbook
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/app
+    volumes:
+      - ./fe-vue-oscar-bookstore:/var/www/app
+    ports:
+      - "${VUE_HOST_PORT}:${VUE_DOCKER_CONTAINER_PORT}"
+    networks:
+      - oscar_bookstore
