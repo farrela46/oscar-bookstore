@@ -192,6 +192,9 @@ export default {
                               <v-rating class="mt-2" density="compact" readonly v-model="item.rating"
                                 active-color="yellow" color="grey"></v-rating>
                               <div class="row mt-2">
+                                <a :class="{ 'mobile-text': isMobile }" class="text-black"><strong>{{ item.user.name }}</strong></a>
+                              </div>
+                              <div class="row mt-1">
                                 <p :class="{ 'mobile-text': isMobile }" class="text-black">{{ item.comment }}</p>
                               </div>
                             </div>
@@ -253,6 +256,7 @@ export default {
   .mobile-text {
     font-size: 16px !important;
   }
+
   .author-text {
     font-size: 12px !important;
     font-weight: 300 !important;

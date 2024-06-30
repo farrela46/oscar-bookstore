@@ -8,6 +8,7 @@
     "prettify": "prettier --write ."
   },
   "dependencies": {
+    "@canvasjs/charts": "^3.8.12",
     "@kyvg/vue3-notification": "^3.2.0",
     "@mdi/font": "^7.4.47",
     "@popperjs/core": "2.11.8",
