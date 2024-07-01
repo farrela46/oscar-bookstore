@@ -162,7 +162,7 @@ export default {
     <div class="row">
       <div class="mb-2 card" v-for="(item, index) in reviews" :key="index">
         <div class="card-body">
-          <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
+          <h6 class="card-title">Nomor Pesanan {{ item.order_id }}</h6>
           <div class="row">
             <div class="col-md-3 col-4">
               <div class="row">

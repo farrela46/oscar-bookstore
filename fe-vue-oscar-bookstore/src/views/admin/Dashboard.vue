@@ -31,65 +31,15 @@ export default {
       availableYears: [],
       monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       sales: [],
-      lineoptions: {
-        animationEnabled: true,
-        exportEnabled: true,
-        theme: "light2",
-        title: {
-          text: "UPI Transactions in India"
-        },
-        axisX: {
-          valueFormatString: "YYYY",
-          labelTextAlign: "center",
-          labelAngle: 0
-        },
-        axisY: {
-          title: "Amount (in ₹ Crore)",
-          valueFormatString: "₹##,##,##0cr"
-        },
-        data: [{
-          type: "line",
-          yValueFormatString: "₹##,##,##0.## crores",
-          dataPoints: [
-            { label: "2016", y: 893.07 },
-            { label: "2017", y: 57020.87 },
-            { label: "2018", y: 585710.45 },
-            { label: "2019", y: 1836638.18 },
-            { label: "2020", y: 3387744.72 },
-            { label: "2021", y: 7159285.80 },
-            { label: "2022 (Jan-Oct)", y: 10122170.33 }
-          ]
-        }]
-      },
-      options: {
-        animationEnabled: true,
-        title: {
-          text: "Overview Penjualan Buku"
-        },
-        axisY: {
-          includeZero: true,
-          suffix: "%"
-        },
-        data: [{
-          yValueFormatString: "#,###.##'%'",
-          dataPoints: [
-            { label: "10-19", y: 25 },
-            { label: "20-29", y: 22.4 },
-            { label: "30-39", y: 21.7 },
-            { label: "40-49", y: 20.3 },
-            { label: "50+", y: 11 }
-          ]
-        }]
-      },
+
       salesLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     };
   },
-  watch: {
-    'dashboardData.monthly_sales': function (newVal) {
-      // Update chart data here
-      this.updateChartData(newVal);
-    }
-  },
+  // watch: {
+  //   'dashboardData.monthly_sales': function (newVal) {
+  //     this.updateChartData(newVal);
+  //   }
+  // },
   created() {
     this.store = this.$store;
     this.body = document.getElementsByTagName("body")[0];
@@ -104,13 +54,13 @@ export default {
     this.retrieveBookStatistics();
   },
   methods: {
-    updateChartData(newData) {
-      this.options.data[0].dataPoints = this.salesLabels.map((label, index) => ({
-        label: label,
-        y: parseFloat(newData[index]) || 0
-      }));
-      this.$forceUpdate();
-    },
+    // updateChartData(newData) {
+    //   this.options.data[0].dataPoints = this.salesLabels.map((label, index) => ({
+    //     label: label,
+    //     y: parseFloat(newData[index]) || 0
+    //   }));
+    //   this.$forceUpdate();
+    // },
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = true;

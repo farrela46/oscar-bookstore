@@ -57,12 +57,10 @@ class DashboardsController extends Controller
     $startDate = Carbon::createFromDate($year, $month ?: 1, 1)->startOfMonth();
     $endDate = Carbon::createFromDate($year, $month ?: 12, 31)->endOfMonth();
 
-    // Total transactions for the specified period with status 'finished'
     $totalTransactions = Order::where('status', 'finished')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->sum('total_payment');
 
-    // Total items sold for the specified period with status 'finished'
     $totalItemsSold = Order::where('status', 'finished')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->get()
@@ -73,7 +71,6 @@ class DashboardsController extends Controller
             }, 0);
         }, 0);
 
-    // Monthly sales data for chart
     $monthlySales = Order::selectRaw('MONTH(created_at) as month, SUM(total_payment) as total')
         ->where('status', 'finished')
         ->whereYear('created_at', $year)
@@ -81,26 +78,22 @@ class DashboardsController extends Controller
         ->pluck('total', 'month')
         ->toArray();
 
-    // Initialize all months to zero if no specific month is selected
     $monthlySalesData = array_fill(1, 12, 0);
     foreach ($monthlySales as $monthNumber => $total) {
         $monthlySalesData[$monthNumber] = $total;
     }
 
-    // Monthly quantity of books sold for chart
     $monthlyBookSales = Buku::selectRaw('MONTH(updated_at) as month, SUM(sold) as total')
         ->whereYear('updated_at', $year)
         ->groupByRaw('MONTH(updated_at)')
         ->pluck('total', 'month')
         ->toArray();
 
-    // Initialize all months to zero if no specific month is selected
     $monthlyBookSalesData = array_fill(1, 12, 0);
     foreach ($monthlyBookSales as $monthNumber => $total) {
         $monthlyBookSalesData[$monthNumber] = $total;
     }
 
-    // If a specific month is selected, zero out other months for both datasets
     if ($month) {
         $monthlySalesData = array_fill(1, 12, 0);
         $monthlyBookSalesData = array_fill(1, 12, 0);
@@ -124,10 +117,8 @@ class DashboardsController extends Controller
 
     public function getBookStatistics()
     {
-        // Mendapatkan data buku yang diurutkan berdasarkan jumlah penjualan terbanyak
         $bukus = Buku::orderBy('sold', 'desc')->get(['judul', 'sold', 'harga', 'foto']);
 
-        // Membuat array untuk menyimpan statistik buku
         $bookStatistics = $bukus->map(function ($buku) {
             return [
                 'judul' => $buku->judul,

@@ -30,6 +30,18 @@ class ReviewsController extends Controller
         ], 201);
     }
 
+    public function getReviewBook($buku_id)
+    {
+        $reviews = Review::where('buku_id', $buku_id)
+            ->with('user')
+            ->get();
+
+        // Return reviews with user information
+        return response()->json([
+            'success' => true,
+            'data' => $reviews
+        ]);
+    }
 
     public function getAllReviews()
     {
