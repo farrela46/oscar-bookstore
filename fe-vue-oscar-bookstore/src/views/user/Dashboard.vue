@@ -35,7 +35,8 @@ export default {
         },
       ],
       showWhatsapp: false,
-      inputChat: ''
+      inputChat: '',
+      searchQuery: ''
     };
   },
   mounted() {
@@ -116,14 +117,22 @@ export default {
         }
       }
     },
-    async retrieveBuku() {
+    searchProduct() {
+      this.retrieveBuku(this.searchQuery);
+    },
+    async retrieveBuku(searchQuery = '') {
       try {
         this.overlay = true;
+        const params = {};
+        if (searchQuery) params.search = searchQuery;
+
         const response = await axios.get(`${BASE_URL}/buku/get`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
+          },
+          params
         });
+
         this.products = response.data;
 
         if (response.data.length > 0) {
@@ -132,9 +141,10 @@ export default {
       } catch (error) {
         console.error(error);
       } finally {
-        this.overlay = false
+        this.overlay = false;
       }
     },
+
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = true;
@@ -163,10 +173,13 @@ export default {
       </v-overlay>
       <div class="row" style="height: 60px;">
         <form class="search-container" @submit.prevent="searchProduct" style="max-width: 350px;">
-          <div class="input-group"><span class="input-group-text text-body"><i class="fas fa-search"
-                aria-hidden="true"></i></span><input type="text" class="form-control" placeholder="Search Product"
-              @input="searchProduct" v-model="searchQuery"></div>
+          <div class="input-group">
+            <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
+            <input type="text" class="form-control" placeholder="Search Product" @input="searchProduct"
+              v-model="searchQuery">
+          </div>
         </form>
+
       </div>
       <div id="carouselExampleIndicators" class="carousel slide mb-3">
         <div class="carousel-indicators">
