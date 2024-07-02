@@ -59,7 +59,7 @@ class CartsController extends Controller
                 'pengarang' => $cartItem->buku->pengarang,
                 'penerbit' => $cartItem->buku->penerbit,
                 'tahun_terbit' => $cartItem->buku->tahun_terbit,
-                'foto' => asset('storage/' . $cartItem->buku->foto),
+                'foto' => $cartItem->buku->foto,
                 'stok' => $cartItem->buku->stok,
                 'harga' => $cartItem->buku->harga,
                 'slug' => $cartItem->buku->slug,

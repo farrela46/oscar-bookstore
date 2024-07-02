@@ -12,6 +12,7 @@ import ManageOrders from "../views/admin/ManageOrders.vue";
 import ManageDetailOrders from "../views/admin/OrderDetail.vue";
 import ManageReviews from "../views/admin/ManageReviews.vue";
 import AdminCart from "../views/admin/Cart.vue";
+import AdminCashier from "../views/admin/Cashier.vue";
 import Tables from "../views/admin/Tables.vue";
 import Billing from "../views/admin/Billing.vue";
 
@@ -107,9 +108,14 @@ const routes = [
     component: AdminCart,
   },
   {
+    path: "/admin/cashier",
+    name: "Admin Caashier",
+    component: AdminCashier,
+  },
+  {
     path: "/tables",
     name: "Tables",
-    component: Tables,
+    component: Tables,  
   },
   {
     path: "/billing",

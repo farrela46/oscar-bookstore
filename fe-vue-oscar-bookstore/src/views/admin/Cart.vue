@@ -53,6 +53,9 @@ export default {
       const numericPrice = parseFloat(price);
       return numericPrice.toLocaleString('id-ID');
     },
+    proceedToCashier() {
+      this.$router.push('/admin/cashier')
+    },
     async retrieveCart() {
       this.overlay = true;
       try {
@@ -215,7 +218,8 @@ export default {
             style="margin-bottom:10px; padding-right: 35px;">
             <div class="card shadow px-2">
               <div class="d-flex justify-content-between align-items-center">
-                <h6 class="mb-0"><i class="fas fa-shopping-basket fa-lg mx-2" style=" color: #42BADB ; cursor: pointer;"></i>{{ orders.totalItems }} Barang Dikeranjang</h6>
+                <h6 class="mb-0"><i class="fas fa-shopping-basket fa-lg mx-2"
+                    style=" color: #42BADB ; cursor: pointer;"></i>{{ orders.totalItems }} Barang Dikeranjang</h6>
                 <button class="btn btn-primary mt-2" @click="proceedToCashier">Cashier</button>
               </div>
             </div>
@@ -224,7 +228,8 @@ export default {
         <div class="row ">
           <div class="card shadow px-2 d-none d-lg-block">
             <div class="d-flex justify-content-between align-items-center">
-              <h6 class="mb-0"><i class="fas fa-shopping-basket fa-lg mx-2" style=" color: #42BADB ; cursor: pointer;"></i>{{ orders.totalItems }} Barang Dikeranjang</h6>
+              <h6 class="mb-0"><i class="fas fa-shopping-basket fa-lg mx-2"
+                  style=" color: #42BADB ; cursor: pointer;"></i>{{ orders.totalItems }} Barang Dikeranjang</h6>
               <button class="btn btn-primary mt-2" @click="proceedToCashier">Cashier</button>
             </div>
           </div>
