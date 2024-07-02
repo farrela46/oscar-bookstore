@@ -87,6 +87,13 @@ export default {
           </template>
         </sidenav-item>
       </li>
+      <li v-if="userRole === 'ADMIN'" class="nav-item">
+        <sidenav-item to="/admin/cart" :class="getRoute() === 'cashier' ? 'active' : ''" navText="Cashier">
+          <template v-slot:icon>
+            <i class="fas fa-shopping-basket text-dark success text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
       <li v-else-if="userRole === 'USER'" class="nav-item">
         <sidenav-item to="/dashboard" :class="getRoute() === 'dashboard' ? 'active' : ''" navText="Home">
 

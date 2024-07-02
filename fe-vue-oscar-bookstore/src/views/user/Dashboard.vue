@@ -179,7 +179,6 @@ export default {
               v-model="searchQuery">
           </div>
         </form>
-
       </div>
       <div id="carouselExampleIndicators" class="carousel slide mb-3">
         <div class="carousel-indicators">

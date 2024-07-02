@@ -47,15 +47,11 @@ class CartsController extends Controller
         $user = Auth::user();
 
         Cart::where('user_id', $user->id)->update(['selected' => false]);
-        $cartItems = $user->carts()->with('buku')->get();
 
-        // if ($cartItems->isEmpty()) {
-        //     return response()->json(['error' => 'Anda belum menambahkan barang'], 200);
-        // }
+        $cartItems = $user->carts()->with('buku')->get();
 
         $books = $cartItems->map(function ($cartItem) {
             return [
-
                 'id' => $cartItem->id,
                 'no_isbn' => $cartItem->buku->no_isbn,
                 'judul' => $cartItem->buku->judul,
@@ -63,7 +59,7 @@ class CartsController extends Controller
                 'pengarang' => $cartItem->buku->pengarang,
                 'penerbit' => $cartItem->buku->penerbit,
                 'tahun_terbit' => $cartItem->buku->tahun_terbit,
-                'foto' => asset('storage/buku_photos/' . basename($cartItem->buku->foto)),
+                'foto' => asset('storage/' . $cartItem->buku->foto),
                 'stok' => $cartItem->buku->stok,
                 'harga' => $cartItem->buku->harga,
                 'slug' => $cartItem->buku->slug,
@@ -74,8 +70,16 @@ class CartsController extends Controller
             ];
         });
 
-        return response()->json(['data' => $books], 200);
+        // Menghitung jumlah item dalam keranjang
+        $totalItems = $cartItems->count();
+
+        // Mengembalikan data buku beserta jumlah item dalam keranjang
+        return response()->json([
+            'data' => $books,
+            'totalItems' => $totalItems
+        ], 200);
     }
+
 
     public function updateCart(Request $request, $id)
     {
@@ -176,7 +180,7 @@ class CartsController extends Controller
         $payload = [
             'origin_area_id' => 'IDNP11IDNC172IDND1288IDZ64129', // default origin area ID
             'destination_area_id' => $request->destination_area_id,
-            'couriers' => 'jne,sicepat', 
+            'couriers' => 'jne,sicepat',
             'items' => $request->items,
         ];
 
