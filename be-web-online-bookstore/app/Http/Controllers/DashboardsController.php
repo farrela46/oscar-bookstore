@@ -54,15 +54,18 @@ class DashboardsController extends Controller
         $year = $request->input('year', Carbon::now()->year);
         $month = $request->input('month', null);
 
-        $startDate = Carbon::createFromDate($year, $month ?: 1, 1)->startOfMonth();
-        $endDate = Carbon::createFromDate($year, $month ?: 12, 31)->endOfMonth();
+        if ($month) {
+            $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        } else {
+            $startDate = Carbon::createFromDate($year, 1, 1)->startOfYear();
+            $endDate = Carbon::createFromDate($year, 12, 31)->endOfYear();
+        }
 
-        $totalTransactions = Order::where('status', 'finished')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        $totalTransactions = Order::whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_payment');
 
-        $totalItemsSold = Order::where('status', 'finished')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        $totalItemsSold = Order::whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->reduce(function ($carry, $order) {
                 $items = json_decode($order->items, true);
@@ -72,7 +75,6 @@ class DashboardsController extends Controller
             }, 0);
 
         $monthlySales = Order::selectRaw('MONTH(created_at) as month, SUM(total_payment) as total')
-            ->where('status', 'finished')
             ->whereYear('created_at', $year)
             ->groupByRaw('MONTH(created_at)')
             ->pluck('total', 'month')
@@ -119,6 +121,7 @@ class DashboardsController extends Controller
             'monthly_book_sales' => array_values($monthlyBookSalesData),
         ]);
     }
+
 
 
 

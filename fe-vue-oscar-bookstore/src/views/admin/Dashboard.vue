@@ -18,7 +18,6 @@ export default {
   },
   data() {
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
     return {
       overlay: false,
       dashboard: false,
@@ -27,11 +26,10 @@ export default {
       },
       cards: [],
       selectedYear: currentYear,
-      selectedMonth: currentMonth,
+      selectedMonth: '',
       availableYears: [],
       monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       sales: [],
-
       salesLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     };
   },
@@ -104,10 +102,12 @@ export default {
 
         this.dashboardData = response.data;
 
+        
+
         const selectedMonthName = this.selectedMonth
           ? this.monthNames[this.selectedMonth - 1]
           : '';
-
+        const yearDescription = this.selectedYear;
         this.cards = [
           {
             title: 'Total Produk',
@@ -132,7 +132,9 @@ export default {
           {
             title: 'Total Penjualan',
             value: this.dashboardData.total_transactions ? this.formatPrice(this.dashboardData.total_transactions) : "Belum ada",
-            description: `Jumlah Penjualan Bulan ${this.selectedMonth ? selectedMonthName : 'Ini'}`,
+            description: this.selectedMonth
+              ? `Jumlah Penjualan Bulan ${selectedMonthName} ${yearDescription}`
+              : `Jumlah Penjualan Tahun ${yearDescription}`,
             icon: {
               component: 'fas fa-dollar-sign',
               background: 'bg-gradient-success',
