@@ -355,67 +355,43 @@ export default {
                 <div style="font-size: 14px;">
                   <hr class="horizontal dark">
                   <div class="row">
-                    <div class="row">
-                      <div class="col">
-                        <a class="text-truncate text-bold">Penerima</a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.penerima }} </a>
-                      </div>
-                      <div class="col">
-                        <a class="text-truncate text-bold">No. Penerima </a>
-                      </div>
-                      <div class="col">
-                        <a>{{ address.no_penerima }}</a>
-                      </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Penerima</strong></span>
+                      <p>{{ address.penerima }}</p>
+                    </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Nomor Penerima</strong></span>
+                      <p>{{ address.no_penerima }}</p>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="row">
-                      <div class="col">
-                        <a class="text-bold"> Alamat Lengkap </a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.alamat_lengkap }} </a>
-                      </div>
-                      <div class="col">
-                        <a class="text-bold">Kota</a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.kota }} </a>
-                      </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Alamat Lengkap</strong></span>
+                      <p>{{ address.alamat_lengkap }}</p>
+                    </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Kota</strong></span>
+                      <p>{{ address.kota }}</p>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="row">
-                      <div class="col">
-                        <a class="text-bold"> Provinsi </a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.provinsi }} </a>
-                      </div>
-                      <div class="col">
-                        <a class="text-bold">Kode Pos</a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.postal_code }} </a>
-                      </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Provinsi</strong></span>
+                      <p>{{ address.provinsi }}</p>
+                    </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Kode Pos</strong></span>
+                      <p>{{ address.postal_code }}</p>
                     </div>
                   </div>
                   <div class="row">
-                    <div class="row">
-                      <div class="col">
-                        <a class="text-bold"> Kecamatan </a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.kecamatan }} </a>
-                      </div>
-                      <div class="col">
-                        <a class="text-bold"> Label </a>
-                      </div>
-                      <div class="col">
-                        <a> {{ address.label }} </a>
-                      </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Kecamatan</strong></span>
+                      <p>{{ address.kecamatan }}</p>
+                    </div>
+                    <div class="col-md-6 col">
+                      <span><strong>Label</strong></span>
+                      <p>{{ address.label }}</p>
                     </div>
                   </div>
                   <div class="row mb-2 mt-4 p-2">
@@ -511,7 +487,7 @@ export default {
                         </div>
                       </div>
                       <div class="row" v-else>
-                        <div  class="col-12 text-center"
+                        <div class="col-12 text-center"
                           style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
                           <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada review</p>
                         </div>
