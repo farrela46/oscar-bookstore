@@ -187,7 +187,7 @@ export default {
             buku_id: order.buku.id,
             quantity: order.quantity,
             totalPrice: order.totalPrice,
-          })),  
+          })),
           first_name: 'Farrel',
           last_name: '',
           email: 'farrel@example.com',
@@ -331,51 +331,43 @@ export default {
                   <div v-if="selectedAddressId">
                     <hr class="horizontal dark">
                     <div class="row">
-                      <div class="row">
-                        <div class="col">
-                          Nama Penerima
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.penerima }}
-                        </div>
-                        <div class="col">
-                          Nomor Penerima
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.no_penerima }}
-                        </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Nama Penerima</strong></span>
+                        <p>{{ selectedAddress.penerima }}</p>
+                      </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Nomor Penerima</strong></span>
+                        <p>{{ selectedAddress.no_penerima }}</p>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="row">
-                        <div class="col">
-                          Provinsi
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.provinsi }}
-                        </div>
-                        <div class="col">
-                          Kota
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.kota }}
-                        </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Provinsi</strong></span>
+                        <p>{{ selectedAddress.provinsi }}</p>
+                      </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Kota</strong></span>
+                        <p>{{ selectedAddress.kota }}</p>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="row">
-                        <div class="col">
-                          Kecamatan
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.kecamatan }}
-                        </div>
-                        <div class="col">
-                          Kode Pos
-                        </div>
-                        <div class="col">
-                          : {{ selectedAddress.postal_code }}
-                        </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Kecamatan</strong></span>
+                        <p>{{ selectedAddress.kecamatan }}</p>
+                      </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Kode Pos</strong></span>
+                        <p>{{ selectedAddress.postal_code }}</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 col">
+                        <span><strong>Alamat Lengkap</strong></span>
+                        <p>{{ selectedAddress.alamat_lengkap }}</p>
+                      </div>
+                      <div class="col-md-6 col">
+                        <span><strong>Label</strong></span>
+                        <p>{{ selectedAddress.label }}</p>
                       </div>
                     </div>
                   </div>
@@ -390,19 +382,19 @@ export default {
                   <div v-else v-for="(rate, index) in shippingRates" :key="index" class="row border mb-3"
                     style="border-radius: 10px;">
                     <div class="col-sm-12">
-                      <div class="p-2">
+                      <div class="p-1">
                         <div class="row align-items-center py-2">
-                          <div class="col-1 d-flex align-items-center">
+                          <div class="col-md-1 col d-flex align-items-center">
                             <input type="checkbox" class="large-checkbox" :checked="selectedCourier === rate"
                               @change="selectCourier(rate)" />
                           </div>
-                          <div class="col-2 d-flex align-items-center">
+                          <div class="col-md-2 col d-flex align-items-center">
                             <img v-if="rate.company === 'jne'" src="../../assets/img/jne.png" alt="jne"
                               class="img-fluid" style="width: 50px; margin-right: 20px;" />
                             <img v-if="rate.company === 'sicepat'" src="../../assets/img/sicepat.png" alt="sicepat"
                               class="img-fluid" style="width: 50px; margin-right: 20px;" />
                           </div>
-                          <div class="col-3">
+                          <div class="col-md-3 col">
                             <div class="row">
                               <strong class="d-block d-sm-inline">Jenis Layanan</strong>
                             </div>
@@ -410,15 +402,15 @@ export default {
                               <a class="d-block d-sm-inline">{{ rate.courier_name }} {{ rate.courier_service_name }}</a>
                             </div>
                           </div>
-                          <div class="col-4">
+                          <div class="col-md-4 col">
                             <div class="row">
-                              <strong class="d-block d-sm-inline">Estimasi Pengiriman</strong>
+                              <strong class="d-block d-sm-inline text-truncate">Estimasi Pengiriman</strong>
                             </div>
                             <div class="row">
                               <a class="d-block d-sm-inline">{{ rate.duration }}</a>
                             </div>
                           </div>
-                          <div class="col-2">
+                          <div class="col-md-2 col">
                             <div class="row">
                               <strong class="d-block d-sm-inline">Tarif</strong>
                             </div>
@@ -463,7 +455,7 @@ export default {
             </div>
 
           </div>
-          <div class="col-lg-4">
+          <div class="col-lg-4" v-if="!overlay">
             <div class="card sticky-menu">
               <div class="card-body">
                 <div class="py-2">
@@ -473,7 +465,7 @@ export default {
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Harga 
+                    Total Harga
                   </div>
                   <div class="col">
                     <p>: Rp {{ formatPrice(totalPayment) }}</p>
@@ -481,7 +473,7 @@ export default {
                 </div>
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total biaya pengiriman 
+                    Total biaya pengiriman
                   </div>
                   <div class="col">
                     <p>: Rp. {{ formatPrice(selectedCourier ? selectedCourier.price : 0) }}</p>
@@ -490,15 +482,13 @@ export default {
                 <hr class="horizontal dark">
                 <div class="row ring-bayar">
                   <div class="col-7">
-                    Total Bayar 
+                    Total Bayar
                   </div>
                   <div class="col">
                     <p>: Rp {{ formatPrice(totalPayment + (selectedCourier ? selectedCourier.price : 0)) }}</p>
                   </div>
                 </div>
-                <button class="btn btn-primary w-100" 
-                @click="proceedToCheckout"
-                >Lanjut untuk Membayar</button>
+                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut untuk Membayar</button>
               </div>
             </div>
           </div>
@@ -601,7 +591,7 @@ a {
   position: sticky;
   top: 100px;
   padding: 3px;
-  
+
 }
 
 @media (max-width: 576px) {
@@ -620,8 +610,40 @@ a {
   }
 
   .row img {
-    width: 30px;
+    width: 80px;
     margin-right: 10px;
+  }
+
+  .large-checkbox {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+
+@media (max-width: 368px) {
+
+  .row .col-1,
+  .row .col-2,
+  .row .col-3,
+  .row .col-4,
+  .row .col-2 a,
+  .row .col-3 a,
+  .row .col-4 a,
+  .row .col-2 strong,
+  .row .col-3 strong,
+  .row .col-4 strong {
+    font-size: 8px;
+  }
+
+  .row img {
+    width: 80px;
+    margin-right: 10px;
+  }
+
+  .large-checkbox {
+    width: 1rem;
+    height: 1rem;
   }
 }
 </style>
