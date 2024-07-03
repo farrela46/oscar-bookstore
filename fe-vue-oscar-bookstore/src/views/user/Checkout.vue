@@ -177,7 +177,17 @@ export default {
       };
     },
     async proceedToCheckout() {
-      this.overlay = true
+      if (!this.selectedCourier) {
+        this.$notify({
+          type: 'warning',
+          title: 'Gagal',
+          text: 'Kurir harus dipilih',
+          color: 'green'
+        });
+        return;
+      }
+
+      this.overlay = true;
       try {
         const response = await axios.post(`${BASE_URL}/order/checkout`, {
           amount: this.totalPayment,
@@ -202,14 +212,15 @@ export default {
         const { paymentUrl } = response.data;
         window.open(paymentUrl, '_blank');
         setTimeout(() => {
-          this.$router.push('/orders')
-        }, 1000); // Adjust the delay as needed
+          this.$router.push('/orders');
+        }, 1000); 
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
       } finally {
-        this.overlay = false
+        this.overlay = false;
       }
     },
+
     async fetchShippingRates() {
       this.loadingKurir = true;
       if (!this.selectedAddressId) {
