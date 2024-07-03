@@ -182,7 +182,7 @@ export default {
             <label for="stok">Stok Buku</label>
             <input class="form-control" type="text" v-model="buku.stok" id="stok" />
             <br>
-            <button class="btn mb-2 btn-primary text-end" type="submit" @click="saveBuku">Simpan</button>
+            <button class="btn mb-2 btn-primary text-end" type="submit" @click="saveBuku">Save</button>
           </form>
         </div>
       </div>

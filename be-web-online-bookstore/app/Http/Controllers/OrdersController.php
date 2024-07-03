@@ -281,44 +281,6 @@ class OrdersController extends Controller
         }
     }
 
-    // public function getOrderDetail($transaction_id)
-    // {
-    //     $order = Order::with(['items.buku', 'address'])->where('transaction_id', $transaction_id)->first();
-
-    //     if ($order) {
-    //         return response()->json($order);
-    //     } else {
-    //         return response()->json(['error' => 'Order not found'], 404);
-    //     }
-    // }
-    // public function getOrderDetail($transaction_id)
-    // {
-    //     $order = Order::with(['items.buku.reviews', 'address'])
-    //         ->where('transaction_id', $transaction_id)
-    //         ->first();
-
-    //     if ($order) {
-    //         return response()->json($order);
-    //     } else {
-    //         return response()->json(['error' => 'Order not found'], 404);
-    //     }
-    // }
-
-    // public function getOrderDetail($transaction_id)
-    // {
-    //     $order = Order::with([
-    //         'items.buku.reviews' => function ($query) {
-    //             $query->where('user_id', auth()->id()); 
-    //         },
-    //         'address'
-    //     ])->where('transaction_id', $transaction_id)->first();
-
-    //     if ($order) {
-    //         return response()->json($order);
-    //     } else {
-    //         return response()->json(['error' => 'Order not found'], 404);
-    //     }
-    // }
 
     public function getOrderDetail($transaction_id)
     {

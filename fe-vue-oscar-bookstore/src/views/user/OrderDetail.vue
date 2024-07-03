@@ -566,10 +566,12 @@ export default {
                 <button v-if="orders.status == 'pending'" class="btn btn-primary w-100" @click="payNow"><i
                     class="fas fa-info-circle mx-2"></i> Cek Status Bayar</button>
                 <button
-                  v-if="orders.status == 'finished' && this.orders.items.some(item => item.buku.reviews.length === 0)"
+                  v-if="(orders.status == 'finished' || orders.status == 'onsite') && orders.items.some(item => item.buku.reviews.length === 0)"
                   style="border-color: black;" class="btn btn-outline-light btn-sm text-dark w-100"
-                  @click="dialogReview = true"><i class="fas fa-star"></i><a> </a>
-                  Berikan Ulasan </button>
+                  @click="dialogReview = true">
+                  <i class="fas fa-star"></i><a> </a>
+                  Berikan Ulasan
+                </button>
                 <button v-if="orders.status == 'delivered'" style="border-color: black;"
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
@@ -669,7 +671,7 @@ export default {
             <v-dialog v-model="dialogReview" max-width="788px">
               <v-card style="border-radius: 10px;">
                 <v-card-title>
-                  <span><a class="text-bold text-dark">Ulas dan Review </a></span>
+                  <span><a class="text-bold text-dark">Review Buku </a></span>
                 </v-card-title>
                 <v-card-text>
                   <div style="font-family: sans-serif">
