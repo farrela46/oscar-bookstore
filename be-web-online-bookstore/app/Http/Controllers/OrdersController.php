@@ -227,23 +227,92 @@ class OrdersController extends Controller
     }
 
     public function getAdminOrders(Request $request)
-    {
-        $statusFilter = $request->query('status');
+{
+    $statusFilter = $request->query('status');
+    $query = "
+        SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
+        FROM orders
+        LEFT JOIN users ON users.id = orders.user_id
+        LEFT JOIN items ON items.order_id = orders.id
+        LEFT JOIN bukus ON bukus.id = items.buku_id
+        ORDER BY orders.created_at DESC
+    ";
 
-        $orders = Order::with(['user', 'items.buku'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        if ($statusFilter) {
-            $orders = $orders->filter(function ($order) use ($statusFilter) {
-                return $order->status === $statusFilter;
-            });
-        }
-
-
-
-        return response()->json($orders->values());
+    if ($statusFilter) {
+        $query = "
+            SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
+            FROM orders
+            LEFT JOIN users ON users.id = orders.user_id
+            LEFT JOIN items ON items.order_id = orders.id
+            LEFT JOIN bukus ON bukus.id = items.buku_id
+            WHERE orders.status = ?
+            ORDER BY orders.created_at DESC
+        ";
+        $orders = DB::select($query, [$statusFilter]);
+    } else {
+        $orders = DB::select($query);
     }
+
+    $formattedOrders = collect($orders)->groupBy('order_id')->map(function ($orderGroup) {
+        $order = $orderGroup->first();
+        $items = $orderGroup->map(function ($item) {
+            return [
+                'id' => $item->item_id,
+                'order_id' => $item->order_id,
+                'buku_id' => $item->buku_id,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+                'buku' => [
+                    'id' => $item->buku_id,
+                    'no_isbn' => $item->no_isbn,
+                    'judul' => $item->judul,
+                    'desc' => $item->desc,
+                    'pengarang' => $item->pengarang,
+                    'penerbit' => $item->penerbit,
+                    'tahun_terbit' => $item->tahun_terbit,
+                    'foto' => asset('storage/buku_photos/' . basename($item->foto)),
+                    'stok' => $item->stok,
+                    'sold' => $item->sold,
+                    'harga' => $item->harga,
+                    'slug' => $item->slug,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at
+                ]
+            ];
+        });
+
+        return [
+            'id' => $order->order_id,
+            'user_id' => $order->user_id,
+            'address_id' => $order->address_id,
+            'transaction_id' => $order->transaction_id,
+            'bsorder_id' => $order->bsorder_id,
+            'total_payment' => $order->total_payment,
+            'shipping_cost' => $order->shipping_cost,
+            'waybill_id' => $order->waybill_id,
+            'status' => $order->status,
+            'courier_details' => $order->courier_details,
+            'items' => $items,
+            'link' => $order->link,
+            'created_at' => $order->created_at,
+            'updated_at' => $order->updated_at,
+            'user' => [
+                'id' => $order->user_id,
+                'name' => $order->name,
+                'email' => $order->email,
+                'role' => $order->role,
+                'no_telp' => $order->no_telp,
+                'email_verified_at' => $order->email_verified_at,
+                'created_at' => $order->created_at,
+                'updated_at' => $order->updated_at
+            ]
+        ];
+    })->values();
+
+    return response()->json($formattedOrders);
+}
 
 
 
@@ -366,7 +435,6 @@ class OrdersController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        // Decode courier_details
         $courierDetails = json_decode($results[0]->courier_details, true) ?? [];
 
         $order = [
