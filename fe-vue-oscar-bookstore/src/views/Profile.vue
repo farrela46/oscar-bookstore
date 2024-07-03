@@ -42,7 +42,8 @@ export default {
       },
       alamat: [],
       selectedAddressId: null,
-      confirmdeletion: false
+      confirmdeletion: false,
+      overlay : false
     };
   },
   created() {
@@ -162,7 +163,12 @@ export default {
         label: ''
       };
     },
+    cancelAlamat() {
+      this.dialog = false,
+      this.resetForm();
+    },
     async fetchUserAddresses() {
+      this.overlay = true
       try {
         const response = await axios.get(`${BASE_URL}/address/get`, {
           headers: {
@@ -172,6 +178,8 @@ export default {
         this.alamat = response.data.addresses;
       } catch (error) {
         console.error('Error fetching addresses:', error);
+      } finally {
+        this.overlay = false
       }
     },
     async deleteAddress(id) {
@@ -204,6 +212,7 @@ export default {
       }
     },
     async getUser() {
+      this.overlay = true
       try {
         const response = await axios.get(`${BASE_URL}/user`, {
           headers: {
@@ -218,6 +227,8 @@ export default {
           const errorMessage = error.response.data.message;
           console.log(errorMessage)
         }
+      } finally {
+        this.overlay = false
       }
     },
     async updateUser() {
@@ -267,6 +278,9 @@ export default {
 
     <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
     <div class="container-fluid">
+      <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
+        <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
+      </v-overlay>
       <div class="card shadow-lg" style="margin-top: 30px;">
         <div class="card-body p-3">
           <div class="row gx-4">
@@ -343,7 +357,9 @@ export default {
               </div>
             </div>
             <div class="card-body">
-              <p class="text-uppercase text-sm">Alamat Pengguna &nbsp;<span>({{ alamat.length }}/3)</span></p>
+              <p class="text-uppercase text-sm">Alamat Pengguna &nbsp;<span>
+                  <!-- ({{ alamat.length }}/3) -->
+                </span></p>
               <div class="row">
                 <argon-button @click="dialog = true" color="success" size="sm" class="ms-auto"><i
                     class="fas fa-plus"></i>&nbsp;Alamat</argon-button>
@@ -351,7 +367,7 @@ export default {
               <hr class="horizontal dark" />
               <div class="row">
                 <div v-for="item in alamat" :key="item.id" class="col-md-12 mb-3">
-                  <div class="border p-2 rounded-lg">
+                  <div class="border p-2 rounded-lg" >
                     <div class="row">
                       <div class="col">
                         <v-chip color="green" variant="elevated">
@@ -361,14 +377,14 @@ export default {
                     </div>
                     <div class="row">
                       <div class="col-md-9 col-9">
-                        <div class="mt-2">
-                          <a class="card-alamat">{{ item.penerima }}</a>
+                        <div class="mt-2" >
+                          <a class="card-alamat" style="color: grey;">{{ item.penerima }}</a>
                           <br>
-                          <a class="card-alamat">{{ item.alamat_lengkap }}</a>
+                          <a class="card-alamat" style="color: grey;">{{ item.alamat_lengkap }}</a>
                           <br>
-                          <a class="card-alamat">{{ item.name }}</a>
+                          <a class="card-alamat" style="color: grey;">{{ item.name }}</a>
                           <br>
-                          <a class="card-alamat">+62&nbsp;{{ item.no_penerima }}</a>
+                          <a class="card-alamat" style="color: grey;">+62&nbsp;{{ item.no_penerima }}</a>
                         </div>
                       </div>
                       <div class="col-md-3 col-3 d-flex align-items-center justify-content-center ">
@@ -405,51 +421,53 @@ export default {
                   style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
                 input kode pos!</a></div>
             <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-            <form>
-              <div class="mb-3">
-                <label for="Province" class="form-label">Provinsi</label>
-                <input type="text" class="form-control" id="province" v-model="address.provinsi">
-              </div>
-              <div class="mb-3">
-                <label for="City" class="form-label">Kota</label>
-                <input type="text" class="form-control" id="city" v-model="address.city">
-              </div>
-              <div class="mb-3">
-                <label for="District" class="form-label">Kecamatan</label>
-                <input type="text" class="form-control" id="district" v-model="address.district">
-              </div>
-              <div class="mb-3">
-                <label for="postal code" class="form-label">Kode Pos</label>
-                <input type="text" class="form-control" id="district" v-model="address.postal_code">
-              </div>
-              <div class="mb-3">
-                <label for="postal code" class="form-label">Alamat Lengkap</label>
-                <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
-              </div>
-              <hr class="horizontal dark" />
-              <div class="mb-3">
-                <label for="recepient" class="form-label">Penerima</label>
-                <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
-              </div>
-              <div class="mb-3">
-                <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1">+62</span>
-                  <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
-                    aria-label="phone" aria-describedby="basic-addon1">
+            <div class="wrap" v-if="selectedAddress">
+              <form >
+                <div class="mb-3">
+                  <label for="Province" class="form-label">Provinsi</label>
+                  <input type="text" class="form-control" id="province" v-model="address.provinsi">
                 </div>
-              </div>
-              <div class="mb-3">
-                <label for="addressNote" class="form-label">Label Alamat</label>
-                <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
-                  v-model="address.label">
-              </div>
-            </form>
+                <div class="mb-3">
+                  <label for="City" class="form-label">Kota</label>
+                  <input type="text" class="form-control" id="city" v-model="address.city">
+                </div>
+                <div class="mb-3">
+                  <label for="District" class="form-label">Kecamatan</label>
+                  <input type="text" class="form-control" id="district" v-model="address.district">
+                </div>
+                <div class="mb-3">
+                  <label for="postal code" class="form-label">Kode Pos</label>
+                  <input type="text" class="form-control" id="district" v-model="address.postal_code">
+                </div>
+                <div class="mb-3">
+                  <label for="postal code" class="form-label">Alamat Lengkap</label>
+                  <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
+                </div>
+                <hr class="horizontal dark" />
+                <div class="mb-3">
+                  <label for="recepient" class="form-label">Penerima</label>
+                  <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
+                </div>
+                <div class="mb-3">
+                  <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">+62</span>
+                    <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
+                      aria-label="phone" aria-describedby="basic-addon1">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="addressNote" class="form-label">Label Alamat</label>
+                  <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
+                    v-model="address.label">
+                </div>
+              </form>
+            </div>
           </v-card-text>
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
+            <v-btn color="blue darken-1" text @click="cancelAlamat">Batal</v-btn>
             <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
           </v-card-actions>
         </v-card>
