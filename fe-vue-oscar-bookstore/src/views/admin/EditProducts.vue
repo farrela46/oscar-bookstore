@@ -120,6 +120,7 @@ export default {
 
         console.log('Update successful:', response.data);
         this.retrieveBuku();
+        this.$refs.fileInput.value = null; 
       } catch (error) {
         console.error('Error updating buku:', error);
       }

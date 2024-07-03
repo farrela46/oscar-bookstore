@@ -26,10 +26,10 @@ class Buku extends Model
 
     // Buku.php
 
-    // public function getFotoUrlAttribute()
-    // {
-    //     return $this->foto ? asset('storage/' . $this->foto) : null;
-    // }
+    public function getFotoUrlAttribute()
+    {
+        return $this->foto ? asset('storage/' . $this->foto) : null;
+    }
 
     // public function getFotoAttribute($value)
     // {
@@ -37,20 +37,20 @@ class Buku extends Model
     // }
 
 
-    public function getFotoUrlAttribute()
-    {
-        return $this->attributes['foto'] ? asset('storage/buku_photos/' . basename($this->attributes['foto'])) : null;
-    }
+    // public function getFotoUrlAttribute()
+    // {
+    //     return $this->attributes['foto'] ? asset('storage/buku_photos/' . basename($this->attributes['foto'])) : null;
+    // }
 
-    public function getFotoAttribute($value)
-    {
-        return url('storage/buku_photos/' . basename($value));
-    }
+    // public function getFotoAttribute($value)
+    // {
+    //     return url('storage/buku_photos/' . basename($value));
+    // }
 
-    public function setFotoAttribute($value)
-    {
-        $this->attributes['foto'] = 'buku_photos/' . basename($value);
-    }
+    // public function setFotoAttribute($value)
+    // {
+    //     $this->attributes['foto'] = 'buku_photos/' . basename($value);
+    // }
 
     
 

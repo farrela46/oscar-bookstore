@@ -101,8 +101,9 @@ class BukusController extends Controller
         }
 
         if ($request->hasFile('foto')) {
-            if (Storage::exists($buku->foto)) {
-                Storage::delete($buku->foto);
+            $oldFilePath = str_replace('storage/', 'public/', $buku->foto);
+            if (Storage::exists($oldFilePath)) {
+                Storage::delete($oldFilePath);
             }
 
             $file = $request->file('foto');
@@ -122,6 +123,7 @@ class BukusController extends Controller
         $buku->harga = $request->input('harga');
         $buku->save();
 
+        // Update the categories
         $categories = json_decode($request->input('categories'), true);
         $categoryIds = Category::whereIn('nama', $categories)->pluck('id')->toArray();
         $buku->categories()->sync($categoryIds);
@@ -130,32 +132,6 @@ class BukusController extends Controller
     }
 
 
-    // public function getBuku(Request $request)
-    // {
-    //     $buku = Buku::with('categories')->get();
-
-    //     $bukuData = $buku->map(function ($item) {
-    //         $categoryNames = $item->categories->pluck('nama')->toArray();
-
-    //         return [
-    //             'id' => $item->id,
-    //             'no_isbn' => $item->no_isbn,
-    //             'judul' => $item->judul,
-    //             'desc' => $item->desc,
-    //             'pengarang' => $item->pengarang,
-    //             'penerbit' => $item->penerbit,
-    //             'tahun_terbit' => $item->tahun_terbit,
-    //             'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
-    //             'stok' => $item->stok,
-    //             'sold' => $item->sold,
-    //             'harga' => $item->harga,
-    //             'slug' => $item->slug,
-    //             'category' => $categoryNames,
-    //         ];
-    //     });
-
-    //     return response()->json($bukuData);
-    // }
 
     public function getBuku(Request $request)
     {
