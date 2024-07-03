@@ -35,6 +35,15 @@ class OrdersController extends Controller
 
         $totalPayment = $request->input('amount') + $request->input('selectedCourier.price');
 
+        $items = $request->input('items');
+
+        foreach ($items as $item) {
+            $buku = Buku::find($item['buku_id']);
+            if (!$buku || $item['quantity'] > $buku->stok) {
+                return response()->json(['error' => 'Stok tidak cukup untuk buku: ' . ($buku ? $buku->judul : 'Unknown')], 400);
+            }
+        }
+
         $order = Order::create([
             'user_id' => auth()->id(),
             'total_payment' => $totalPayment,
@@ -42,7 +51,7 @@ class OrdersController extends Controller
             'shipping_cost' => $request->input('selectedCourier.price'),
             'status' => 'pending',
             'courier_details' => json_encode($request->input('selectedCourier')),
-            'items' => json_encode($request->input('items')),
+            'items' => json_encode($items),
             'transaction_id' => $transactionId,
         ]);
         $orderId = $order->id;
@@ -66,8 +75,7 @@ class OrdersController extends Controller
 
             $order->update(['link' => $paymentUrl]);
 
-            // Create order items
-            foreach ($request->input('items') as $item) {
+            foreach ($items as $item) {
                 Item::create([
                     'order_id' => $order->id,
                     'buku_id' => $item['buku_id'],
@@ -76,9 +84,8 @@ class OrdersController extends Controller
                 ]);
             }
 
-            // Delete cart items after order creation
             Cart::where('user_id', auth()->id())
-                ->whereIn('buku_id', array_column($request->input('items'), 'buku_id'))
+                ->whereIn('buku_id', array_column($items, 'buku_id'))
                 ->delete();
 
             return response()->json(['paymentUrl' => $paymentUrl]);
@@ -87,47 +94,104 @@ class OrdersController extends Controller
         }
     }
 
+
     public function createOfflineOrder(Request $request)
     {
         $adminUserId = 1;
 
         $email = $request->input('email');
-        $user = User::where('email', $email)->first();
-        $userId = $user ? $user->id : $adminUserId;
+
+        if (empty($email)) {
+            $userId = $adminUserId;
+        } else {
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $userId = $user->id;
+        }
 
         $transactionId = (string) Str::uuid();
         $totalPayment = $request->input('amount');
 
-        $order = Order::create([
-            'user_id' => $userId,
-            'total_payment' => $totalPayment,
-            'address_id' => $request->input('address_id', 6),
-            'shipping_cost' => 0,
-            'status' => 'onsite',
-            'courier_details' => json_encode([]),
-            'items' => json_encode($request->input('items')),
-            'transaction_id' => $transactionId,
-        ]);
-        $orderId = $order->id;
+        $items = $request->input('items');
+        $orderItems = [];
 
         try {
-            foreach ($request->input('items') as $item) {
-                Item::create([
-                    'order_id' => $order->id,
-                    'buku_id' => $item['buku_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['totalPrice'],
-                ]);
+            foreach ($items as $item) {
+                $buku = Buku::find($item['buku_id']);
+
+                if (!$buku || $item['quantity'] > $buku->stok) {
+                    return response()->json(['error' => 'Stok tidak cukup untuk buku: ' . $buku->judul], 400);
+                }
             }
 
-            Cart::where('user_id', auth()->id())
-                ->whereIn('buku_id', array_column($request->input('items'), 'buku_id'))
+            $order = Order::create([
+                'user_id' => $userId,
+                'total_payment' => $totalPayment,
+                'address_id' => $request->input('address_id', 6),
+                'shipping_cost' => 0,
+                'status' => 'onsite',
+                'courier_details' => json_encode([]),
+                'items' => json_encode($items),
+                'transaction_id' => $transactionId,
+            ]);
+
+            $orderId = $order->id;
+
+            foreach ($items as $item) {
+                $buku = Buku::find($item['buku_id']);
+
+                if ($buku) {
+                    Item::create([
+                        'order_id' => $order->id,
+                        'buku_id' => $item['buku_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['totalPrice'],
+                    ]);
+
+                    $buku->stok -= $item['quantity'];
+                    $buku->sold += $item['quantity'];
+                    $buku->save();
+
+                    $orderItems[] = [
+                        'buku_id' => $item['buku_id'],
+                        'quantity' => $item['quantity'],
+                        'totalPrice' => $item['totalPrice'],
+                        'judul' => $buku->judul,
+                        'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
+                    ];
+                }
+            }
+
+            Cart::where('user_id', $userId)
+                ->whereIn('buku_id', array_column($items, 'buku_id'))
                 ->delete();
+
+            $response = [
+                'user' => [
+                    'id' => $userId,
+                    'email' => $email,
+                ],
+                'order' => [
+                    'id' => $orderId,
+                    'total_payment' => $totalPayment,
+                    'items' => $orderItems
+                ]
+            ];
+
+            return response()->json($response, 200);
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
+
+
 
 
 
