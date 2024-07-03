@@ -166,7 +166,7 @@ class OrdersController extends Controller
                 }
             }
 
-            Cart::where('user_id', $userId)
+            Cart::where('user_id', auth()->id())
                 ->whereIn('buku_id', array_column($items, 'buku_id'))
                 ->delete();
 

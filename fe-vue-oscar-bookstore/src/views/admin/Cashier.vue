@@ -45,7 +45,14 @@ export default {
       dialog: false,
       selectedCourier: null,
       totalPay: 0,
-      customerEmail: ''
+      customerEmail: '',
+      orderInvoice: {
+        user: {},
+        order: {
+          items: []
+        }
+      },
+      dialogCashier: false
     };
   },
 
@@ -99,6 +106,10 @@ export default {
 
     selectCourier(rate) {
       this.selectedCourier = rate;
+    },
+    closeModalDelete() {
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
+      modal.hide();
     },
     searchWithDelay() {
       this.loadingRegist = true;
@@ -222,14 +233,18 @@ export default {
         });
 
         console.log(response);
-        this.$router.push('/admin/cart');
+        this.orderInvoice = response.data;
       } catch (error) {
         console.error('Error creating offline order:', error);
       } finally {
         this.overlay = false;
+        this.dialogCashier = true;
       }
     },
-
+    pesananSelesai() {
+      this.dialogCashier = false;
+      this.$router.push('/admin/cart');
+    },
     async proceedToCheckout() {
       this.overlay = true
       try {
@@ -393,7 +408,7 @@ export default {
                   <h3 class="card-title">Rincian Belanja</h3>
                 </div>
                 <hr class="horizontal dark">
-                <argon-input type="text" placeholder="Email Pelanggan" v-model="customerEmail" />
+
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
@@ -403,6 +418,7 @@ export default {
                     <p>: Rp {{ formatPrice(totalPayment) }}</p>
                   </div>
                 </div>
+                <argon-input type="text" placeholder="Email Pelanggan" v-model="customerEmail" />
                 <hr class="horizontal dark">
                 <button class="btn btn-primary w-100" @click="createOfflineOrder">Lanjut untuk Membayar</button>
               </div>
@@ -427,74 +443,56 @@ export default {
             </div>
           </div>
         </div>
-        <v-dialog v-model="dialog" persistent max-width="600px">
+        <v-dialog v-model="dialogCashier" persistent max-width="788px">
           <v-card>
             <v-card-title>
-              <span class="headline">Tambah Alamat</span>
+              <span class="headline">Order Created</span>
             </v-card-title>
-
             <v-card-text>
-              <div class="mb-3">
-                <label for="searchQuery" class="form-label">Cari Lokasi</label>
-                <input type="text" class="form-control" id="searchQuery" v-model="searchQuery" @input="searchWithDelay">
+              <div class="mb-3 row">
+                <div class="col-sm-2">
+                  <label for="status" class="col-form-label">Email User</label>
+                </div>
+                <div class="col-sm-10" style="padding-right: 20px">
+                  <input type="text" class="form-control" v-model="orderInvoice.user.email" disabled>
+                </div>
               </div>
-
-              <div v-if="searchResults.length" class="mb-3">
-                <label for="addressSelect" class="form-label">Pilih Alamat</label>
-                <select class="form-select" id="addressSelect" v-model="selectedAddresses" @change="filledAddress">
-                  <option v-for="result in searchResults" :key="result.id" :value="result">{{ result.name }}</option>
-                </select>
-              </div>
-              <div v-else><a style="font-size: 12px; color:red;"><i class="fas fa-info-circle"
-                    style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
-                  input kode pos!</a></div>
-              <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-              <form>
-                <div class="mb-3">
-                  <label for="Province" class="form-label">Provinsi</label>
-                  <input type="text" class="form-control" id="province" v-model="address.provinsi">
-                </div>
-                <div class="mb-3">
-                  <label for="City" class="form-label">Kota</label>
-                  <input type="text" class="form-control" id="city" v-model="address.city">
-                </div>
-                <div class="mb-3">
-                  <label for="District" class="form-label">Kecamatan</label>
-                  <input type="text" class="form-control" id="district" v-model="address.district">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Kode Pos</label>
-                  <input type="text" class="form-control" id="district" v-model="address.postal_code">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Alamat Lengkap</label>
-                  <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
-                </div>
-                <hr class="horizontal dark" />
-                <div class="mb-3">
-                  <label for="recepient" class="form-label">Penerima</label>
-                  <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
-                </div>
-                <div class="mb-3">
-                  <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">+62</span>
-                    <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
-                      aria-label="phone" aria-describedby="basic-addon1">
+              <div class="row">
+                <div class="mb-2 border" v-for="(item, index) in orderInvoice.order.items" :key="index"
+                  style="border-radius: 10px">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3 col-4">
+                        <div class="row">
+                          <div class="col-9">
+                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 col-8">
+                        <div class="row">
+                          <div class="col-9">
+                            <div class="row">
+                              <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.judul
+                                }}</a>
+                              <p><strong>Rp {{ formatPrice(item.totalPrice) }}</strong> </p>
+                              <p class="d-inline"><span class="mx-2">{{ item.quantity }} barang</span></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label for="addressNote" class="form-label">Label Alamat</label>
-                  <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
-                    v-model="address.label">
-                </div>
-              </form>
+              </div>
+              <div class="row">
+                <h4>Total Transaksi Rp. {{ formatPrice(orderInvoice.order.total_payment) }}</h4>
+              </div>
             </v-card-text>
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
-              <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
+              <v-btn color="blue darken-1" text @click="pesananSelesai">Selesai</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
