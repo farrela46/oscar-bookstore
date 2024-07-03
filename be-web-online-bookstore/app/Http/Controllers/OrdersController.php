@@ -9,6 +9,7 @@ use App\Models\Cart;
 use App\Models\Item;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Review;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -282,72 +283,177 @@ class OrdersController extends Controller
     }
 
 
+    // public function getOrderDetail($transaction_id)
+    // {
+    //     $isAdmin = auth()->user()->role === 'ADMIN';
+
+    //     $order = Order::with([
+    //         'items.buku.reviews' => function ($query) use ($isAdmin, $transaction_id) {
+    //             $query->whereIn('order_id', function ($subquery) use ($transaction_id) {
+    //                 $subquery->select('orders.id')
+    //                     ->from('orders')
+    //                     ->join('items', 'orders.id', '=', 'items.order_id')
+    //                     ->where('orders.transaction_id', $transaction_id);
+    //             });
+
+    //             if (!$isAdmin) {
+    //                 $query->where('user_id', auth()->id());
+    //             }
+    //         },
+    //         'address'
+    //     ])->where('transaction_id', $transaction_id)->first();
+
+    //     if ($order) {
+    //         return response()->json($order);
+    //     } else {
+    //         return response()->json(['error' => 'Order not found'], 404);
+    //     }
+    // }
+
     public function getOrderDetail($transaction_id)
     {
         $isAdmin = auth()->user()->role === 'ADMIN';
+        $userId = auth()->id();
 
-        $order = Order::with([
-            'items.buku.reviews' => function ($query) use ($isAdmin, $transaction_id) {
-                $query->whereIn('order_id', function ($subquery) use ($transaction_id) {
-                    $subquery->select('orders.id')
-                        ->from('orders')
-                        ->join('items', 'orders.id', '=', 'items.order_id')
-                        ->where('orders.transaction_id', $transaction_id);
-                });
+        $query = "
+        SELECT 
+            orders.*,
+            items.id AS item_id,
+            items.order_id,
+            items.buku_id,
+            items.quantity,
+            items.price AS item_price,
+            items.created_at AS item_created_at,
+            items.updated_at AS item_updated_at,
+            bukus.id AS buku_id,
+            bukus.no_isbn,
+            bukus.judul,
+            bukus.desc,
+            bukus.pengarang,
+            bukus.penerbit,
+            bukus.tahun_terbit,
+            bukus.foto,
+            bukus.stok,
+            bukus.sold,
+            bukus.harga,
+            bukus.slug,
+            bukus.created_at AS buku_created_at,
+            bukus.updated_at AS buku_updated_at,
+            addresses.id AS address_id,
+            addresses.user_id,
+            addresses.selected_address_id,
+            addresses.name,
+            addresses.penerima,
+            addresses.no_penerima,
+            addresses.provinsi,
+            addresses.kota,
+            addresses.kecamatan,
+            addresses.alamat_lengkap,
+            addresses.postal_code,
+            addresses.label,
+            addresses.created_at AS address_created_at,
+            addresses.updated_at AS address_updated_at
+        FROM orders
+        LEFT JOIN items ON items.order_id = orders.id
+        LEFT JOIN bukus ON bukus.id = items.buku_id
+        LEFT JOIN addresses ON orders.address_id = addresses.id
+        WHERE orders.transaction_id = :transactionId
+    ";
 
-                if (!$isAdmin) {
-                    $query->where('user_id', auth()->id());
-                }
-            },
-            'address'
-        ])->where('transaction_id', $transaction_id)->first();
+        $results = DB::select($query, ['transactionId' => $transaction_id]);
 
-        if ($order) {
-            return response()->json($order);
-        } else {
+        if (empty($results)) {
             return response()->json(['error' => 'Order not found'], 404);
         }
+
+        // Decode courier_details
+        $courierDetails = json_decode($results[0]->courier_details, true) ?? [];
+
+        $order = [
+            'id' => $results[0]->id,
+            'user_id' => $results[0]->user_id,
+            'address_id' => $results[0]->address_id,
+            'transaction_id' => $results[0]->transaction_id,
+            'total_payment' => $results[0]->total_payment,
+            'shipping_cost' => $results[0]->shipping_cost,
+            'status' => $results[0]->status,
+            'created_at' => $results[0]->created_at,
+            'updated_at' => $results[0]->updated_at,
+            'courier_details' => $courierDetails,
+            'items' => [],
+            'address' => [
+                'id' => $results[0]->address_id,
+                'user_id' => $results[0]->user_id,
+                'selected_address_id' => $results[0]->selected_address_id,
+                'name' => $results[0]->name,
+                'penerima' => $results[0]->penerima,
+                'no_penerima' => $results[0]->no_penerima,
+                'provinsi' => $results[0]->provinsi,
+                'kota' => $results[0]->kota,
+                'kecamatan' => $results[0]->kecamatan,
+                'alamat_lengkap' => $results[0]->alamat_lengkap,
+                'postal_code' => $results[0]->postal_code,
+                'label' => $results[0]->label,
+                'created_at' => $results[0]->address_created_at,
+                'updated_at' => $results[0]->address_updated_at
+            ]
+        ];
+
+        foreach ($results as $row) {
+            $order['items'][] = [
+                'id' => $row->item_id,
+                'order_id' => $row->order_id,
+                'buku_id' => $row->buku_id,
+                'quantity' => $row->quantity,
+                'price' => $row->item_price,
+                'created_at' => $row->item_created_at,
+                'updated_at' => $row->item_updated_at,
+                'buku' => [
+                    'id' => $row->buku_id,
+                    'no_isbn' => $row->no_isbn,
+                    'judul' => $row->judul,
+                    'desc' => $row->desc,
+                    'pengarang' => $row->pengarang,
+                    'penerbit' => $row->penerbit,
+                    'tahun_terbit' => $row->tahun_terbit,
+                    'foto' => asset('storage/buku_photos/' . basename($row->foto)),
+                    'stok' => $row->stok,
+                    'sold' => $row->sold,
+                    'harga' => $row->harga,
+                    'slug' => $row->slug,
+                    'created_at' => $row->buku_created_at,
+                    'updated_at' => $row->buku_updated_at,
+                    'reviews' => Review::where('buku_id', $row->buku_id)
+                        ->when(!$isAdmin, function ($query) use ($userId) {
+                            $query->where('user_id', $userId);
+                        })
+                        ->get()
+                        ->map(function ($review) {
+                            return [
+                                'id' => $review->id,
+                                'buku_id' => $review->buku_id,
+                                'user_id' => $review->user_id,
+                                'rating' => $review->rating,
+                                'review' => $review->review,
+                                'created_at' => $review->created_at,
+                                'updated_at' => $review->updated_at
+                            ];
+                        })
+                        ->toArray()
+                ]
+            ];
+        }
+
+        return response()->json($order);
     }
+
+
+
+
 
 
     //ORDERS
 
-    // public function makeOrder(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'origin_contact_name' => 'required|string',
-    //         'origin_contact_phone' => 'required|string',
-    //         'origin_address' => 'required|string',
-    //         'origin_note' => 'nullable|string',
-    //         'origin_postal_code' => 'required|integer',
-    //         'origin_area_id' => 'required|string',
-    //         'destination_contact_name' => 'required|string',
-    //         'destination_contact_phone' => 'required|string',
-    //         'destination_address' => 'required|string',
-    //         'destination_postal_code' => 'required|integer',
-    //         'destination_area_id' => 'required|string',
-    //         'courier_company' => 'required|string',
-    //         'courier_type' => 'required|string',
-    //         'delivery_type' => 'required|string',
-    //         'metadata' => 'nullable|array',
-    //         'items' => 'required|array',
-    //         'items.*.name' => 'required|string',
-    //         'items.*.description' => 'nullable|string',
-    //         'items.*.value' => 'required|numeric',
-    //         'items.*.quantity' => 'required|integer',
-    //         'items.*.height' => 'nullable|numeric',
-    //         'items.*.length' => 'nullable|numeric',
-    //         'items.*.weight' => 'required|numeric',
-    //         'items.*.width' => 'nullable|numeric',
-    //     ]);
-
-    //     try {
-    //         $response = $this->biteshipService->createOrder($validated);
-    //         return response()->json($response, 201);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
 
     public function makeOrder(Request $request)
     {

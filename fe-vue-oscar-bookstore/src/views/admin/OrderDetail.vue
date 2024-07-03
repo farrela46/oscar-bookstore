@@ -398,7 +398,7 @@ export default {
                       <p>{{ address.label }}</p>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4 p-2" v-if="courier.length > 0">
+                  <div class="row mb-2 mt-4 p-2" v-if="courier && Object.keys(courier).length > 0">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
