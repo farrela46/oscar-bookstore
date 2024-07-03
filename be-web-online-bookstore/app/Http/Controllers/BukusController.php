@@ -100,7 +100,6 @@ class BukusController extends Controller
             return response()->json(['message' => 'Buku tidak ditemukan'], 404);
         }
 
-        // Process file upload if a new file is provided
         if ($request->hasFile('foto')) {
             if (Storage::exists($buku->foto)) {
                 Storage::delete($buku->foto);
@@ -110,7 +109,7 @@ class BukusController extends Controller
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('public/buku_photos', $fileName);
 
-            $buku->foto = $filePath;
+            $buku->foto = 'storage/buku_photos/' . $fileName;
         }
 
         $buku->no_isbn = $request->input('no_isbn');
@@ -123,11 +122,13 @@ class BukusController extends Controller
         $buku->harga = $request->input('harga');
         $buku->save();
 
-        $categories = $request->input('categories');
-        $buku->categories()->sync($categories);
+        $categories = json_decode($request->input('categories'), true);
+        $categoryIds = Category::whereIn('nama', $categories)->pluck('id')->toArray();
+        $buku->categories()->sync($categoryIds);
 
         return response()->json(['message' => 'Successfully updated Buku'], 200);
     }
+
 
     // public function getBuku(Request $request)
     // {
