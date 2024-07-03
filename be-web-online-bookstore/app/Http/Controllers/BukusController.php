@@ -159,15 +159,28 @@ class BukusController extends Controller
     public function getBuku(Request $request)
     {
         $search = $request->input('search', '');
+        $sortBy = $request->input('sortBy', '');
 
         $buku = Buku::with('categories')
             ->when($search, function ($query, $search) {
-                $query->where('judul', 'like', "%{$search}%")
-                    ->orWhere('pengarang', 'like', "%{$search}%")
-                    ->orWhere('penerbit', 'like', "%{$search}%")
-                    ->orWhereHas('categories', function ($query) use ($search) {
-                        $query->where('nama', 'like', "%{$search}%");
-                    });
+                $query->where(function ($query) use ($search) {
+                    $query->where('judul', 'like', "%{$search}%")
+                        ->orWhere('pengarang', 'like', "%{$search}%")
+                        ->orWhere('penerbit', 'like', "%{$search}%")
+                        ->orWhereHas('categories', function ($query) use ($search) {
+                            $query->where('nama', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($sortBy, function ($query, $sortBy) {
+                if ($sortBy === 'lowstock') {
+                    $query->orderBy('stok', 'asc');
+                } elseif ($sortBy === 'mostsold') {
+                    $query->orderBy('sold', 'desc');
+                }
+            }, function ($query) {
+                // Default sort by most sold if no sortBy is provided
+                $query->orderBy('sold', 'desc');
             })
             ->get();
 
@@ -193,6 +206,7 @@ class BukusController extends Controller
 
         return response()->json($bukuData);
     }
+
 
 
 

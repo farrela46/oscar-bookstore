@@ -33,6 +33,7 @@ export default {
       dialog: false,
       showModal: false,
       selectedUserId: null,
+      overlay: false
     };
   },
   computed: {
@@ -57,7 +58,7 @@ export default {
       document.getElementById('closeModal').click();
     },
     async getAllReview() {
-      this.loading = true;
+      this.overlay = true;
       try {
         const response = await axios.get(`${BASE_URL}/review/all`, {
           headers: {
@@ -68,7 +69,7 @@ export default {
       } catch (error) {
         console.error(error);
       } finally {
-        this.loading = false;
+        this.overlay = false;
       }
     },
     async onSubmit() {
@@ -159,6 +160,9 @@ export default {
 <template>
   <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <div class="py-4 container-fluid">
+    <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
+        <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
+      </v-overlay>
     <div class="row">
       <div class="mb-2 card" v-for="(item, index) in reviews" :key="index">
         <div class="card-body">

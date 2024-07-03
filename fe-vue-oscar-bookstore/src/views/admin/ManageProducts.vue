@@ -126,22 +126,26 @@ export default {
       this.loading = true;
       try {
         const response = await axios.get(`${BASE_URL}/buku/get`, {
+          params: {
+            sortBy: 'lowstock'
+          },
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
 
-        this.items = response.data
+        this.items = response.data;
 
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error retrieving books:', error);
       } finally {
         this.loading = false;
       }
     },
+
     updateHarga() {
       const numericValue = parseInt(this.formattedHarga.replace(/\./g, ''), 10);
       this.buku.harga = isNaN(numericValue) ? '' : numericValue;
