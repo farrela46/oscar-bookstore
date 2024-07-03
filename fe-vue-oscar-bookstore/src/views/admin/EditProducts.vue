@@ -3,12 +3,28 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 // import AuthorsTable from "@/views/components/AuthorsTable.vue";
+import Navbar from "@/examples/Navbars/Navbar.vue";
+import Breadcrumbs from '@/components/Vuetify/Breadcrumbs.vue';
 
 export default {
   components: {
+    Navbar,
+    Breadcrumbs,
   },
   data() {
     return {
+      breadcrumbsItems: [
+        {
+          title: 'Product',
+          disabled: false,
+          href: '/admin/products',
+        },
+        {
+          title: '',
+          disabled: true,
+          href: '/',
+        }
+      ],
       overlay: false,
       currentCategory: '',
       currentCategoryID: '',
@@ -52,16 +68,20 @@ export default {
         this.overlay = false;
       }
     },
+    
     async retrieveBuku() {
       this.overlay = true;
       try {
-        const response = await axios.get(`${BASE_URL}/buku/get`, {
+
+        const slug = this.$route.params.slug;
+        const response = await axios.get(`${BASE_URL}/buku/detail/` + slug, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem('access_token')
           }
         });
 
         this.buku = response.data
+        this.breadcrumbsItems[1].title = this.buku.judul;
 
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
@@ -77,12 +97,13 @@ export default {
 </script>
 
 <template>
+  <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
   <div class="py-4 container-fluid">
+    <Breadcrumbs class="d-flex align-items-center mt-2 text-dark" :items="breadcrumbsItems" />
     <div class="row mt-3">
       <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">
         <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
       </v-overlay>
-      {{ buku }}
       <div class="row">
         <div class="col-md-12">
           <div class="card mb-4 pt-4 border-0 px-2">
