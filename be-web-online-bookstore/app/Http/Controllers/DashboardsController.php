@@ -135,7 +135,7 @@ class DashboardsController extends Controller
                 'sales' => $buku->sold,
                 'value' => $buku->harga * $buku->sold,
                 2,
-                'foto' => $buku->foto,
+                'foto' => asset('storage/buku_photos/' . basename($buku->foto)),
             ];
         });
 
