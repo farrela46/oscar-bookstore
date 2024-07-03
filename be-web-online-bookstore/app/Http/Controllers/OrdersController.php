@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Models\Buku;
 use App\Models\Cart;
 use App\Models\Item;
+use App\Models\User;
 use App\Models\Order;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
@@ -80,12 +81,58 @@ class OrdersController extends Controller
                 ->whereIn('buku_id', array_column($request->input('items'), 'buku_id'))
                 ->delete();
 
-            // Return the payment URL
             return response()->json(['paymentUrl' => $paymentUrl]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function createOfflineOrder(Request $request)
+    {
+        $adminUserId = 1;
+
+        $email = $request->input('email');
+        $user = User::where('email', $email)->first();
+        $userId = $user ? $user->id : $adminUserId;
+
+        $transactionId = (string) Str::uuid();
+        $totalPayment = $request->input('amount');
+
+        $order = Order::create([
+            'user_id' => $userId,
+            'total_payment' => $totalPayment,
+            'address_id' => $request->input('address_id', 6),
+            'shipping_cost' => 0,
+            'status' => 'onsite',
+            'courier_details' => json_encode([]),
+            'items' => json_encode($request->input('items')),
+            'transaction_id' => $transactionId,
+        ]);
+        $orderId = $order->id;
+
+        try {
+            foreach ($request->input('items') as $item) {
+                Item::create([
+                    'order_id' => $order->id,
+                    'buku_id' => $item['buku_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['totalPrice'],
+                ]);
+            }
+
+            Cart::where('user_id', auth()->id())
+                ->whereIn('buku_id', array_column($request->input('items'), 'buku_id'))
+                ->delete();
+
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
+
+
 
     public function getUserOrders(Request $request)
     {

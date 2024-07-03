@@ -53,6 +53,7 @@ class CartsController extends Controller
         $books = $cartItems->map(function ($cartItem) {
             return [
                 'id' => $cartItem->id,
+                'buku_id' => $cartItem->buku->id,
                 'no_isbn' => $cartItem->buku->no_isbn,
                 'judul' => $cartItem->buku->judul,
                 'desc' => $cartItem->buku->desc,

@@ -2,10 +2,13 @@
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
+import * as bootstrap from 'bootstrap';
+import ArgonInput from "@/components/ArgonInput.vue";
 
 export default {
   components: {
-    Navbar
+    Navbar,
+    ArgonInput
   },
   data() {
     return {
@@ -41,6 +44,8 @@ export default {
       shippingRates: [],
       dialog: false,
       selectedCourier: null,
+      totalPay: 0,
+      customerEmail: ''
     };
   },
 
@@ -65,6 +70,12 @@ export default {
       this.fillAddress();
       this.fetchShippingRates();
     },
+    totalPayment: {
+      handler(newValue) {
+        this.totalPay = newValue;
+      },
+      immediate: true
+    }
   },
   methods: {
     setupPage() {
@@ -125,39 +136,6 @@ export default {
         this.address.postal_code = this.selectedAddresses.postal_code;
       }
     },
-    async saveAddress() {
-      const addressData = {
-        selected_address_id: this.selectedAddresses.id,
-        name: this.selectedAddresses.name,
-        provinsi: this.selectedAddresses.administrative_division_level_1_name,
-        kota: this.selectedAddresses.administrative_division_level_2_name,
-        kecamatan: this.selectedAddresses.administrative_division_level_3_name,
-        postal_code: this.selectedAddresses.postal_code,
-        penerima: this.address.penerima,
-        alamat_lengkap: this.address.alamat_lengkap,
-        no_penerima: this.address.no_penerima,
-        label: this.address.label,
-      };
-
-      try {
-        await axios.post(`${BASE_URL}/address/store`, addressData, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.dialog = false,
-          this.$notify({
-            type: 'success',
-            title: 'Success',
-            text: 'Successfully Updated!',
-            color: 'green'
-          });
-        this.resetForm();
-        this.fetchUserAddresses();
-      } catch (error) {
-        console.error('Error saving address:', error);
-      }
-    },
     resetForm() {
       this.searchQuery = '';
       this.searchResults = [];
@@ -173,6 +151,85 @@ export default {
         label: ''
       };
     },
+    async removeOrder(id) {
+      try {
+        await axios.delete(`${BASE_URL}/cart/delete/` + id, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.retrieveCart();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    incrementQuantity(index) {
+      const order = this.orders[index];
+      const newQuantity = order.quantity + 1;
+      this.updateQuantity(index, order.id, newQuantity);
+    },
+    decrementQuantity(index) {
+      const order = this.orders[index];
+      const newQuantity = order.quantity - 1;
+      if (newQuantity > 0) {
+        this.updateQuantity(index, order.id, newQuantity);
+      }
+    },
+    openDeleteConfirmation(index) {
+      const orderId = this.orders[index].id;
+      this.selectedProductId = orderId
+      let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
+      modal.show();
+    },
+    confirmDelete() {
+      if (this.selectedProductId) {
+        this.removeOrder(this.selectedProductId);
+        this.closeModalDelete();
+      }
+    },
+    async updateQuantity(index, id, newQuantity) {
+      if (newQuantity < 1) return;
+      try {
+        await axios.put(`${BASE_URL}/cart/update/` + id, { quantity: newQuantity }, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.orders[index].quantity = newQuantity;
+        this.orders[index].totalPrice = newQuantity * this.orders[index].harga;
+
+        this.retrieveCart();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async createOfflineOrder() {
+      this.overlay = true;
+      try {
+        const response = await axios.post(`${BASE_URL}/order/onsite`, {
+          email: this.customerEmail,
+          amount: this.totalPay,
+          items: this.orders.map(order => ({
+            buku_id: order.buku_id,
+            quantity: order.quantity,
+            totalPrice: order.totalPrice,
+          })),
+        }, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('access_token'),
+            'Content-Type': 'application/json',
+          },
+        });
+
+        console.log(response);
+        this.$router.push('/admin/cart');
+      } catch (error) {
+        console.error('Error creating offline order:', error);
+      } finally {
+        this.overlay = false;
+      }
+    },
+
     async proceedToCheckout() {
       this.overlay = true
       try {
@@ -205,23 +262,6 @@ export default {
         console.error('Error proceeding to checkout:', error);
       } finally {
         this.overlay = false
-      }
-    },
-    async updateQuantity(index, id, newQuantity) {
-      if (newQuantity < 1) return;
-
-      try {
-        await axios.put(`${BASE_URL}/cart/update/` + id, { quantity: newQuantity }, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.orders[index].quantity = newQuantity;
-        this.orders[index].totalPrice = newQuantity * this.orders[index].harga;
-
-        this.retrieveCart();
-      } catch (error) {
-        console.error(error);
       }
     },
     async retrieveCart() {
@@ -319,10 +359,22 @@ export default {
                     </div>
                     <div class="col-md-9 col-8">
                       <div class="row">
-                        <div class="col-12">
+                        <div class="col-md-8">
                           <h5 class="text-truncate">{{ order.judul }}</h5>
                           <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{
         formatPrice(order.harga) }}</p>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="d-flex align-items-center">
+                            <i class="fas fa-minus-circle" style="cursor: pointer;"
+                              @click="decrementQuantity(index)"></i>
+                            <span class="mx-2">{{ order.quantity }}</span>
+                            <i class="fas fa-plus-circle" style="cursor: pointer;"
+                              @click="incrementQuantity(index)"></i>
+                            <button class="btn btn-link text-danger ms-3" @click="openDeleteConfirmation(index)">
+                              <i class="bi bi-trash"></i> Hapus
+                            </button>
+                          </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
                           <span><strong>Rp {{ formatPrice(order.quantity * order.harga) }}</strong></span>
@@ -333,7 +385,6 @@ export default {
                 </div>
               </div>
             </div>
-
           </div>
           <div class="col-lg-4">
             <div class="card sticky-menu">
@@ -342,6 +393,7 @@ export default {
                   <h3 class="card-title">Rincian Belanja</h3>
                 </div>
                 <hr class="horizontal dark">
+                <argon-input type="text" placeholder="Email Pelanggan" v-model="customerEmail" />
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
@@ -352,7 +404,25 @@ export default {
                   </div>
                 </div>
                 <hr class="horizontal dark">
-                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut untuk Membayar</button>
+                <button class="btn btn-primary w-100" @click="createOfflineOrder">Lanjut untuk Membayar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
+          aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-black" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to remove this product?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" @click="confirmDelete">Remove</button>
               </div>
             </div>
           </div>

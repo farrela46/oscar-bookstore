@@ -245,6 +245,8 @@ export default {
           return 'badge-success text-dark';
         case 'finished':
           return 'badge-success text-dark';
+        case 'onsite':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -267,6 +269,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'onsite':
+          return 'On Site';
         case 'failed':
           return 'Pembayaran Gagal';
         default:
@@ -394,7 +398,7 @@ export default {
                       <p>{{ address.label }}</p>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4 p-2">
+                  <div class="row mb-2 mt-4 p-2" v-if="courier.length > 0">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
@@ -562,7 +566,7 @@ export default {
                   @click="createOrder">Proses
                   Pesanan</button>
                 <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"
-                  v-if="orders.status != 'pending' && orders.status != 'process'"><i
+                  v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"><i
                     class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
               </div>

@@ -244,6 +244,8 @@ export default {
           return 'badge-success text-dark';
         case 'finished':
           return 'badge-success text-dark';
+        case 'onsite':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -266,6 +268,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'onsite':
+          return 'On Site';
         case 'failed':
           return 'Pembayaran Gagal';
         default:
@@ -394,7 +398,7 @@ export default {
                       <p>{{ address.label }}</p>
                     </div>
                   </div>
-                  <div class="row mb-2 mt-4 p-2">
+                  <div class="row mb-2 mt-4 p-2" v-if="courier.length > 0">
                     <div class="col-sm-12 border" style="border-radius: 10px;">
                       <div class="p-2">
                         <div class="row align-items-center py-2">
@@ -570,7 +574,7 @@ export default {
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
                   Ulas & Konfirmasi </button>
-                <button v-if="orders.status != 'pending' && orders.status != 'process'"
+                <button v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"
                   class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
                     class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
@@ -686,7 +690,7 @@ export default {
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
         item.buku.judul
-                                      }}</a>
+      }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">

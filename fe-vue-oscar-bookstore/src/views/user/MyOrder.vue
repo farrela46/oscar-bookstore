@@ -141,6 +141,8 @@ export default {
           return 'badge-success text-dark';
         case 'finished':
           return 'badge-success text-dark';
+        case 'onsite':
+          return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
         default:
@@ -163,6 +165,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'onsite':
+          return 'On Site';
         case 'failed':
           return 'Pembayaran Gagal';
         default:
@@ -195,8 +199,8 @@ export default {
                   <option value="delivery">Sedang Dikirim</option>
                   <option value="delivered">Terkirim</option>
                   <option value="finished">Selesai</option>
+                  <option value="onsite">OnSite</option>
                   <option value="expired">Expired</option>
-                  
                 </select>
               </div>
             </div>
