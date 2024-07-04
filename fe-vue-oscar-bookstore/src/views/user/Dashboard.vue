@@ -227,7 +227,7 @@ export default {
             <h6 class="text-muted" style="font-size: 10px"><a href="#">{{ item.pengarang }}</a></h6>
             <h6 class="text-uppercase  text-truncate" style="font-size: 16px;"><a>{{ item.judul }}</a></h6>
             <div class="d-flex align-items-center">
-              <a class="text-muted"><b>Stock: </b>{{ item.stok }}</a>
+              <a class="text-muted"><i class="fas fa-star mx-1" style="color: #FFEB3B;"></i>{{ item.average_rating }} &#x2022; {{ item.sold }} Terjual</a>
             </div>
             <div class="d-flex align-items-center">
               <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a>

@@ -159,30 +159,38 @@ class BukusController extends Controller
             }, function ($query) {
                 $query->orderBy('sold', 'desc');
             })
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $averageRating = DB::table('reviews')
+                    ->where('buku_id', $item->id)
+                    ->avg('rating');
 
-        $bukuData = $buku->map(function ($item) {
-            $categoryNames = $item->categories->pluck('nama')->toArray();
+                $roundedRating = $averageRating ? round($averageRating) : 0;
 
-            return [
-                'id' => $item->id,
-                'no_isbn' => $item->no_isbn,
-                'judul' => $item->judul,
-                'desc' => $item->desc,
-                'pengarang' => $item->pengarang,
-                'penerbit' => $item->penerbit,
-                'tahun_terbit' => $item->tahun_terbit,
-                'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
-                'stok' => $item->stok,
-                'sold' => $item->sold,
-                'harga' => $item->harga,
-                'slug' => $item->slug,
-                'category' => $categoryNames,
-            ];
-        });
+                $categoryNames = $item->categories->pluck('nama')->toArray();
 
-        return response()->json($bukuData);
+                return [
+                    'id' => $item->id,
+                    'no_isbn' => $item->no_isbn,
+                    'judul' => $item->judul,
+                    'desc' => $item->desc,
+                    'pengarang' => $item->pengarang,
+                    'penerbit' => $item->penerbit,
+                    'tahun_terbit' => $item->tahun_terbit,
+                    'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
+                    'stok' => $item->stok,
+                    'sold' => $item->sold,
+                    'harga' => $item->harga,
+                    'slug' => $item->slug,
+                    'category' => $categoryNames,
+                    'average_rating' => $roundedRating
+                ];
+            });
+
+        return response()->json($buku);
     }
+
+
 
 
 
