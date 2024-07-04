@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Buku;
-use App\Models\BukuCategory;
 use App\Models\Image;
 use App\Models\Category;
 use Illuminate\Support\Str;
+use App\Models\BukuCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BukusController extends Controller
@@ -156,7 +157,6 @@ class BukusController extends Controller
                     $query->orderBy('sold', 'desc');
                 }
             }, function ($query) {
-                // Default sort by most sold if no sortBy is provided
                 $query->orderBy('sold', 'desc');
             })
             ->get();
@@ -194,6 +194,12 @@ class BukusController extends Controller
         if (!$buku) {
             return response()->json(['error' => 'Buku not found'], 404);
         }
+
+        $ratingData = DB::table('reviews')
+            ->selectRaw('AVG(rating) as average_rating, COUNT(*) as total_reviews')
+            ->where('buku_id', $buku->id)
+            ->first();
+
         $categoryNames = $buku->categories->pluck('nama')->implode(', ');
 
         $bukuData = [
@@ -208,10 +214,15 @@ class BukusController extends Controller
             'stok' => $buku->stok,
             'sold' => $buku->sold,
             'harga' => $buku->harga,
-            'category' => $categoryNames
+            'category' => $categoryNames,
+            'average_rating' => $ratingData->average_rating ?: 0, // Use 0 if no ratings
+            'total_reviews' => $ratingData->total_reviews
         ];
+
+        // Return the response as JSON
         return response()->json($bukuData);
     }
+
 
 
     public function delete($id)

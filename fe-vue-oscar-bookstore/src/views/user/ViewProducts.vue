@@ -210,6 +210,8 @@ export default {
             <div class="col-md-9 d-flex flex-column justify-content-between">
               <a class="title-author mt-1 text-dark">{{ products.pengarang }}</a>
               <h2 style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">{{ products.judul }}</h2>
+              <v-rating v-model="products.average_rating" density="compact" readonly half-increments hover active-color="yellow"
+              color="grey"></v-rating>
               <hr>
               <h3 class="title-deskripsi">Deskripsi Buku</h3>
               <div>

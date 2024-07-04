@@ -39,7 +39,7 @@ class ReviewsController extends Controller
     public function getReviewBook($buku_id)
     {
         $reviews = Review::where('buku_id', $buku_id)
-            ->with('user')
+            ->with('user')->orderBy('created_at', 'desc')
             ->get();
 
         // Return reviews with user information
