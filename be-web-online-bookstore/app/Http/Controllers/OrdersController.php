@@ -504,6 +504,8 @@ class OrdersController extends Controller
             'user_id' => $results[0]->user_id,
             'address_id' => $results[0]->address_id,
             'transaction_id' => $results[0]->transaction_id,
+            'bsorder_id' => $results[0]->bsorder_id,
+            'waybill_id' => $results[0]->waybill_id,
             'total_payment' => $results[0]->total_payment,
             'shipping_cost' => $results[0]->shipping_cost,
             'status' => $results[0]->status,
