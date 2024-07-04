@@ -227,9 +227,9 @@ class OrdersController extends Controller
     }
 
     public function getAdminOrders(Request $request)
-{
-    $statusFilter = $request->query('status');
-    $query = "
+    {
+        $statusFilter = $request->query('status');
+        $query = "
         SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
         FROM orders
         LEFT JOIN users ON users.id = orders.user_id
@@ -238,8 +238,8 @@ class OrdersController extends Controller
         ORDER BY orders.created_at DESC
     ";
 
-    if ($statusFilter) {
-        $query = "
+        if ($statusFilter) {
+            $query = "
             SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
             FROM orders
             LEFT JOIN users ON users.id = orders.user_id
@@ -248,71 +248,71 @@ class OrdersController extends Controller
             WHERE orders.status = ?
             ORDER BY orders.created_at DESC
         ";
-        $orders = DB::select($query, [$statusFilter]);
-    } else {
-        $orders = DB::select($query);
-    }
+            $orders = DB::select($query, [$statusFilter]);
+        } else {
+            $orders = DB::select($query);
+        }
 
-    $formattedOrders = collect($orders)->groupBy('order_id')->map(function ($orderGroup) {
-        $order = $orderGroup->first();
-        $items = $orderGroup->map(function ($item) {
-            return [
-                'id' => $item->item_id,
-                'order_id' => $item->order_id,
-                'buku_id' => $item->buku_id,
-                'quantity' => $item->quantity,
-                'price' => $item->price,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
-                'buku' => [
-                    'id' => $item->buku_id,
-                    'no_isbn' => $item->no_isbn,
-                    'judul' => $item->judul,
-                    'desc' => $item->desc,
-                    'pengarang' => $item->pengarang,
-                    'penerbit' => $item->penerbit,
-                    'tahun_terbit' => $item->tahun_terbit,
-                    'foto' => asset('storage/buku_photos/' . basename($item->foto)),
-                    'stok' => $item->stok,
-                    'sold' => $item->sold,
-                    'harga' => $item->harga,
-                    'slug' => $item->slug,
+        $formattedOrders = collect($orders)->groupBy('order_id')->map(function ($orderGroup) {
+            $order = $orderGroup->first();
+            $items = $orderGroup->map(function ($item) {
+                return [
+                    'id' => $item->item_id,
+                    'order_id' => $item->order_id,
+                    'buku_id' => $item->buku_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
                     'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at
+                    'updated_at' => $item->updated_at,
+                    'buku' => [
+                        'id' => $item->buku_id,
+                        'no_isbn' => $item->no_isbn,
+                        'judul' => $item->judul,
+                        'desc' => $item->desc,
+                        'pengarang' => $item->pengarang,
+                        'penerbit' => $item->penerbit,
+                        'tahun_terbit' => $item->tahun_terbit,
+                        'foto' => asset('storage/buku_photos/' . basename($item->foto)),
+                        'stok' => $item->stok,
+                        'sold' => $item->sold,
+                        'harga' => $item->harga,
+                        'slug' => $item->slug,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at
+                    ]
+                ];
+            });
+
+            return [
+                'id' => $order->order_id,
+                'user_id' => $order->user_id,
+                'address_id' => $order->address_id,
+                'transaction_id' => $order->transaction_id,
+                'bsorder_id' => $order->bsorder_id,
+                'total_payment' => $order->total_payment,
+                'shipping_cost' => $order->shipping_cost,
+                'waybill_id' => $order->waybill_id,
+                'status' => $order->status,
+                'courier_details' => $order->courier_details,
+                'items' => $items,
+                'link' => $order->link,
+                'created_at' => $order->created_at,
+                'updated_at' => $order->updated_at,
+                'user' => [
+                    'id' => $order->user_id,
+                    'name' => $order->name,
+                    'email' => $order->email,
+                    'role' => $order->role,
+                    'no_telp' => $order->no_telp,
+                    'email_verified_at' => $order->email_verified_at,
+                    'created_at' => $order->created_at,
+                    'updated_at' => $order->updated_at
                 ]
             ];
-        });
+        })->values();
 
-        return [
-            'id' => $order->order_id,
-            'user_id' => $order->user_id,
-            'address_id' => $order->address_id,
-            'transaction_id' => $order->transaction_id,
-            'bsorder_id' => $order->bsorder_id,
-            'total_payment' => $order->total_payment,
-            'shipping_cost' => $order->shipping_cost,
-            'waybill_id' => $order->waybill_id,
-            'status' => $order->status,
-            'courier_details' => $order->courier_details,
-            'items' => $items,
-            'link' => $order->link,
-            'created_at' => $order->created_at,
-            'updated_at' => $order->updated_at,
-            'user' => [
-                'id' => $order->user_id,
-                'name' => $order->name,
-                'email' => $order->email,
-                'role' => $order->role,
-                'no_telp' => $order->no_telp,
-                'email_verified_at' => $order->email_verified_at,
-                'created_at' => $order->created_at,
-                'updated_at' => $order->updated_at
-            ]
-        ];
-    })->values();
-
-    return response()->json($formattedOrders);
-}
+        return response()->json($formattedOrders);
+    }
 
 
 
@@ -409,9 +409,9 @@ class OrdersController extends Controller
             bukus.created_at AS buku_created_at,
             bukus.updated_at AS buku_updated_at,
             addresses.id AS address_id,
-            addresses.user_id,
+            addresses.user_id AS address_user_id,
             addresses.selected_address_id,
-            addresses.name,
+            addresses.name AS address_name,
             addresses.penerima,
             addresses.no_penerima,
             addresses.provinsi,
@@ -451,9 +451,9 @@ class OrdersController extends Controller
             'items' => [],
             'address' => [
                 'id' => $results[0]->address_id,
-                'user_id' => $results[0]->user_id,
+                'user_id' => $results[0]->address_user_id,
                 'selected_address_id' => $results[0]->selected_address_id,
-                'name' => $results[0]->name,
+                'name' => $results[0]->address_name,
                 'penerima' => $results[0]->penerima,
                 'no_penerima' => $results[0]->no_penerima,
                 'provinsi' => $results[0]->provinsi,
@@ -468,6 +468,26 @@ class OrdersController extends Controller
         ];
 
         foreach ($results as $row) {
+            $reviews = Review::where('buku_id', $row->buku_id)
+                ->where('order_id', $row->order_id) // Added condition to match order_id
+                ->when(!$isAdmin, function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->get()
+                ->map(function ($review) {
+                    return [
+                        'id' => $review->id,
+                        'buku_id' => $review->buku_id,
+                        'user_id' => $review->user_id,
+                        'order_id' => $review->order_id, // Ensure order_id is included
+                        'rating' => $review->rating,
+                        'comment' => $review->comment,
+                        'created_at' => $review->created_at,
+                        'updated_at' => $review->updated_at
+                    ];
+                })
+                ->toArray();
+
             $order['items'][] = [
                 'id' => $row->item_id,
                 'order_id' => $row->order_id,
@@ -491,29 +511,14 @@ class OrdersController extends Controller
                     'slug' => $row->slug,
                     'created_at' => $row->buku_created_at,
                     'updated_at' => $row->buku_updated_at,
-                    'reviews' => Review::where('buku_id', $row->buku_id)
-                        ->when(!$isAdmin, function ($query) use ($userId) {
-                            $query->where('user_id', $userId);
-                        })
-                        ->get()
-                        ->map(function ($review) {
-                            return [
-                                'id' => $review->id,
-                                'buku_id' => $review->buku_id,
-                                'user_id' => $review->user_id,
-                                'rating' => $review->rating,
-                                'review' => $review->review,
-                                'created_at' => $review->created_at,
-                                'updated_at' => $review->updated_at
-                            ];
-                        })
-                        ->toArray()
+                    'reviews' => $reviews
                 ]
             ];
         }
 
         return response()->json($order);
     }
+
 
 
 
