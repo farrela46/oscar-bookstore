@@ -165,7 +165,7 @@ class BukusController extends Controller
                     ->where('buku_id', $item->id)
                     ->avg('rating');
 
-                $roundedRating = $averageRating ? round($averageRating) : 0;
+                $roundedRating = $averageRating ? $this->roundToHalf($averageRating) : 0;
 
                 $categoryNames = $item->categories->pluck('nama')->toArray();
 
@@ -190,6 +190,31 @@ class BukusController extends Controller
         return response()->json($buku);
     }
 
+    /**
+     * Round a number to the nearest half (0.5).
+     *
+     * @param float $number
+     * @return float
+     */
+    private function roundToHalf($number)
+    {
+        // Round to the nearest half (0.5) but round down if the decimal is less than 0.25
+        $rounded = round($number * 2) / 2;
+        $decimal = $number - floor($number);
+
+        if ($decimal < 0.25) {
+            $rounded = floor($number);
+        } elseif ($decimal >= 0.25 && $decimal < 0.75) {
+            $rounded = floor($number) + 0.5;
+        } else {
+            $rounded = ceil($number);
+        }
+
+        return $rounded;
+    }
+
+
+
 
 
 
@@ -203,13 +228,19 @@ class BukusController extends Controller
             return response()->json(['error' => 'Buku not found'], 404);
         }
 
+        // Fetch rating data
         $ratingData = DB::table('reviews')
             ->selectRaw('AVG(rating) as average_rating, COUNT(*) as total_reviews')
             ->where('buku_id', $buku->id)
             ->first();
 
+        // Round the average rating to the nearest 0.5
+        $roundedRating = $ratingData->average_rating ? $this->roundToHalf($ratingData->average_rating) : 0;
+
+        // Fetch category names
         $categoryNames = $buku->categories->pluck('nama')->implode(', ');
 
+        // Build the book data array
         $bukuData = [
             'id' => $buku->id,
             'no_isbn' => $buku->no_isbn,
@@ -223,14 +254,13 @@ class BukusController extends Controller
             'sold' => $buku->sold,
             'harga' => $buku->harga,
             'category' => $categoryNames,
-            'average_rating' => $ratingData->average_rating ?: 0, // Use 0 if no ratings
+            'average_rating' => $roundedRating,
             'total_reviews' => $ratingData->total_reviews
         ];
 
         // Return the response as JSON
         return response()->json($bukuData);
     }
-
 
 
     public function delete($id)
