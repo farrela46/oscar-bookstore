@@ -19,8 +19,13 @@ class ReviewsController extends Controller
         ]);
 
         $review = Review::create($validated);
+
         $order = Order::findOrFail($validated['order_id']);
-        $order->status = 'finished';
+
+        if (in_array($order->status, ['delivered', 'finished'])) {
+            $order->status = 'finished';
+        }
+
         $order->save();
 
         return response()->json([
@@ -29,6 +34,7 @@ class ReviewsController extends Controller
             'data' => $review
         ], 201);
     }
+
 
     public function getReviewBook($buku_id)
     {

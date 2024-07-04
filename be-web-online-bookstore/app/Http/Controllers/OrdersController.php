@@ -204,7 +204,6 @@ class OrdersController extends Controller
         $userId = $request->user()->id;
         $statusFilter = $request->query('status');
 
-        // Construct the base query
         $query = "
         SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
         FROM orders
@@ -214,7 +213,6 @@ class OrdersController extends Controller
         ORDER BY orders.created_at DESC
     ";
 
-        // Apply status filter if provided
         if ($statusFilter) {
             $query = "
             SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
@@ -277,7 +275,6 @@ class OrdersController extends Controller
             ];
         })->values();
 
-        // Update pending orders to expired if they are older than 24 hours
         foreach ($formattedOrders as $order) {
             if ($order['status'] === 'pending' && Carbon::parse($order['created_at'])->diffInHours(Carbon::now()) > 24) {
                 DB::table('orders')
