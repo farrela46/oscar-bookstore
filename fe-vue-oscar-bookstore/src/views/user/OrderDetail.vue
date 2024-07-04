@@ -444,63 +444,64 @@ export default {
               </div>
             </div>
             <div class="row">
-              
               <div class="mb-2 card" v-for="(item, index) in items" :key="index">
-                <div class="card-body">
-                  <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
-                  <div class="row">
-                    <div class="col-md-3 col-4">
-                      <div class="row">
-                        <div class="col">
-                          <img :src="item.buku.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                <router-link :to="'/products/' + item.buku.slug">
+                  <div class="card-body">
+                    <h6 class="card-title">Pesanan {{ index + 1 }}</h6>
+                    <div class="row">
+                      <div class="col-md-3 col-4">
+                        <div class="row">
+                          <div class="col">
+                            <img :src="item.buku.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-md-9 col-8">
-                      <div class="row">
-                        <div class="col-12">
-                          <div class="row">
-                            <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul
-                              }}</a>
-                          </div>
-                          <div class="row">
-                            <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
-        item.quantity }}
-                                barang</span> X Rp {{
-        formatPrice(item.buku.harga) }}</a>
-                          </div>
-                          <div class="row" v-if="item.buku.reviews.length > 0">
-                            <div style="color: black">
-                              <div class="row mt-2">
-                                <div class="col-12 border" style="border-radius: 10px;">
-                                  <div class="px-4" v-for="(review, reviewIndex) in item.buku.reviews"
-                                    :key="reviewIndex">
-                                    <div class="row">
-                                      <v-rating class="mt-2" density="compact" readonly v-model="review.rating"
-                                        active-color="yellow" color="grey"></v-rating>
-                                      <div class="row mt-2">
-                                        <p class="text-black">{{ review.comment }}</p>
+                      <div class="col-md-9 col-8">
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="row">
+                              <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul
+                                }}</a>
+                            </div>
+                            <div class="row">
+                              <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
+          item.quantity }}
+                                  barang</span> X Rp {{
+          formatPrice(item.buku.harga) }}</a>
+                            </div>
+                            <div class="row" v-if="item.buku.reviews.length > 0">
+                              <div style="color: black">
+                                <div class="row mt-2">
+                                  <div class="col-12 border" style="border-radius: 10px;">
+                                    <div class="px-4" v-for="(review, reviewIndex) in item.buku.reviews"
+                                      :key="reviewIndex">
+                                      <div class="row">
+                                        <v-rating class="mt-2" density="compact" readonly v-model="review.rating"
+                                          active-color="yellow" color="grey"></v-rating>
+                                        <div class="row mt-2">
+                                          <p class="text-black">{{ review.comment }}</p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div class="row" v-else>
-                            <div class="col-12 text-center"
-                              style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
-                              <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada review</p>
+                            <div class="row" v-else>
+                              <div class="col-12 text-center"
+                                style="border-radius: 10px; padding: 20px; background-color: #f8f9fa;">
+                                <p class="text-dark" style="margin: 0; font-size: 18px;">Belum ada review</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="col-12 d-flex justify-content-end align-items-center mt-2">
-                          <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
+                          <div class="col-12 d-flex justify-content-end align-items-center mt-2">
+                            <span><strong>Rp {{ formatPrice(item.price) }}</strong></span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </router-link>
               </div>
             </div>
           </div>
@@ -693,7 +694,7 @@ export default {
                                   <div class="row">
                                     <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
         item.buku.judul
-      }}</a>
+                                      }}</a>
                                   </div>
                                   <div class="row" style="max-width: 100px;">
                                     <div class="col">

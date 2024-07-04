@@ -201,7 +201,7 @@ export default {
           first_name: 'Farrel',
           last_name: '',
           email: 'farrel@example.com',
-          phone: '815559800895',
+          phone: '085179684793',
         }, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
