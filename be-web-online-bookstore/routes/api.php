@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\DashboardsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -8,10 +7,12 @@ use App\Http\Controllers\BukusController;
 use App\Http\Controllers\CartsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\BannersController;
 use App\Http\Controllers\ReviewsController;
 use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\DashboardsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,4 +106,10 @@ Route::prefix('/loc')->group(function () {
 Route::prefix('/dashboard')->middleware('auth:sanctum')->group(function () {
     Route::get('/get', [DashboardsController::class, 'getDashboardData']);
     Route::get('/book', [DashboardsController::class, 'getBookStatistics']);
+});
+
+
+Route::prefix('/banner')->middleware('auth:sanctum')->group(function () {
+    Route::get('/get', [BannersController::class, 'index']);
+    Route::get('/stre', [BannersController::class, 'store']);
 });
