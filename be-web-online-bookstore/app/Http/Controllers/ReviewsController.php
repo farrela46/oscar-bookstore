@@ -53,12 +53,17 @@ class ReviewsController extends Controller
     {
         $reviews = Review::with(['user', 'buku'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($review) {
+                $review->buku->foto = asset('storage/buku_photos/' . basename($review->buku->foto));
+                return $review;
+            });
 
         return response()->json([
             'success' => true,
             'data' => $reviews
         ]);
     }
+
 
 }

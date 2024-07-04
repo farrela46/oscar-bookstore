@@ -117,7 +117,7 @@ export default {
   <nav class="navbar navbar-main navbar-expand-lg px-0 mx-2 shadow border-radius-md z-999" v-bind="$attrs"
     id="navbarBlur" data-scroll="true">
     <div class="px-3 py-1 container-fluid">
-      <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
+      <router-link  class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
         to="/">OSCAR BOOKSTORE</router-link>
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" :class="'px-0 me-sm-4'" id="navbar">
         <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
@@ -260,6 +260,24 @@ export default {
                     <div class="d-flex flex-column ml-4 justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
                         My Profile
+                      </h6>
+                    </div>
+                  </div>
+                </a>
+              </li>
+              <li class="mb-2" v-if="role === 'ADMIN'">
+                <a class="dropdown-item border-radius-md" href="/admin/dashboard">
+                  <div class="py-1 d-flex">
+                    <div class="my-auto mx-3">
+                      <span style="font-size: 1rem;">
+                        <span style="color: black;">
+                          <i class="ni ni-tv-2"></i>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="d-flex flex-column ml-4 justify-content-center">
+                      <h6 class="mb-1 text-sm font-weight-normal">
+                        Dashboard
                       </h6>
                     </div>
                   </div>

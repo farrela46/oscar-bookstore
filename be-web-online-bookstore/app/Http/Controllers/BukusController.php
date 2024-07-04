@@ -177,7 +177,7 @@ class BukusController extends Controller
                     'pengarang' => $item->pengarang,
                     'penerbit' => $item->penerbit,
                     'tahun_terbit' => $item->tahun_terbit,
-                    'foto' => asset('storage/buku_photos/' . basename($item->foto)), // Adjust the path as needed
+                    'foto' => asset('storage/buku_photos/' . basename($item->foto)),
                     'stok' => $item->stok,
                     'sold' => $item->sold,
                     'harga' => $item->harga,
@@ -228,19 +228,15 @@ class BukusController extends Controller
             return response()->json(['error' => 'Buku not found'], 404);
         }
 
-        // Fetch rating data
         $ratingData = DB::table('reviews')
             ->selectRaw('AVG(rating) as average_rating, COUNT(*) as total_reviews')
             ->where('buku_id', $buku->id)
             ->first();
 
-        // Round the average rating to the nearest 0.5
         $roundedRating = $ratingData->average_rating ? $this->roundToHalf($ratingData->average_rating) : 0;
 
-        // Fetch category names
         $categoryNames = $buku->categories->pluck('nama')->implode(', ');
 
-        // Build the book data array
         $bukuData = [
             'id' => $buku->id,
             'no_isbn' => $buku->no_isbn,
