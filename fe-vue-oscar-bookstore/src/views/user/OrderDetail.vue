@@ -444,6 +444,7 @@ export default {
               </div>
             </div>
             <div class="row">
+              
               <div class="mb-2 card" v-for="(item, index) in items" :key="index">
                 <div class="card-body">
                   <h6 class="card-title">Pesanan {{ index + 1 }}</h6>

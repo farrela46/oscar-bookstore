@@ -201,30 +201,95 @@ class OrdersController extends Controller
 
     public function getUserOrders(Request $request)
     {
-        $user = $request->user();
+        $userId = $request->user()->id;
         $statusFilter = $request->query('status');
 
-        $orders = Order::where('user_id', $user->id)
-            ->with(['items.buku'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Construct the base query
+        $query = "
+        SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
+        FROM orders
+        LEFT JOIN items ON items.order_id = orders.id
+        LEFT JOIN bukus ON bukus.id = items.buku_id
+        WHERE orders.user_id = ?
+        ORDER BY orders.created_at DESC
+    ";
 
-        $now = Carbon::now();
-        foreach ($orders as $order) {
-            if ($order->status === 'pending' && $now->diffInHours($order->created_at) > 24) {
-                $order->status = 'expired';
-                $order->save();
+        // Apply status filter if provided
+        if ($statusFilter) {
+            $query = "
+            SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
+            FROM orders
+            LEFT JOIN items ON items.order_id = orders.id
+            LEFT JOIN bukus ON bukus.id = items.buku_id
+            WHERE orders.user_id = ? AND orders.status = ?
+            ORDER BY orders.created_at DESC
+        ";
+            $orders = DB::select($query, [$userId, $statusFilter]);
+        } else {
+            $orders = DB::select($query, [$userId]);
+        }
+
+        $formattedOrders = collect($orders)->groupBy('order_id')->map(function ($orderGroup) {
+            $order = $orderGroup->first();
+            $items = $orderGroup->map(function ($item) {
+                return [
+                    'id' => $item->item_id,
+                    'order_id' => $item->order_id,
+                    'buku_id' => $item->buku_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                    'buku' => [
+                        'id' => $item->buku_id,
+                        'no_isbn' => $item->no_isbn,
+                        'judul' => $item->judul,
+                        'desc' => $item->desc,
+                        'pengarang' => $item->pengarang,
+                        'penerbit' => $item->penerbit,
+                        'tahun_terbit' => $item->tahun_terbit,
+                        'foto' => asset('storage/buku_photos/' . basename($item->foto)),
+                        'stok' => $item->stok,
+                        'sold' => $item->sold,
+                        'harga' => $item->harga,
+                        'slug' => $item->slug,
+                        'created_at' => $item->created_at,
+                        'updated_at' => $item->updated_at
+                    ]
+                ];
+            });
+
+            return [
+                'id' => $order->order_id,
+                'user_id' => $order->user_id,
+                'address_id' => $order->address_id,
+                'transaction_id' => $order->transaction_id,
+                'bsorder_id' => $order->bsorder_id,
+                'total_payment' => $order->total_payment,
+                'shipping_cost' => $order->shipping_cost,
+                'waybill_id' => $order->waybill_id,
+                'status' => $order->status,
+                'courier_details' => json_decode($order->courier_details, true),
+                'items' => $items,
+                'link' => $order->link,
+                'created_at' => $order->created_at,
+                'updated_at' => $order->updated_at
+            ];
+        })->values();
+
+        // Update pending orders to expired if they are older than 24 hours
+        foreach ($formattedOrders as $order) {
+            if ($order['status'] === 'pending' && Carbon::parse($order['created_at'])->diffInHours(Carbon::now()) > 24) {
+                DB::table('orders')
+                    ->where('id', $order['id'])
+                    ->update(['status' => 'expired']);
+                $order['status'] = 'expired';
             }
         }
 
-        if ($statusFilter) {
-            $orders = $orders->filter(function ($order) use ($statusFilter) {
-                return $order->status === $statusFilter;
-            });
-        }
-
-        return response()->json($orders->values());
+        return response()->json($formattedOrders);
     }
+
 
     public function getAdminOrders(Request $request)
     {
@@ -479,7 +544,7 @@ class OrdersController extends Controller
                         'id' => $review->id,
                         'buku_id' => $review->buku_id,
                         'user_id' => $review->user_id,
-                        'order_id' => $review->order_id, // Ensure order_id is included
+                        'order_id' => $review->order_id,
                         'rating' => $review->rating,
                         'comment' => $review->comment,
                         'created_at' => $review->created_at,
