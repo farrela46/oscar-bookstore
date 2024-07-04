@@ -111,5 +111,5 @@ Route::prefix('/dashboard')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('/banner')->middleware('auth:sanctum')->group(function () {
     Route::get('/get', [BannersController::class, 'index']);
-    Route::get('/stre', [BannersController::class, 'store']);
+    Route::post('/store', [BannersController::class, 'store']);
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class BannersController extends Controller
@@ -11,17 +12,17 @@ class BannersController extends Controller
     {
         $request->validate([
             'judul' => 'required|string|max:255',
-            'image' => 'required|image|max:2048', // image file validation
+            'foto' => 'required|image|max:2048', // image file validation
         ]);
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
             $fileName = time() . '_' . Str::slug($file->getClientOriginalName(), '-') . '.' . $file->getClientOriginalExtension();
             $filePath = $file->storeAs('public/buku_banners', $fileName);
 
             $banner = Banner::create([
                 'judul' => $request->input('judul'),
-                'image_path' => $filePath,
+                'path' => $filePath,
             ]);
 
             return response()->json($banner, 201);
