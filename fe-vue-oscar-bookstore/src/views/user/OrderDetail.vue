@@ -528,7 +528,7 @@ export default {
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
                     <span v-if="orders.waybill_id">{{ orders.waybill_id }}</span>
-                    <span else>-</span>
+                    <span v-else> - </span>
                   </div>
                 </div>
                 <a><strong>Tanggal Pemesanan</strong></a>

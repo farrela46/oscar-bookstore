@@ -36,11 +36,13 @@ export default {
       ],
       showWhatsapp: false,
       inputChat: '',
-      searchQuery: ''
+      searchQuery: '',
+      banners:[]
     };
   },
   mounted() {
     this.retrieveBuku();
+    this.getBanner();
   },
   created() {
     this.store = this.$store;
@@ -119,6 +121,20 @@ export default {
     },
     searchProduct() {
       this.retrieveBuku(this.searchQuery);
+    }, async getBanner() {
+      this.overlay = true;
+      try {
+        const response = await axios.get(`${BASE_URL}/banner/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.banners = response.data;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.overlay = false;
+      }
     },
     async retrieveBuku(searchQuery = '') {
       try {
@@ -227,7 +243,8 @@ export default {
             <h6 class="text-muted" style="font-size: 10px"><a href="#">{{ item.pengarang }}</a></h6>
             <h6 class="text-uppercase  text-truncate" style="font-size: 16px;"><a>{{ item.judul }}</a></h6>
             <div class="d-flex align-items-center">
-              <a class="text-muted"><i class="fas fa-star mx-1" style="color: #FFEB3B;"></i>{{ item.average_rating }} &#x2022; {{ item.sold }} Terjual</a>
+              <a class="text-muted"><i class="fas fa-star mx-1" style="color: #FFEB3B;"></i>{{ item.average_rating }}
+                &#x2022; {{ item.sold }} Terjual</a>
             </div>
             <div class="d-flex align-items-center">
               <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a>

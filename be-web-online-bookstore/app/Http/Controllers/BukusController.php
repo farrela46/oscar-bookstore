@@ -72,26 +72,7 @@ class BukusController extends Controller
         }
     }
 
-    private function saveImage(array|UploadedFile $file, int $id): void
-    {
-        $file->store('buku_photos');
-        $path = Storage::path('buku_photos/' . $file->hashName());
-        $url = Storage::url('buku_photos/' . $file->hashName());
-        $this->replaceImage([
-            'buku_id' => $id,
-            'new_path' => $path,
-            'new_url' => $url
-        ]);
-    }
-
-    private function replaceImage(array $data): void
-    {
-        $buku = $data['buku_id'];
-        Image::create([
-            'file_path' => $data['new_path'],
-            'buku_id' => $buku
-        ]);
-    }
+   
 
     public function update(Request $request, $id)
     {

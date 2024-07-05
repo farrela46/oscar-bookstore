@@ -3,8 +3,8 @@ import axios from "axios";
 import BASE_URL from '@/api/config-api';
 // import ArgonPagination from "@/components/ArgonPagination.vue";
 // import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
-// import ArgonButton from "@/components/ArgonButton.vue";
-// import ArgonInput from "@/components/ArgonInput.vue";
+import ArgonButton from "@/components/ArgonButton.vue";
+import ArgonInput from "@/components/ArgonInput.vue";
 import moment from 'moment';
 import * as bootstrap from 'bootstrap';
 import Navbar from "@/examples/Navbars/Navbar.vue";
@@ -15,24 +15,21 @@ export default {
   components: {
     // ArgonPagination,
     // ArgonPaginationItem,
-    // ArgonButton,
-    // ArgonInput,
+    ArgonButton,
+    ArgonInput,
     Navbar
   },
   data() {
     return {
       reviews: [],
-      users_edit: [],
-      register: {
-        name: '',
-        email: '',
-        password: '',
+      banner: {
+        judul: '',
+        foto: null,
       },
+      banners: [],
       loading: false,
       loadingRegist: false,
-      dialog: false,
-      showModal: false,
-      selectedUserId: null,
+      addBanner: false,
       overlay: false
     };
   },
@@ -57,52 +54,67 @@ export default {
     closeModal() {
       document.getElementById('closeModal').click();
     },
-    async getAllReview() {
-      this.overlay = true;
-      try {
-        const response = await axios.get(`${BASE_URL}/review/all`, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        this.reviews = response.data.data;
-      } catch (error) {
-        console.error(error);
-      } finally {
-        this.overlay = false;
-      }
+    handleFileChange(event) {
+      this.banner.foto = event.target.files[0];
     },
-    async onSubmit() {
-      this.loadingRegist = true;
+    async storeBanner() {
+      this.loadingRegist = true
       try {
-        const response = await axios.post(`${BASE_URL}/register`, {
-          name: this.register.name,
-          email: this.register.email,
-          password: this.register.password
+
+        const formData = new FormData();
+        formData.append('judul', this.banner.judul);
+        if (this.banner.foto) {
+          formData.append('foto', this.banner.foto, this.banner.foto.name);
+        }
+
+        const token = localStorage.getItem('access_token');
+        const response = await axios.post(`${BASE_URL}/banner/store`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer ' + token,
+          },
         });
-        this.getAllUser();
+
+        console.log(response.data);
+
+        this.addBanner = false;
+        this.getBanner();
+        this.clearForm();
+
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: response.data.message,
-          color: 'green'
+          text: 'Banner berhasil ditambahkan',
+          color: 'green',
         });
       } catch (error) {
         console.error(error);
-
         if (error.response && error.response.data.message) {
           const errorMessage = error.response.data.message;
           this.$notify({
             type: 'error',
             title: 'Error',
             text: errorMessage,
-            color: 'red'
+            color: 'red',
           });
         }
       } finally {
-        this.loadingRegist = false;
-        this.clearForm();
-        this.closeModal();
+        this.loadingRegist = false
+      }
+    },
+    async getBanner() {
+      this.overlay = true;
+      try {
+        const response = await axios.get(`${BASE_URL}/banner/get`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.banners = response.data;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.overlay = false;
       }
     },
     async deleteUser(id) {
@@ -125,9 +137,8 @@ export default {
       }
     },
     clearForm() {
-      this.register.name = '';
-      this.register.email = '';
-      this.register.password = '';
+      this.banner.judul = '';
+      this.banner.foto = null;
     },
     openDeleteConfirmation(id) {
       this.selectedUserId = id;
@@ -152,7 +163,7 @@ export default {
     },
   },
   mounted() {
-    this.getAllReview();
+    this.getBanner();
   },
 };
 </script>
@@ -164,57 +175,32 @@ export default {
       <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
     </v-overlay>
     <div class="container">
+      <div class="row ps-3 mb-2  text-end bg-white p-2" style="border-radius: 10px">
+        <div class="col text-start d-flex align-items-center">
+          <h5><strong>List Banner</strong></h5>
+        </div>
+        <div class="col">
+          <argon-button @click="addBanner = true">Add Banner</argon-button>
+        </div>
+      </div>
 
       <div class="row">
-        <div class="mb-2 card" v-for="(item, index) in reviews" :key="index">
+        <div class="mb-2 card" v-for="(item, index) in banners" :key="index" style="max-height: 300px">
           <div class="card-body">
-            <h6 class="card-title">Nomor Pesanan {{ item.order_id }}</h6>
             <div class="row">
-              <div class="col-md-3 col-4">
+              <div class="col-md-10">
                 <div class="row">
-                  <div class="col">
-                    <img :src="item.buku.foto" class="img-fluid" alt="Book image"
-                      :style="{ maxWidth: isMobile ? '80px' : '100px' }">
-                  </div>
+                  <h4> {{ item.judul }} </h4>
+                </div>
+                <div class="row">
+                  <img :src="item.foto" class="rounded img-fluid" alt="Book Image" style="width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 5px;">
                 </div>
               </div>
-              <div class="col-md-9 col-8">
-                <div class="row">
-                  <div class="col-12">
-                    <div class="row">
-                      <a class="text-truncate text-bold" :class="{ 'mobile-text': isMobile }" style="color: black;">
-                        {{ item.buku.judul }}
-                      </a>
-                    </div>
-                    <div class="row">
-                      <a :class="{ 'author-text': isMobile }">{{ item.buku.pengarang }}</a>
-                    </div>
-                    <div class="row">
-                      <div style="color: black">
-                        <div class="row mt-2">
-                          <div class="col-12 border" style="border-radius: 10px;">
-                            <div class="px-4">
-                              <div class="row">
-                                <v-rating class="mt-2" density="compact" readonly v-model="item.rating"
-                                  active-color="yellow" color="grey"></v-rating>
-                                <div class="row mt-2">
-                                  <a :class="{ 'mobile-text': isMobile }" class="text-black"><strong>{{ item.user.name
-                                      }}</strong></a>
-                                </div>
-                                <div class="row mt-1">
-                                  <p :class="{ 'mobile-text': isMobile }" class="text-black">{{ item.comment }}</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-12 d-flex justify-content-end align-items-center mt-2">
-                    <span><strong>Rp {{ formatPrice(item.buku.harga) }}</strong></span>
-                  </div>
-                </div>
+              <div class="col-md-2 d-flex align-items-center justify-content-center">
+                <argon-button @click="addBanner = true" color="danger">Hapus</argon-button>
               </div>
             </div>
           </div>
@@ -230,6 +216,27 @@ export default {
         </argon-pagination>
       </div> -->
     </div>
+    <v-dialog v-model="addBanner" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Add Banner</span>
+        </v-card-title>
+
+        <v-form @submit.prevent="storeBanner"> <!-- Handle submit event -->
+          <v-card-text>
+            <argon-input type="text" placeholder="Judul Banner" v-model="banner.judul" />
+            <input type="file" class="form-control" ref="fileInput" @change="handleFileChange">
+            <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <button type="button" class="btn btn-secondary" @click="addBanner = false">Close</button>
+            <button type="submit" class="ms-2 btn btn-primary">Add</button> <!-- Use type="submit" -->
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
       aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

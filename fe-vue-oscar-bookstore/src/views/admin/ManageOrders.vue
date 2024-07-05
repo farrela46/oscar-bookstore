@@ -144,7 +144,7 @@ export default {
           return 'badge-success text-dark';
         case 'finished':
           return 'badge-success text-dark';
-          case 'onsite':
+        case 'onsite':
           return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
@@ -168,7 +168,7 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
-          case 'onsite':
+        case 'onsite':
           return 'On Site';
         case 'failed':
           return 'Pembayaran Gagal';
@@ -241,7 +241,11 @@ export default {
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
-                  <span><strong>Metode pembayaran</strong>: Midtrans</span>
+                  <span>
+                    <strong>Metode pembayaran</strong>:
+                    <span v-if="order.status === 'onsite'">On Site</span>
+                    <span v-else>Midtrans</span>
+                  </span>
                   <button class="btn btn-sm btn-primary" @click="lihatDetail(order)"
                     v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>

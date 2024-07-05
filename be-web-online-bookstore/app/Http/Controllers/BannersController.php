@@ -33,7 +33,13 @@ class BannersController extends Controller
 
     public function index()
     {
-        $banners = Banner::all();
+        $banners = Banner::all()->map(function ($item) {
+            return [
+                'judul' => $item->judul,
+                'foto' => asset('storage/buku_banners/' . basename($item->path)),
+            ];
+        });
+
         return response()->json($banners);
     }
 

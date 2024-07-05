@@ -65,6 +65,14 @@ export default {
         </sidenav-item>
       </li>
       <li v-if="userRole === 'ADMIN'" class="nav-item">
+        <sidenav-item to="/admin/banners" :class="getRoute() === 'manage banners' ? 'active' : ''"
+          navText="Manage Banners">
+          <template v-slot:icon>
+            <i class="fas fa-images text-danger text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
+      <li v-if="userRole === 'ADMIN'" class="nav-item">
         <sidenav-item to="/admin/orders" :class="getRoute() === 'manage orders' ? 'active' : ''"
           navText="Manage Orders">
           <template v-slot:icon>

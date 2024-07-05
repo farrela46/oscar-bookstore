@@ -3,8 +3,8 @@
 import { useStore } from "vuex";
 import axios from "axios";
 import BASE_URL from '@/api/config-api';
-import ArgonPagination from "@/components/ArgonPagination.vue";
-import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
+// import ArgonPagination from "@/components/ArgonPagination.vue";
+// import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
 import moment from 'moment';
@@ -15,8 +15,8 @@ import Navbar from "@/examples/Navbars/Navbar.vue";
 export default {
 
   components: {
-    ArgonPagination,
-    ArgonPaginationItem,
+    // ArgonPagination,
+    // ArgonPaginationItem,
     ArgonButton,
     ArgonInput,
     Navbar
@@ -524,7 +524,7 @@ export default {
             </div>
           </div>
         </div>
-        <div class="row mt-2">
+        <!-- <div class="row mt-2">
           <argon-pagination>
             <argon-pagination-item prev />
             <argon-pagination-item label="1" active />
@@ -532,7 +532,7 @@ export default {
             <argon-pagination-item label="3" />
             <argon-pagination-item next />
           </argon-pagination>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

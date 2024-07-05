@@ -229,7 +229,7 @@ export default {
         title: 'Pendapatan'
       },
       data: [{
-        type: 'line',
+        type: 'spline',
         dataPoints: this.dashboardData.monthly_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
       }]
     }" />
