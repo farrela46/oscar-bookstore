@@ -30,7 +30,8 @@ export default {
       loading: false,
       loadingRegist: false,
       addBanner: false,
-      overlay: false
+      overlay: false,
+      selectedBannerId: null,
     };
   },
   computed: {
@@ -117,9 +118,9 @@ export default {
         this.overlay = false;
       }
     },
-    async deleteUser(id) {
+    async deleteBanner(id) {
       try {
-        const response = await axios.delete(`${BASE_URL}/deleteUser/` + id, {
+        const response = await axios.delete(`${BASE_URL}/banner/delete/` + id, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
           },
@@ -128,10 +129,10 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'User berhasil dihapus',
+          text: 'Banner berhasil dihapus',
           color: 'green'
         });
-        this.getAllUser();
+        this.getBanner();
       } catch (error) {
         console.error(error);
       }
@@ -141,13 +142,13 @@ export default {
       this.banner.foto = null;
     },
     openDeleteConfirmation(id) {
-      this.selectedUserId = id;
+      this.selectedBannerId = id;
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.show();
     },
     confirmDelete() {
-      if (this.selectedUserId) {
-        this.deleteUser(this.selectedUserId);
+      if (this.selectedBannerId) {
+        this.deleteBanner(this.selectedBannerId);
         this.closeModalDelete();
       }
     },
@@ -200,7 +201,7 @@ export default {
                 </div>
               </div>
               <div class="col-md-2 col-sm-2 d-flex align-items-center justify-content-center">
-                <argon-button @click="addBanner = true" color="danger">Hapus</argon-button>
+                <argon-button @click="openDeleteConfirmation(item.id)" color="danger">Hapus</argon-button>
               </div>
             </div>
           </div>
@@ -232,7 +233,7 @@ export default {
           <v-card-actions>
             <v-spacer></v-spacer>
             <button type="button" class="btn btn-secondary" @click="addBanner = false">Close</button>
-            <button type="submit" class="ms-2 btn btn-primary">Add</button> <!-- Use type="submit" -->
+            <button type="submit" class="ms-2 btn btn-primary">Add</button> 
           </v-card-actions>
         </v-form>
       </v-card>
@@ -246,7 +247,7 @@ export default {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Are you sure you want to delete this user?
+            Are you sure you want to delete this banner?
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

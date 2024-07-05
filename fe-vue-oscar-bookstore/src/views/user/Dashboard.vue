@@ -37,7 +37,7 @@ export default {
       showWhatsapp: false,
       inputChat: '',
       searchQuery: '',
-      banners:[]
+      banners: []
     };
   },
   mounted() {
@@ -121,7 +121,8 @@ export default {
     },
     searchProduct() {
       this.retrieveBuku(this.searchQuery);
-    }, async getBanner() {
+    },
+    async getBanner() {
       this.overlay = true;
       try {
         const response = await axios.get(`${BASE_URL}/banner/get`, {
@@ -130,15 +131,20 @@ export default {
           }
         });
         this.banners = response.data;
+
+        setTimeout(() => {
+          this.overlay = false;
+        }, 3000);
+
       } catch (error) {
         console.error(error);
-      } finally {
-        this.overlay = false;
+        this.overlay = false; 
       }
     },
+
     async retrieveBuku(searchQuery = '') {
+      this.overlay = true;
       try {
-        this.overlay = true;
         const params = {};
         if (searchQuery) params.search = searchQuery;
 
@@ -150,16 +156,20 @@ export default {
         });
 
         this.products = response.data;
-
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
         }
+
+        setTimeout(() => {
+          this.overlay = false;
+        }, 3000);
+
       } catch (error) {
         console.error(error);
-      } finally {
-        this.overlay = false;
+        this.overlay = false; 
       }
     },
+
 
     setupPage() {
       this.store.state.hideConfigButton = true;
@@ -198,17 +208,13 @@ export default {
       </div>
       <div id="carouselExampleIndicators" class="carousel slide mb-3">
         <div class="carousel-indicators">
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
-            aria-current="true" aria-label="Slide 1"></button>
-          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
-            aria-label="Slide 2"></button>
+          <button v-for="(banner, index) in banners" :key="index" type="button"
+            :data-bs-target="'#carouselExampleIndicators'" :data-bs-slide-to="index" :class="{ 'active': index === 0 }"
+            :aria-current="index === 0 ? 'true' : ''" :aria-label="'Slide ' + (index + 1)"></button>
         </div>
         <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="../../assets/img/promote1.png" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="../../assets/img/promote2.jpg" class="d-block w-100" alt="...">
+          <div v-for="(banner, index) in banners" :key="index" :class="['carousel-item', { active: index === 0 }]">
+            <img :src="banner.foto" class="d-block w-100" :alt="banner.judul">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
@@ -222,6 +228,7 @@ export default {
           <span class="visually-hidden">Next</span>
         </button>
       </div>
+
       <router-link :to="'/products/' + item.slug" class="col-md-2 mb-2 col-6" v-for="item in products" :key="item.id">
         <div class="product-single-card shadow">
           <div class="product-top-area">
