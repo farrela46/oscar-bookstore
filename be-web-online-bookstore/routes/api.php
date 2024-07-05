@@ -109,7 +109,9 @@ Route::prefix('/dashboard')->middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::prefix('/banner')->middleware('auth:sanctum')->group(function () {
+Route::prefix('/banner')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/store', [BannersController::class, 'store']);
+    });
     Route::get('/get', [BannersController::class, 'index']);
-    Route::post('/store', [BannersController::class, 'store']);
 });

@@ -185,21 +185,21 @@ export default {
       </div>
 
       <div class="row">
-        <div class="mb-2 card" v-for="(item, index) in banners" :key="index" style="max-height: 300px">
+        <div class="mb-2 card" v-for="(item, index) in banners" :key="index" style="max-height: 400px">
           <div class="card-body">
             <div class="row">
-              <div class="col-md-10">
+              <div class="col-md-10 col-sm-10">
                 <div class="row">
                   <h4> {{ item.judul }} </h4>
                 </div>
                 <div class="row">
                   <img :src="item.foto" class="rounded img-fluid" alt="Book Image" style="width: 100%;
-  max-height: 200px;
+  max-height: 300px;
   object-fit: cover;
   border-radius: 5px;">
                 </div>
               </div>
-              <div class="col-md-2 d-flex align-items-center justify-content-center">
+              <div class="col-md-2 col-sm-2 d-flex align-items-center justify-content-center">
                 <argon-button @click="addBanner = true" color="danger">Hapus</argon-button>
               </div>
             </div>
