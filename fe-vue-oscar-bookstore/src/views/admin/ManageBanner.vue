@@ -178,10 +178,10 @@ export default {
     <div class="container">
       <div class="row ps-3 mb-2  text-end bg-white p-2" style="border-radius: 10px">
         <div class="col text-start d-flex align-items-center">
-          <h5><strong>List Banner</strong></h5>
+          <h5><strong>List Banner ({{ banners.length }}/3)</strong></h5>
         </div>
         <div class="col">
-          <argon-button @click="addBanner = true">Add Banner</argon-button>
+          <argon-button @click="addBanner = true" v-if="banners.length < 3 ">Add Banner</argon-button>
         </div>
       </div>
 

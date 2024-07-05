@@ -251,7 +251,6 @@ export default {
         if (error.response && error.response.data.message) {
           const errorMessage = error.response.data.message;
           console.log(errorMessage);
-          // Handle error notification if needed
         }
       }
     },

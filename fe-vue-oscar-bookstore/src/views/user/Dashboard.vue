@@ -138,7 +138,7 @@ export default {
 
       } catch (error) {
         console.error(error);
-        this.overlay = false; 
+        this.overlay = false;
       }
     },
 
@@ -166,7 +166,7 @@ export default {
 
       } catch (error) {
         console.error(error);
-        this.overlay = false; 
+        this.overlay = false;
       }
     },
 
@@ -214,7 +214,9 @@ export default {
         </div>
         <div class="carousel-inner">
           <div v-for="(banner, index) in banners" :key="index" :class="['carousel-item', { active: index === 0 }]">
-            <img :src="banner.foto" class="d-block w-100" :alt="banner.judul">
+            <img :src="banner.foto" class="d-block w-100" :alt="banner.judul" style="width: 100%;
+  max-height: 300px;
+  object-fit: cover;">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
