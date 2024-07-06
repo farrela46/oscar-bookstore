@@ -22,7 +22,8 @@ class Payment extends Model
         'card_type',
         'payment_option_type',
         'shopeepay_reference_number',
-        'reference_id'
+        'reference_id',
+        'link'
     ];
 
     public function order()

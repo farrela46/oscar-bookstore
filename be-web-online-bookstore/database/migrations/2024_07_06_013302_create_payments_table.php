@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->string('payment_option_type')->nullable();
             $table->string('shopeepay_reference_number')->nullable();
             $table->string('reference_id')->nullable();
+            $table->string('link')->nullable();
             $table->timestamps();
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');

@@ -205,20 +205,26 @@ class OrdersController extends Controller
         $statusFilter = $request->query('status');
 
         $query = "
-        SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
+        SELECT orders.*, items.*, bukus.*, payments.*, shipments.*, 
+               orders.id as order_id, items.id as item_id, bukus.id as buku_id, payments.id as payment_id, shipments.id as shipment_id
         FROM orders
         LEFT JOIN items ON items.order_id = orders.id
         LEFT JOIN bukus ON bukus.id = items.buku_id
+        LEFT JOIN payments ON payments.order_id = orders.id
+        LEFT JOIN shipments ON shipments.order_id = orders.id
         WHERE orders.user_id = ?
         ORDER BY orders.created_at DESC
     ";
 
         if ($statusFilter) {
             $query = "
-            SELECT orders.*, items.*, bukus.*, orders.id as order_id, items.id as item_id, bukus.id as buku_id
+            SELECT orders.*, items.*, bukus.*, payments.*, shipments.*, 
+                   orders.id as order_id, items.id as item_id, bukus.id as buku_id, payments.id as payment_id, shipments.id as shipment_id
             FROM orders
             LEFT JOIN items ON items.order_id = orders.id
             LEFT JOIN bukus ON bukus.id = items.buku_id
+            LEFT JOIN payments ON payments.order_id = orders.id
+            LEFT JOIN shipments ON shipments.order_id = orders.id
             WHERE orders.user_id = ? AND orders.status = ?
             ORDER BY orders.created_at DESC
         ";
@@ -262,16 +268,33 @@ class OrdersController extends Controller
                 'user_id' => $order->user_id,
                 'address_id' => $order->address_id,
                 'transaction_id' => $order->transaction_id,
-                'bsorder_id' => $order->bsorder_id,
                 'total_payment' => $order->total_payment,
-                'shipping_cost' => $order->shipping_cost,
-                'waybill_id' => $order->waybill_id,
                 'status' => $order->status,
-                'courier_details' => json_decode($order->courier_details, true),
                 'items' => $items,
-                'link' => $order->link,
                 'created_at' => $order->created_at,
-                'updated_at' => $order->updated_at
+                'updated_at' => $order->updated_at,
+                'payment' => [
+                    'id' => $order->payment_id,
+                    'transaction_id' => $order->transaction_id,
+                    'mdtransaction_id' => $order->mdtransaction_id,
+                    'masked_card' => $order->masked_card,
+                    'payment_type' => $order->payment_type,
+                    'transaction_time' => $order->transaction_time,
+                    'bank' => $order->bank,
+                    'gross_amount' => $order->gross_amount,
+                    'card_type' => $order->card_type,
+                    'payment_option_type' => $order->payment_option_type,
+                    'shopeepay_reference_number' => $order->shopeepay_reference_number,
+                    'reference_id' => $order->reference_id,
+                    'link' => $order->link, 
+                ],
+                'shipment' => [
+                    'id' => $order->shipment_id,
+                    'bsorder_id' => $order->bsorder_id,
+                    'shipping_cost' => $order->shipping_cost,
+                    'waybill_id' => $order->waybill_id,
+                    'courier_details' => json_decode($order->courier_details, true)
+                ],
             ];
         })->values();
 
@@ -286,6 +309,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
     public function getAdminOrders(Request $request)
