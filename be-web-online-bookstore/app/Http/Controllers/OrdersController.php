@@ -291,62 +291,101 @@ class OrdersController extends Controller
     public function getAdminOrders(Request $request)
     {
         $statusFilter = $request->query('status');
+
         $query = "
-        SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
-        FROM orders
-        LEFT JOIN users ON users.id = orders.user_id
-        LEFT JOIN items ON items.order_id = orders.id
-        LEFT JOIN bukus ON bukus.id = items.buku_id
-        ORDER BY orders.created_at DESC
+    SELECT orders.*, 
+           users.name, users.email, users.role, users.no_telp, users.email_verified_at,
+           payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
+           payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
+           payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
+           shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
+    FROM orders
+    LEFT JOIN users ON users.id = orders.user_id
+    LEFT JOIN payments ON payments.order_id = orders.id
+    LEFT JOIN shipments ON shipments.order_id = orders.id
+    ORDER BY orders.created_at DESC
     ";
 
         if ($statusFilter) {
             $query = "
-            SELECT orders.*, users.*, items.*, bukus.*, orders.id as order_id, users.id as user_id, items.id as item_id, bukus.id as buku_id
-            FROM orders
-            LEFT JOIN users ON users.id = orders.user_id
-            LEFT JOIN items ON items.order_id = orders.id
-            LEFT JOIN bukus ON bukus.id = items.buku_id
-            WHERE orders.status = ?
-            ORDER BY orders.created_at DESC
+        SELECT orders.*, 
+               users.name, users.email, users.role, users.no_telp, users.email_verified_at,
+               payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
+               payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
+               payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
+               shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
+        FROM orders
+        LEFT JOIN users ON users.id = orders.user_id
+        LEFT JOIN payments ON payments.order_id = orders.id
+        LEFT JOIN shipments ON shipments.order_id = orders.id
+        WHERE orders.status = ?
+        ORDER BY orders.created_at DESC
         ";
             $orders = DB::select($query, [$statusFilter]);
         } else {
             $orders = DB::select($query);
         }
 
-        $formattedOrders = collect($orders)->groupBy('order_id')->map(function ($orderGroup) {
+        // Format orders untuk menyertakan items
+        $formattedOrders = collect($orders)->groupBy('id')->map(function ($orderGroup) {
             $order = $orderGroup->first();
-            $items = $orderGroup->map(function ($item) {
-                return [
-                    'id' => $item->item_id,
-                    'order_id' => $item->order_id,
-                    'buku_id' => $item->buku_id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'created_at' => $item->created_at,
-                    'updated_at' => $item->updated_at,
-                    'buku' => [
-                        'id' => $item->buku_id,
-                        'no_isbn' => $item->no_isbn,
-                        'judul' => $item->judul,
-                        'desc' => $item->desc,
-                        'pengarang' => $item->pengarang,
-                        'penerbit' => $item->penerbit,
-                        'tahun_terbit' => $item->tahun_terbit,
-                        'foto' => asset('storage/buku_photos/' . basename($item->foto)),
-                        'stok' => $item->stok,
-                        'sold' => $item->sold,
-                        'harga' => $item->harga,
-                        'slug' => $item->slug,
+
+            // Ambil items berdasarkan order_id
+            $items = DB::table('items')
+                ->leftJoin('bukus', 'bukus.id', '=', 'items.buku_id')
+                ->where('items.order_id', $order->id)
+                ->select(
+                    'items.id as item_id',
+                    'items.order_id',
+                    'items.buku_id',
+                    'items.quantity',
+                    'items.price',
+                    'items.created_at',
+                    'items.updated_at',
+                    'bukus.id as buku_id',
+                    'bukus.no_isbn',
+                    'bukus.judul',
+                    'bukus.desc',
+                    'bukus.pengarang',
+                    'bukus.penerbit',
+                    'bukus.tahun_terbit',
+                    'bukus.foto',
+                    'bukus.stok',
+                    'bukus.sold',
+                    'bukus.harga',
+                    'bukus.slug'
+                )
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->item_id,
+                        'order_id' => $item->order_id,
+                        'buku_id' => $item->buku_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
                         'created_at' => $item->created_at,
-                        'updated_at' => $item->updated_at
-                    ]
-                ];
-            });
+                        'updated_at' => $item->updated_at,
+                        'buku' => [
+                            'id' => $item->buku_id,
+                            'no_isbn' => $item->no_isbn,
+                            'judul' => $item->judul,
+                            'desc' => $item->desc,
+                            'pengarang' => $item->pengarang,
+                            'penerbit' => $item->penerbit,
+                            'tahun_terbit' => $item->tahun_terbit,
+                            'foto' => asset('storage/buku_photos/' . basename($item->foto)),
+                            'stok' => $item->stok,
+                            'sold' => $item->sold,
+                            'harga' => $item->harga,
+                            'slug' => $item->slug,
+                            'created_at' => $item->created_at,
+                            'updated_at' => $item->updated_at
+                        ]
+                    ];
+                });
 
             return [
-                'id' => $order->order_id,
+                'id' => $order->id,
                 'user_id' => $order->user_id,
                 'address_id' => $order->address_id,
                 'transaction_id' => $order->transaction_id,
@@ -375,6 +414,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
 
