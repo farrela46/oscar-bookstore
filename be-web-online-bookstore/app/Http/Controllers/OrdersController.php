@@ -322,6 +322,7 @@ class OrdersController extends Controller
            payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
            payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
            payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
+           payments.link, -- Tambahkan ini untuk mengambil link dari payments
            shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
     FROM orders
     LEFT JOIN users ON users.id = orders.user_id
@@ -337,6 +338,7 @@ class OrdersController extends Controller
                payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
                payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
                payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
+               payments.link, -- Tambahkan ini untuk mengambil link dari payments
                shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
         FROM orders
         LEFT JOIN users ON users.id = orders.user_id
@@ -418,7 +420,7 @@ class OrdersController extends Controller
                 'status' => $order->status,
                 'courier_details' => $order->courier_details,
                 'items' => $items,
-                'link' => $order->link,
+                'link' => $order->link, // Ambil dari `payments.link`
                 'created_at' => $order->created_at,
                 'updated_at' => $order->updated_at,
                 'user' => [
@@ -436,6 +438,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
 
