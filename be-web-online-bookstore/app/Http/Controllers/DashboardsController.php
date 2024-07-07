@@ -65,15 +65,13 @@ class DashboardsController extends Controller
         $totalTransactions = Order::whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_payment');
 
-        $totalItemsSold = Order::whereBetween('created_at', [$startDate, $endDate])
-            ->get()
-            ->reduce(function ($carry, $order) {
-                $items = json_decode($order->items, true);
-                return $carry + array_reduce($items, function ($sum, $item) {
-                    return $sum + $item['quantity'];
-                }, 0);
-            }, 0);
+        // Total Items Sold
+        $totalItemsSold = DB::table('items')
+            ->join('orders', 'items.order_id', '=', 'orders.id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->sum('items.quantity');
 
+        // Monthly Sales Data
         $monthlySales = Order::selectRaw('MONTH(created_at) as month, SUM(total_payment) as total')
             ->whereYear('created_at', $year)
             ->groupByRaw('MONTH(created_at)')
@@ -85,19 +83,19 @@ class DashboardsController extends Controller
             $monthlySalesData[$monthNumber] = $total;
         }
 
-        $monthlyBookSales = Order::whereYear('created_at', $year)
-            ->get()
-            ->reduce(function ($carry, $order) {
-                $month = Carbon::parse($order->created_at)->month;
-                $items = json_decode($order->items, true);
-                foreach ($items as $item) {
-                    if (!isset($carry[$month])) {
-                        $carry[$month] = 0;
-                    }
-                    $carry[$month] += $item['quantity'];
-                }
-                return $carry;
-            }, array_fill(1, 12, 0));
+        // Monthly Book Sales Data
+        $monthlyBookSales = DB::table('items')
+            ->selectRaw('MONTH(orders.created_at) as month, SUM(items.quantity) as total')
+            ->join('orders', 'items.order_id', '=', 'orders.id')
+            ->whereYear('orders.created_at', $year)
+            ->groupByRaw('MONTH(orders.created_at)')
+            ->pluck('total', 'month')
+            ->toArray();
+
+        $monthlyBookSalesData = array_fill(1, 12, 0);
+        foreach ($monthlyBookSales as $monthNumber => $total) {
+            $monthlyBookSalesData[$monthNumber] = $total;
+        }
 
         if ($month) {
             $monthlySalesData = array_fill(1, 12, 0);
@@ -105,10 +103,11 @@ class DashboardsController extends Controller
             $monthlySalesData[$month] = $monthlySales[$month] ?? 0;
             $monthlyBookSalesData[$month] = $monthlyBookSales[$month] ?? 0;
         } else {
-            $monthlyBookSalesData = array_values($monthlyBookSales);
+            $monthlyBookSalesData = array_values($monthlyBookSalesData);
         }
 
         $totalUsers = User::where('role', 'USER')->count();
+
         $totalProducts = Buku::count();
 
         return response()->json([
@@ -121,6 +120,7 @@ class DashboardsController extends Controller
             'monthly_book_sales' => array_values($monthlyBookSalesData),
         ]);
     }
+
 
 
 

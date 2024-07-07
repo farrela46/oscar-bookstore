@@ -286,7 +286,7 @@ class OrdersController extends Controller
                     'payment_option_type' => $order->payment_option_type,
                     'shopeepay_reference_number' => $order->shopeepay_reference_number,
                     'reference_id' => $order->reference_id,
-                    'link' => $order->link, 
+                    'link' => $order->link,
                 ],
                 'shipment' => [
                     'id' => $order->shipment_id,
@@ -350,11 +350,9 @@ class OrdersController extends Controller
             $orders = DB::select($query);
         }
 
-        // Format orders untuk menyertakan items
         $formattedOrders = collect($orders)->groupBy('id')->map(function ($orderGroup) {
             $order = $orderGroup->first();
 
-            // Ambil items berdasarkan order_id
             $items = DB::table('items')
                 ->leftJoin('bukus', 'bukus.id', '=', 'items.buku_id')
                 ->where('items.order_id', $order->id)
@@ -511,48 +509,61 @@ class OrdersController extends Controller
         $userId = auth()->id();
 
         $query = "
-        SELECT 
-            orders.*,
-            items.id AS item_id,
-            items.order_id,
-            items.buku_id,
-            items.quantity,
-            items.price AS item_price,
-            items.created_at AS item_created_at,
-            items.updated_at AS item_updated_at,
-            bukus.id AS buku_id,
-            bukus.no_isbn,
-            bukus.judul,
-            bukus.desc,
-            bukus.pengarang,
-            bukus.penerbit,
-            bukus.tahun_terbit,
-            bukus.foto,
-            bukus.stok,
-            bukus.sold,
-            bukus.harga,
-            bukus.slug,
-            bukus.created_at AS buku_created_at,
-            bukus.updated_at AS buku_updated_at,
-            addresses.id AS address_id,
-            addresses.user_id AS address_user_id,
-            addresses.selected_address_id,
-            addresses.name AS address_name,
-            addresses.penerima,
-            addresses.no_penerima,
-            addresses.provinsi,
-            addresses.kota,
-            addresses.kecamatan,
-            addresses.alamat_lengkap,
-            addresses.postal_code,
-            addresses.label,
-            addresses.created_at AS address_created_at,
-            addresses.updated_at AS address_updated_at
-        FROM orders
-        LEFT JOIN items ON items.order_id = orders.id
-        LEFT JOIN bukus ON bukus.id = items.buku_id
-        LEFT JOIN addresses ON orders.address_id = addresses.id
-        WHERE orders.transaction_id = :transactionId
+    SELECT 
+        orders.id AS order_id,
+        orders.user_id,
+        orders.address_id,
+        orders.status,
+        orders.total_payment,
+        orders.created_at AS order_created_at,
+        orders.updated_at AS order_updated_at,
+        items.id AS item_id,
+        items.order_id,
+        items.buku_id,
+        items.quantity,
+        items.price AS item_price,
+        items.created_at AS item_created_at,
+        items.updated_at AS item_updated_at,
+        bukus.id AS buku_id,
+        bukus.no_isbn,
+        bukus.judul,
+        bukus.desc,
+        bukus.pengarang,
+        bukus.penerbit,
+        bukus.tahun_terbit,
+        bukus.foto,
+        bukus.stok,
+        bukus.sold,
+        bukus.harga,
+        bukus.slug,
+        bukus.created_at AS buku_created_at,
+        bukus.updated_at AS buku_updated_at,
+        addresses.id AS address_id,
+        addresses.user_id AS address_user_id,
+        addresses.selected_address_id,
+        addresses.name AS address_name,
+        addresses.penerima,
+        addresses.no_penerima,
+        addresses.provinsi,
+        addresses.kota,
+        addresses.kecamatan,
+        addresses.alamat_lengkap,
+        addresses.postal_code,
+        addresses.label,
+        addresses.created_at AS address_created_at,
+        addresses.updated_at AS address_updated_at,
+        payments.transaction_id AS payment_transaction_id,
+        shipments.bsorder_id AS payment_bsorder_id,
+        shipments.shipping_cost,
+        shipments.waybill_id,
+        shipments.courier_details
+    FROM orders
+    LEFT JOIN items ON items.order_id = orders.id
+    LEFT JOIN bukus ON bukus.id = items.buku_id
+    LEFT JOIN addresses ON orders.address_id = addresses.id
+    LEFT JOIN payments ON payments.order_id = orders.id
+    LEFT JOIN shipments ON shipments.order_id = orders.id
+    WHERE payments.transaction_id = :transactionId
     ";
 
         $results = DB::select($query, ['transactionId' => $transaction_id]);
@@ -564,17 +575,17 @@ class OrdersController extends Controller
         $courierDetails = json_decode($results[0]->courier_details, true) ?? [];
 
         $order = [
-            'id' => $results[0]->id,
+            'id' => $results[0]->order_id,
             'user_id' => $results[0]->user_id,
             'address_id' => $results[0]->address_id,
-            'transaction_id' => $results[0]->transaction_id,
-            'bsorder_id' => $results[0]->bsorder_id,
+            'transaction_id' => $results[0]->payment_transaction_id,
+            'bsorder_id' => $results[0]->payment_bsorder_id,
             'waybill_id' => $results[0]->waybill_id,
             'total_payment' => $results[0]->total_payment,
             'shipping_cost' => $results[0]->shipping_cost,
             'status' => $results[0]->status,
-            'created_at' => $results[0]->created_at,
-            'updated_at' => $results[0]->updated_at,
+            'created_at' => $results[0]->order_created_at,
+            'updated_at' => $results[0]->order_updated_at,
             'courier_details' => $courierDetails,
             'items' => [],
             'address' => [
@@ -646,6 +657,7 @@ class OrdersController extends Controller
 
         return response()->json($order);
     }
+
 
 
 
