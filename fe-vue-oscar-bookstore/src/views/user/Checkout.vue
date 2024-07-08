@@ -36,7 +36,7 @@ export default {
         penerima: '',
         no_penerima: ''
       },
-      selectedAddressId: "",
+      selectedAddressId: null,
       selectedAddress: {},
       shippingRates: [],
       dialog: false,
@@ -526,46 +526,48 @@ export default {
                     style="color: #ff0000;"></i>&nbsp;Jika Alamat yang dicari tidak muncul, coba ganti kata kunci atau
                   input kode pos!</a></div>
               <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
-              <form>
-                <div class="mb-3">
-                  <label for="Province" class="form-label">Provinsi</label>
-                  <input type="text" class="form-control" id="province" v-model="address.provinsi">
-                </div>
-                <div class="mb-3">
-                  <label for="City" class="form-label">Kota</label>
-                  <input type="text" class="form-control" id="city" v-model="address.city">
-                </div>
-                <div class="mb-3">
-                  <label for="District" class="form-label">Kecamatan</label>
-                  <input type="text" class="form-control" id="district" v-model="address.district">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Kode Pos</label>
-                  <input type="text" class="form-control" id="district" v-model="address.postal_code">
-                </div>
-                <div class="mb-3">
-                  <label for="postal code" class="form-label">Alamat Lengkap</label>
-                  <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
-                </div>
-                <hr class="horizontal dark" />
-                <div class="mb-3">
-                  <label for="recepient" class="form-label">Penerima</label>
-                  <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
-                </div>
-                <div class="mb-3">
-                  <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1">+62</span>
-                    <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
-                      aria-label="phone" aria-describedby="basic-addon1">
+              <div class="wrap" v-if="selectedAddresses">
+                <form>
+                  <div class="mb-3">
+                    <label for="Province" class="form-label">Provinsi</label>
+                    <input type="text" class="form-control" id="province" v-model="address.provinsi">
                   </div>
-                </div>
-                <div class="mb-3">
-                  <label for="addressNote" class="form-label">Label Alamat</label>
-                  <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
-                    v-model="address.label">
-                </div>
-              </form>
+                  <div class="mb-3">
+                    <label for="City" class="form-label">Kota</label>
+                    <input type="text" class="form-control" id="city" v-model="address.city">
+                  </div>
+                  <div class="mb-3">
+                    <label for="District" class="form-label">Kecamatan</label>
+                    <input type="text" class="form-control" id="district" v-model="address.district">
+                  </div>
+                  <div class="mb-3">
+                    <label for="postal code" class="form-label">Kode Pos</label>
+                    <input type="text" class="form-control" id="district" v-model="address.postal_code">
+                  </div>
+                  <div class="mb-3">
+                    <label for="postal code" class="form-label">Alamat Lengkap</label>
+                    <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
+                  </div>
+                  <hr class="horizontal dark" />
+                  <div class="mb-3">
+                    <label for="recepient" class="form-label">Penerima</label>
+                    <input type="text" class="form-control" id="recipientPhone" v-model="address.penerima">
+                  </div>
+                  <div class="mb-3">
+                    <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
+                    <div class="input-group mb-3">
+                      <span class="input-group-text" id="basic-addon1">+62</span>
+                      <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
+                        aria-label="phone" aria-describedby="basic-addon1">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="addressNote" class="form-label">Label Alamat</label>
+                    <input type="text" class="form-control" id="addressNote" placeholder="Rumah, Kantor"
+                      v-model="address.label">
+                  </div>
+                </form>
+              </div>
             </v-card-text>
 
             <v-card-actions>

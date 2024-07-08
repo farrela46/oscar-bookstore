@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Review;
 use GuzzleHttp\Client;
+use App\Models\Payment;
+use App\Models\Shipment;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\BiteshipService;
@@ -32,50 +34,44 @@ class OrdersController extends Controller
 
     public function createOrder(Request $request)
     {
-        $transactionId = (string) Str::uuid();
-
-        $totalPayment = $request->input('amount') + $request->input('selectedCourier.price');
-
-        $items = $request->input('items');
-
-        foreach ($items as $item) {
-            $buku = Buku::find($item['buku_id']);
-            if (!$buku || $item['quantity'] > $buku->stok) {
-                return response()->json(['error' => 'Stok tidak cukup untuk buku: ' . ($buku ? $buku->judul : 'Unknown')], 400);
-            }
-        }
-
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'total_payment' => $totalPayment,
-            'address_id' => $request->input('address_id'),
-            'shipping_cost' => $request->input('selectedCourier.price'),
-            'status' => 'pending',
-            'courier_details' => json_encode($request->input('selectedCourier')),
-            'items' => json_encode($items),
-            'transaction_id' => $transactionId,
-        ]);
-        $orderId = $order->id;
-
-        $orderDetails = [
-            'transaction_details' => [
-                'order_id' => $transactionId,
-                'gross_amount' => $totalPayment,
-            ],
-            'customer_details' => [
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-            ],
-        ];
+        // Mulai transaksi database
+        DB::beginTransaction();
 
         try {
-            $snapToken = $this->midtransService->createTransaction($orderDetails);
-            $paymentUrl = $snapToken->redirect_url;
+            // Buat UUID untuk transaksi
+            $transactionId = (string) Str::uuid();
 
-            $order->update(['link' => $paymentUrl]);
+            // Hitung total pembayaran (termasuk biaya pengiriman)
+            $totalPayment = $request->input('amount');
+            $shippingCost = $request->input('selectedCourier.price');
+            $items = $request->input('items');
 
+            // Validasi stok buku
+            foreach ($items as $item) {
+                $buku = Buku::find($item['buku_id']);
+                if (!$buku || $item['quantity'] > $buku->stok) {
+                    throw new Exception('Stok tidak cukup untuk buku: ' . ($buku ? $buku->judul : 'Unknown'));
+                }
+            }
+
+            // Buat order di tabel orders
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'total_payment' => $totalPayment,
+                'address_id' => $request->input('address_id'),
+                'status' => 'pending',
+            ]);
+
+            // Buat entri di tabel shipments
+            Shipment::create([
+                'order_id' => $order->id,
+                'shipping_cost' => $shippingCost,
+                'courier_details' => json_encode($request->input('selectedCourier')),
+                'bsorder_id' => $request->input('bsorder_id'), // Optional, jika ada
+                'waybill_id' => $request->input('waybill_id') // Optional, jika ada
+            ]);
+
+            // Buat item di tabel items
             foreach ($items as $item) {
                 Item::create([
                     'order_id' => $order->id,
@@ -83,15 +79,54 @@ class OrdersController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $item['totalPrice'],
                 ]);
+
+                // Kurangi stok buku
+                Buku::where('id', $item['buku_id'])->decrement('stok', $item['quantity']);
             }
 
+            // Hapus item dari keranjang pengguna
             Cart::where('user_id', auth()->id())
                 ->whereIn('buku_id', array_column($items, 'buku_id'))
                 ->delete();
 
+            // Persiapkan detail pembayaran untuk payment gateway
+            $orderDetails = [
+                'transaction_details' => [
+                    'order_id' => $transactionId, // Gunakan UUID untuk order_id di Midtrans
+                    'gross_amount' => $totalPayment + $shippingCost, // Termasuk biaya pengiriman
+                ],
+                'customer_details' => [
+                    'first_name' => $request->input('first_name'),
+                    'last_name' => $request->input('last_name'),
+                    'email' => $request->input('email'),
+                    'phone' => $request->input('phone'),
+                ],
+            ];
+
+            // Buat transaksi di payment gateway
+            $snapToken = $this->midtransService->createTransaction($orderDetails);
+            $paymentUrl = $snapToken->redirect_url;
+
+            // Buat entri di tabel payments
+            Payment::create([
+                'order_id' => $order->id,
+                'transaction_id' => $transactionId,
+                'link' => $paymentUrl,
+                'mdtransaction_id' => $snapToken->transaction_id ?? $transactionId, // Gunakan UUID jika tidak tersedia
+                'gross_amount' => $totalPayment + $shippingCost,
+                'transaction_time' => now(),
+                'payment_type' => $snapToken->payment_type ?? null,
+            ]);
+
+            // Komit transaksi
+            DB::commit();
+
+            // Kembalikan URL pembayaran ke klien
             return response()->json(['paymentUrl' => $paymentUrl]);
+
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            DB::rollBack(); // Rollback transaksi jika ada error
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
@@ -420,7 +455,7 @@ class OrdersController extends Controller
                 'status' => $order->status,
                 'courier_details' => $order->courier_details,
                 'items' => $items,
-                'link' => $order->link, // Ambil dari `payments.link`
+                'link' => $order->link,
                 'created_at' => $order->created_at,
                 'updated_at' => $order->updated_at,
                 'user' => [
