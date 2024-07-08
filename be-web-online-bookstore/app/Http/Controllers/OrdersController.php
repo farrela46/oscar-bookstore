@@ -293,7 +293,6 @@ class OrdersController extends Controller
                 'id' => $order->order_id,
                 'user_id' => $order->user_id,
                 'address_id' => $order->address_id,
-                'transaction_id' => $order->transaction_id,
                 'total_payment' => $order->total_payment,
                 'status' => $order->status,
                 'items' => $items,
@@ -335,6 +334,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
 
@@ -503,7 +503,6 @@ class OrdersController extends Controller
                         'mdtransaction_id' => $status['transaction_id'] ?? null,
                     ]);
 
-                    // Update status order menjadi 'process'
                     $order = Order::find($payment->order_id);
                     if ($order) {
                         $order->status = 'process';
@@ -558,61 +557,72 @@ class OrdersController extends Controller
         $userId = auth()->id();
 
         $query = "
-    SELECT 
-        orders.id AS order_id,
-        orders.user_id,
-        orders.address_id,
-        orders.status,
-        orders.total_payment,
-        orders.created_at AS order_created_at,
-        orders.updated_at AS order_updated_at,
-        items.id AS item_id,
-        items.order_id,
-        items.buku_id,
-        items.quantity,
-        items.price AS item_price,
-        items.created_at AS item_created_at,
-        items.updated_at AS item_updated_at,
-        bukus.id AS buku_id,
-        bukus.no_isbn,
-        bukus.judul,
-        bukus.desc,
-        bukus.pengarang,
-        bukus.penerbit,
-        bukus.tahun_terbit,
-        bukus.foto,
-        bukus.stok,
-        bukus.sold,
-        bukus.harga,
-        bukus.slug,
-        bukus.created_at AS buku_created_at,
-        bukus.updated_at AS buku_updated_at,
-        addresses.id AS address_id,
-        addresses.user_id AS address_user_id,
-        addresses.selected_address_id,
-        addresses.name AS address_name,
-        addresses.penerima,
-        addresses.no_penerima,
-        addresses.provinsi,
-        addresses.kota,
-        addresses.kecamatan,
-        addresses.alamat_lengkap,
-        addresses.postal_code,
-        addresses.label,
-        addresses.created_at AS address_created_at,
-        addresses.updated_at AS address_updated_at,
-        payments.transaction_id AS payment_transaction_id,
-        shipments.bsorder_id AS payment_bsorder_id,
-        shipments.shipping_cost,
-        shipments.waybill_id,
-        shipments.courier_details
-    FROM orders
-    LEFT JOIN items ON items.order_id = orders.id
-    LEFT JOIN bukus ON bukus.id = items.buku_id
-    LEFT JOIN addresses ON orders.address_id = addresses.id
-    LEFT JOIN payments ON payments.order_id = orders.id
-    LEFT JOIN shipments ON shipments.order_id = orders.id
-    WHERE payments.transaction_id = :transactionId
+        SELECT 
+            orders.id AS order_id,
+            orders.user_id,
+            orders.address_id,
+            orders.status,
+            orders.total_payment,
+            orders.created_at AS order_created_at,
+            orders.updated_at AS order_updated_at,
+            items.id AS item_id,
+            items.order_id,
+            items.buku_id,
+            items.quantity,
+            items.price AS item_price,
+            items.created_at AS item_created_at,
+            items.updated_at AS item_updated_at,
+            bukus.id AS buku_id,
+            bukus.no_isbn,
+            bukus.judul,
+            bukus.desc,
+            bukus.pengarang,
+            bukus.penerbit,
+            bukus.tahun_terbit,
+            bukus.foto,
+            bukus.stok,
+            bukus.sold,
+            bukus.harga,
+            bukus.slug,
+            bukus.created_at AS buku_created_at,
+            bukus.updated_at AS buku_updated_at,
+            addresses.id AS address_id,
+            addresses.user_id AS address_user_id,
+            addresses.selected_address_id,
+            addresses.name AS address_name,
+            addresses.penerima,
+            addresses.no_penerima,
+            addresses.provinsi,
+            addresses.kota,
+            addresses.kecamatan,
+            addresses.alamat_lengkap,
+            addresses.postal_code,
+            addresses.label,
+            addresses.created_at AS address_created_at,
+            addresses.updated_at AS address_updated_at,
+            payments.transaction_id AS payment_transaction_id,
+            payments.mdtransaction_id AS payment_mdtransaction_id,
+            payments.masked_card AS payment_masked_card,
+            payments.payment_type AS payment_payment_type,
+            payments.transaction_time AS payment_transaction_time,
+            payments.bank AS payment_bank,
+            payments.gross_amount AS payment_gross_amount,
+            payments.card_type AS payment_card_type,
+            payments.payment_option_type AS payment_option_type,
+            payments.shopeepay_reference_number AS payment_shopeepay_reference_number,
+            payments.reference_id AS payment_reference_id,
+            payments.link AS payment_link,
+            shipments.bsorder_id AS shipment_bsorder_id,
+            shipments.shipping_cost AS shipment_shipping_cost,
+            shipments.waybill_id AS shipment_waybill_id,
+            shipments.courier_details AS shipment_courier_details
+        FROM orders
+        LEFT JOIN items ON items.order_id = orders.id
+        LEFT JOIN bukus ON bukus.id = items.buku_id
+        LEFT JOIN addresses ON orders.address_id = addresses.id
+        LEFT JOIN payments ON payments.order_id = orders.id
+        LEFT JOIN shipments ON shipments.order_id = orders.id
+        WHERE payments.transaction_id = :transactionId
     ";
 
         $results = DB::select($query, ['transactionId' => $transaction_id]);
@@ -621,17 +631,17 @@ class OrdersController extends Controller
             return response()->json(['error' => 'Order not found'], 404);
         }
 
-        $courierDetails = json_decode($results[0]->courier_details, true) ?? [];
+        $courierDetails = json_decode($results[0]->shipment_courier_details, true) ?? [];
 
         $order = [
             'id' => $results[0]->order_id,
             'user_id' => $results[0]->user_id,
             'address_id' => $results[0]->address_id,
             'transaction_id' => $results[0]->payment_transaction_id,
-            'bsorder_id' => $results[0]->payment_bsorder_id,
-            'waybill_id' => $results[0]->waybill_id,
+            'bsorder_id' => $results[0]->shipment_bsorder_id,
+            'waybill_id' => $results[0]->shipment_waybill_id,
             'total_payment' => $results[0]->total_payment,
-            'shipping_cost' => $results[0]->shipping_cost,
+            'shipping_cost' => $results[0]->shipment_shipping_cost,
             'status' => $results[0]->status,
             'created_at' => $results[0]->order_created_at,
             'updated_at' => $results[0]->order_updated_at,
@@ -652,12 +662,26 @@ class OrdersController extends Controller
                 'label' => $results[0]->label,
                 'created_at' => $results[0]->address_created_at,
                 'updated_at' => $results[0]->address_updated_at
+            ],
+            'payment' => [
+                'transaction_id' => $results[0]->payment_transaction_id,
+                'mdtransaction_id' => $results[0]->payment_mdtransaction_id,
+                'masked_card' => $results[0]->payment_masked_card,
+                'payment_type' => $results[0]->payment_payment_type,
+                'transaction_time' => $results[0]->payment_transaction_time,
+                'bank' => $results[0]->payment_bank,
+                'gross_amount' => $results[0]->payment_gross_amount,
+                'card_type' => $results[0]->payment_card_type,
+                'payment_option_type' => $results[0]->payment_option_type,
+                'shopeepay_reference_number' => $results[0]->payment_shopeepay_reference_number,
+                'reference_id' => $results[0]->payment_reference_id,
+                'link' => $results[0]->payment_link,
             ]
         ];
 
         foreach ($results as $row) {
             $reviews = Review::where('buku_id', $row->buku_id)
-                ->where('order_id', $row->order_id) // Added condition to match order_id
+                ->where('order_id', $row->order_id)
                 ->when(!$isAdmin, function ($query) use ($userId) {
                     $query->where('user_id', $userId);
                 })
@@ -706,6 +730,7 @@ class OrdersController extends Controller
 
         return response()->json($order);
     }
+
 
 
 

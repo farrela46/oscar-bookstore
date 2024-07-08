@@ -77,7 +77,7 @@ export default {
       }
     },
     lihatDetail(order) {
-      this.$router.push('/orders/' + order.transaction_id)
+      this.$router.push('/orders/' + order.payment.transaction_id)
     },
     async payNow(order) {
       try {

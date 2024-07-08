@@ -460,14 +460,15 @@ export default {
                         <div class="row">
                           <div class="col-12">
                             <div class="row">
-                              <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.buku.judul
-                                }}</a>
+                              <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{
+        item.buku.judul
+      }}</a>
                             </div>
                             <div class="row">
                               <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
           item.quantity }}
                                   barang</span> X Rp {{
-          formatPrice(item.buku.harga) }}</a>
+        formatPrice(item.buku.harga) }}</a>
                             </div>
                             <div class="row" v-if="item.buku.reviews.length > 0">
                               <div style="color: black">
@@ -535,6 +536,14 @@ export default {
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
                     <span>{{ formatDate(orders.created_at) }}</span>
+                  </div>
+                </div>
+                <hr>
+                <a><strong>Metode Pembayaran</strong></a>
+                <div class="row ring-bayar mb-2">
+                  <div class="col-12">
+                    <p><strong>Payment Type </strong><a class="text-uppercase"> {{ orders.payment.bank }}</a> {{
+        orders.payment.payment_type }}</p>
                   </div>
                 </div>
                 <hr>
