@@ -339,6 +339,16 @@ export default {
       }
     }
   },
+  computed: {
+    formattedPaymentType() {
+      if (this.orders.payment && this.orders.payment.payment_type) {
+        return this.orders.payment.payment_type
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, char => char.toUpperCase());
+      }
+      return '';
+    }
+  }
 
 };
 </script>
@@ -543,7 +553,7 @@ export default {
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
                     <p><strong>Payment Type </strong><a class="text-uppercase"> {{ orders.payment.bank }}</a> {{
-        orders.payment.payment_type }}</p>
+        formattedPaymentType }}</p>
                   </div>
                 </div>
                 <hr>
