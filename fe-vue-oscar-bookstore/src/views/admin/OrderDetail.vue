@@ -340,6 +340,16 @@ export default {
       }
     }
   },
+  computed: {
+    formattedPaymentType() {
+      if (this.orders.payment && this.orders.payment.payment_type) {
+        return this.orders.payment.payment_type
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, char => char.toUpperCase());
+      }
+      return '';
+    }
+  }
 };
 </script>
 
@@ -536,6 +546,13 @@ export default {
                   </div>
                 </div>
                 <hr>
+                <a><strong>Metode Pembayaran</strong></a>
+                <div class="row ring-bayar mb-2">
+                  <div class="col-12">
+                    <p><strong>Payment Type </strong><a class="text-uppercase"> {{ orders.payment.bank }}</a> {{
+        formattedPaymentType }}</p>
+                  </div>
+                </div>
                 <p>Ringkasan Pembayaran</p>
                 <div class="row ring-bayar">
                   <div class="col-7">
