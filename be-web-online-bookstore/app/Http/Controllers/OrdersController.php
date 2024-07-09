@@ -782,16 +782,38 @@ class OrdersController extends Controller
 
             if (isset($response['id'])) {
                 $order = Order::findOrFail($request->order_id);
-                $order->bsorder_id = $response['id'];
-                $order->waybill_id = $response['courier']['waybill_id'];
                 $order->status = 'packing';
                 $order->save();
+
+                $shipment = Shipment::updateOrCreate(
+                    ['order_id' => $order->id],
+                    [
+                        'bsorder_id' => $response['id'],
+                        'waybill_id' => $response['courier']['waybill_id'],
+                    ]
+                );
 
                 foreach ($request->item_ids as $item) {
                     $buku = Buku::findOrFail($item['item_id']);
                     $buku->stok -= $item['quantity'];
                     $buku->sold += $item['quantity'];
                     $buku->save();
+
+                    $orderItem = Item::where('order_id', $order->id)
+                        ->where('buku_id', $buku->id)
+                        ->first();
+
+                    if ($orderItem) {
+                        $orderItem->quantity = $item['quantity'];
+                        $orderItem->save();
+                    } else {
+                        Item::create([
+                            'order_id' => $order->id,
+                            'buku_id' => $buku->id,
+                            'quantity' => $item['quantity'],
+                            'price' => $buku->harga 
+                        ]);
+                    }
                 }
 
                 DB::commit();
@@ -804,6 +826,7 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
     public function retrieveAdminOrder($bsorderId)
