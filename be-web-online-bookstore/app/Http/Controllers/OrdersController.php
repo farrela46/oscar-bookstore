@@ -146,12 +146,14 @@ class OrdersController extends Controller
         $items = $request->input('items');
         $orderItems = [];
 
+        DB::beginTransaction();
+
         try {
             foreach ($items as $item) {
                 $buku = Buku::find($item['buku_id']);
 
                 if (!$buku || $item['quantity'] > $buku->stok) {
-                    return response()->json(['error' => 'Stok tidak cukup untuk buku: ' . $buku->judul], 400);
+                    return response()->json(['error' => 'Stok tidak cukup untuk buku: ' . ($buku ? $buku->judul : 'Unknown')], 400);
                 }
             }
 
@@ -159,14 +161,8 @@ class OrdersController extends Controller
                 'user_id' => $userId,
                 'total_payment' => $totalPayment,
                 'address_id' => $request->input('address_id', 6),
-                'shipping_cost' => 0,
                 'status' => 'onsite',
-                'courier_details' => json_encode([]),
-                'items' => json_encode($items),
-                'transaction_id' => $transactionId,
             ]);
-
-            $orderId = $order->id;
 
             foreach ($items as $item) {
                 $buku = Buku::find($item['buku_id']);
@@ -193,9 +189,27 @@ class OrdersController extends Controller
                 }
             }
 
+            // Create payment record
+            Payment::create([
+                'order_id' => $order->id,
+                'transaction_id' => $transactionId,
+                'amount' => $totalPayment,
+            ]);
+
+            // Create shipment record
+            Shipment::create([
+                'order_id' => $order->id,
+                'bsorder_id' => null,
+                'waybill_id' => null,
+                'shipping_cost' => 0, // Assuming no shipping cost for onsite orders
+                'courier_details' => json_encode([]),
+            ]);
+
             Cart::where('user_id', auth()->id())
                 ->whereIn('buku_id', array_column($items, 'buku_id'))
                 ->delete();
+
+            DB::commit();
 
             $response = [
                 'user' => [
@@ -203,7 +217,7 @@ class OrdersController extends Controller
                     'email' => $email,
                 ],
                 'order' => [
-                    'id' => $orderId,
+                    'id' => $order->id,
                     'total_payment' => $totalPayment,
                     'items' => $orderItems
                 ]
@@ -212,9 +226,11 @@ class OrdersController extends Controller
             return response()->json($response, 200);
 
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
 
@@ -795,25 +811,33 @@ class OrdersController extends Controller
 
                 foreach ($request->item_ids as $item) {
                     $buku = Buku::findOrFail($item['item_id']);
-                    $buku->stok -= $item['quantity'];
-                    $buku->sold += $item['quantity'];
-                    $buku->save();
 
                     $orderItem = Item::where('order_id', $order->id)
                         ->where('buku_id', $buku->id)
                         ->first();
 
                     if ($orderItem) {
-                        $orderItem->quantity = $item['quantity'];
+                        $previousQuantity = $orderItem->quantity;
+                        $newQuantity = $item['quantity'];
+
+                        $buku->stok += $previousQuantity - $newQuantity;
+                        $buku->sold += $newQuantity - $previousQuantity;
+
+                        $orderItem->quantity = $newQuantity;
                         $orderItem->save();
                     } else {
+                        $buku->stok -= $item['quantity'];
+                        $buku->sold += $item['quantity'];
+
                         Item::create([
                             'order_id' => $order->id,
                             'buku_id' => $buku->id,
                             'quantity' => $item['quantity'],
-                            'price' => $buku->harga 
+                            'price' => $buku->harga
                         ]);
                     }
+
+                    $buku->save();
                 }
 
                 DB::commit();
@@ -826,6 +850,7 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
 

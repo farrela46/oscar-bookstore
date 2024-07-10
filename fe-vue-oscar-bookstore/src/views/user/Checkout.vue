@@ -323,6 +323,7 @@ export default {
         <v-progress-circular color="primary" size="96" indeterminate></v-progress-circular>
       </v-overlay>
       <div class="container">
+        <h3>Checkout</h3>
         <div class="row">
           <div class="col-lg-8">
             <div class="row mb-2">
