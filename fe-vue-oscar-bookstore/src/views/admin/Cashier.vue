@@ -54,6 +54,7 @@ export default {
       },
       dialogCashier: false,
       confirmCashier: false,
+      buyerMoney: ''
     };
   },
 
@@ -71,6 +72,26 @@ export default {
   computed: {
     totalPayment() {
       return this.orders.reduce((sum, order) => sum + order.totalPrice, 0);
+    },
+    change() {
+      return this.buyerMoney - this.totalPayment;
+    },
+    formattedNominal: {
+      get() {
+        return this.buyerMoney.toLocaleString('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).replace('IDR', 'Rp').trim();
+      },
+      set(value) {
+        if (typeof value === 'string') {
+          const numericValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
+          this.buyerMoney = isNaN(numericValue) ? 0 : numericValue;
+        } else {
+          this.buyerMoney = 0;
+        }
+      }
     }
   },
   watch: {
@@ -111,6 +132,10 @@ export default {
     closeModalDelete() {
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmationModal'))
       modal.hide();
+    },
+    updateNominal() {
+      const numericValue = parseInt(this.formattedNominal.replace(/\./g, ''), 10);
+      this.buyerMoney = isNaN(numericValue) ? '' : numericValue;
     },
     searchWithDelay() {
       this.loadingRegist = true;
@@ -508,7 +533,7 @@ export default {
                   <label for="status" class="col-form-label">Email User</label>
                 </div>
                 <div class="col-sm-10" style="padding-right: 20px">
-                  <input type="text" class="form-control" v-model="orderInvoice.user.email" disabled>
+                  <input type="text" class="form-control" v-model="customerEmail" disabled>
                 </div>
               </div>
               <div class="row">
@@ -546,7 +571,7 @@ export default {
                   <label for="buyerMoney" class="col-form-label">Uang Pembeli</label>
                 </div>
                 <div class="col-sm-10" style="padding-right: 20px">
-                  <input type="number" class="form-control" v-model="buyerMoney" />
+                  <input type="text" class="form-control" v-model="formattedNominal" />
                 </div>
               </div>
               <div class="row mt-3">
@@ -555,7 +580,7 @@ export default {
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="pesananSelesai">Selesai</v-btn>
+              <v-btn color="blue darken-1" text @click="createOfflineOrder">Selesai</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
