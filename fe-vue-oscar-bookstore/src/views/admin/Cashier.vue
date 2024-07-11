@@ -52,7 +52,8 @@ export default {
           items: []
         }
       },
-      dialogCashier: false
+      dialogCashier: false,
+      confirmCashier: false,
     };
   },
 
@@ -420,7 +421,7 @@ export default {
                 </div>
                 <argon-input type="text" placeholder="Email Pelanggan" v-model="customerEmail" />
                 <hr class="horizontal dark">
-                <button class="btn btn-primary w-100" @click="createOfflineOrder">Lanjut untuk Membayar</button>
+                <button class="btn btn-primary w-100" @click="confirmCashier = true">Lanjut untuk Membayar</button>
               </div>
             </div>
           </div>
@@ -490,6 +491,68 @@ export default {
               </div>
             </v-card-text>
 
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="pesananSelesai">Selesai</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="confirmCashier" max-width="788px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Konfirmasi Pembelian</span>
+            </v-card-title>
+            <v-card-text>
+              <div class="mb-3 row">
+                <div class="col-sm-2">
+                  <label for="status" class="col-form-label">Email User</label>
+                </div>
+                <div class="col-sm-10" style="padding-right: 20px">
+                  <input type="text" class="form-control" v-model="orderInvoice.user.email" disabled>
+                </div>
+              </div>
+              <div class="row">
+                <div class="mb-2 border" v-for="(item, index) in orders" :key="index" style="border-radius: 10px">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-3 col-4">
+                        <div class="row">
+                          <div class="col-9">
+                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 col-8">
+                        <div class="row">
+                          <div class="col-9">
+                            <div class="row">
+                              <a class="text-truncate text-bold" style="font-size: 16px; color: black;">{{ item.judul
+                                }}</a>
+                              <p><strong>Rp {{ formatPrice(item.totalPrice) }}</strong> </p>
+                              <p class="d-inline"><span class="mx-2">{{ item.quantity }} barang</span></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <h4>Total Transaksi Rp. {{ formatPrice(totalPayment) }}</h4>
+              </div>
+              <div class="row mt-3">
+                <div class="col-sm-2">
+                  <label for="buyerMoney" class="col-form-label">Uang Pembeli</label>
+                </div>
+                <div class="col-sm-10" style="padding-right: 20px">
+                  <input type="number" class="form-control" v-model="buyerMoney" />
+                </div>
+              </div>
+              <div class="row mt-3">
+                <h4>Kembalian Rp. {{ formatPrice(change) }}</h4>
+              </div>
+            </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="pesananSelesai">Selesai</v-btn>

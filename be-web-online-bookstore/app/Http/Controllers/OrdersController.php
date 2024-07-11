@@ -189,19 +189,17 @@ class OrdersController extends Controller
                 }
             }
 
-            // Create payment record
             Payment::create([
                 'order_id' => $order->id,
                 'transaction_id' => $transactionId,
                 'amount' => $totalPayment,
             ]);
 
-            // Create shipment record
             Shipment::create([
                 'order_id' => $order->id,
                 'bsorder_id' => null,
                 'waybill_id' => null,
-                'shipping_cost' => 0, // Assuming no shipping cost for onsite orders
+                'shipping_cost' => 0, 
                 'courier_details' => json_encode([]),
             ]);
 
