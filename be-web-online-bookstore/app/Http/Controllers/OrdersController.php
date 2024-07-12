@@ -197,7 +197,7 @@ class OrdersController extends Controller
                 'order_id' => $order->id,
                 'bsorder_id' => null,
                 'waybill_id' => null,
-                'shipping_cost' => 0, 
+                'shipping_cost' => 0,
                 'courier_details' => json_encode([]),
             ]);
 
@@ -807,24 +807,18 @@ class OrdersController extends Controller
 
                 foreach ($request->item_ids as $item) {
                     $buku = Buku::findOrFail($item['item_id']);
+                    $buku->stok -= $item['quantity'];
+                    $buku->sold += $item['quantity'];
+                    $buku->save();
 
                     $orderItem = Item::where('order_id', $order->id)
                         ->where('buku_id', $buku->id)
                         ->first();
 
                     if ($orderItem) {
-                        $previousQuantity = $orderItem->quantity;
-                        $newQuantity = $item['quantity'];
-
-                        $buku->stok += $previousQuantity - $newQuantity;
-                        $buku->sold += $newQuantity - $previousQuantity;
-
-                        $orderItem->quantity = $newQuantity;
+                        $orderItem->quantity = $item['quantity'];
                         $orderItem->save();
                     } else {
-                        $buku->stok -= $item['quantity'];
-                        $buku->sold += $item['quantity'];
-
                         Item::create([
                             'order_id' => $order->id,
                             'buku_id' => $buku->id,
@@ -832,8 +826,6 @@ class OrdersController extends Controller
                             'price' => $buku->harga
                         ]);
                     }
-
-                    $buku->save();
                 }
 
                 DB::commit();
