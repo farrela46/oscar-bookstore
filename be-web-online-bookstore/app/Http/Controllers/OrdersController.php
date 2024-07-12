@@ -76,8 +76,6 @@ class OrdersController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $item['totalPrice'],
                 ]);
-
-                Buku::where('id', $item['buku_id'])->decrement('stok', $item['quantity']);
             }
 
             Cart::where('user_id', auth()->id())
