@@ -348,6 +348,16 @@ export default {
           .replace(/\b\w/g, char => char.toUpperCase());
       }
       return '';
+    },
+    showProcessButton() {
+      const isOrderProcess = this.orders && this.orders.status === 'process';
+      const isCourierNotFound =
+        this.courierTrack &&
+        this.courierTrack.history &&
+        this.courierTrack.history.length > 0 &&
+        this.courierTrack.history[0].status === 'courier_not_found';
+
+      return isOrderProcess || isCourierNotFound;
     }
   }
 };
@@ -579,9 +589,9 @@ export default {
                     <p>: Rp. {{ formatPrice(calculateTotalPayment()) }}</p>
                   </div>
                 </div>
-                <button v-if="orders.status === 'process'" class="btn btn-primary btn-sm w-100"
-                  @click="createOrder">Proses
-                  Pesanan</button>
+                <button v-if="showProcessButton" class="btn btn-primary btn-sm w-100" @click="createOrder">
+                  Proses Pesanan
+                </button>
                 <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"
                   v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"><i
                     class="fas fa-info-circle mx-2"></i>
