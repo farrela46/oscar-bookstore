@@ -264,6 +264,7 @@ export default {
         console.error('Error creating offline order:', error);
       } finally {
         this.overlay = false;
+        this.confirmCashier = false
         this.dialogCashier = true;
       }
     },
