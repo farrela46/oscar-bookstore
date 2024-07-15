@@ -3,7 +3,7 @@ FROM node:18-alpine3.18 as build-stage
 # set the working directory
 WORKDIR /app
 # Copy the working directory in the container
-COPY package*.json ./
+COPY package*.json .
 # Install the project dependencies
 RUN npm install
 # Copy the rest of the project files to the container

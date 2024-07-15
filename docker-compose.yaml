@@ -31,14 +31,12 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "${MYSQL_HOST_PORT}:${MYSQL_DOCKER_CONTAINER_PORT}"
+      - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
     environment:
       MYSQL_DATABASE: oscarbook
-      MYSQL_USER: ${MYSQL_DB_USER}
-      MYSQL_PASSWORD: ${MYSQL_DB_USER_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: password
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     networks:
@@ -56,7 +54,7 @@ services:
       - oscar_bookstore
 
   php:
-    image: vixiloc/vcashier-php:1.0.3
+    image: farrela46/be-oscar
     container_name: php_oscarbook
     restart: unless-stopped
     tty: true
@@ -67,9 +65,7 @@ services:
       - oscar_bookstore
 
   vue:
-    build:
-      context: ./fe-vue-oscar-bookstore
-      dockerfile: Dockerfile
+    image: farrela46/fe-oscar:latest
     container_name: vue_oscarbook
     restart: unless-stopped
     tty: true
@@ -77,6 +73,6 @@ services:
     volumes:
       - ./fe-vue-oscar-bookstore:/var/www/app
     ports:
-      - "${VUE_HOST_PORT}:${VUE_DOCKER_CONTAINER_PORT}"
+      - "8080:80"
     networks:
       - oscar_bookstore
