@@ -1,11 +1,8 @@
-version: '3'
-
 networks:
   oscar_bookstore:
     driver: bridge
-
-volumes:
   mysql:
+    external: true
 
 services:
   nginx_be:
@@ -20,36 +17,6 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
-      - mysql
-    networks:
-      - oscar_bookstore
-
-  mysql:
-    platform: linux/amd64
-    image: mysql
-    container_name: mysql_oscarbook
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: oscarbook
-      MYSQL_ROOT_PASSWORD: password
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
-    networks:
-      - oscar_bookstore
-
-  phpmyadmin:
-    image: phpmyadmin
-    restart: unless-stopped
-    container_name: phpmyadmin_oscarbook
-    ports:
-      - "8888:80"
-    environment:
-      - PMA_ARBITRARY=1
     networks:
       - oscar_bookstore
 
@@ -63,6 +30,7 @@ services:
       - ./be-web-online-bookstore:/var/www/app
     networks:
       - oscar_bookstore
+      - mysql
 
   vue:
     image: farrela46/fe-oscar:latest
