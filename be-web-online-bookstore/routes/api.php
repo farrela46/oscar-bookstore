@@ -72,16 +72,18 @@ Route::prefix('/cart')->middleware('auth:sanctum')->group(function () {
     Route::post('/rates', [CartsController::class, 'getShippingRates']);
 });
 
-Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
-    Route::post('/checkout', [OrdersController::class, 'createOrder']);
-    Route::post('/onsite', [OrdersController::class, 'createOfflineOrder']);
-    Route::get('/get', [OrdersController::class, 'getUserOrders']);
-    Route::get('/getadmin', [OrdersController::class, 'getAdminOrders']);
-    Route::get('/status', [OrdersController::class, 'getOrderStatus']);
-    Route::post('/create', [OrdersController::class, 'makeOrder']);
-    Route::post('/update-status', [OrdersController::class, 'UpdateOrderStatus']);
-    Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
-    Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
+Route::prefix('/order')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/checkout', [OrdersController::class, 'createOrder']);
+        Route::post('/onsite', [OrdersController::class, 'createOfflineOrder']);
+        Route::get('/get', [OrdersController::class, 'getUserOrders']);
+        Route::get('/getadmin', [OrdersController::class, 'getAdminOrders']);
+        Route::get('/status', [OrdersController::class, 'getOrderStatus']);
+        Route::post('/create', [OrdersController::class, 'makeOrder']);
+        Route::post('/update-status', [OrdersController::class, 'UpdateOrderStatus']);
+        Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
+        Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
+    });
     Route::post('/webhook', [OrdersController::class, 'biteshipWebhook']);
 });
 
