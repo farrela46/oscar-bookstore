@@ -82,6 +82,7 @@ Route::prefix('/order')->middleware('auth:sanctum')->group(function () {
     Route::post('/update-status', [OrdersController::class, 'UpdateOrderStatus']);
     Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
     Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
+    Route::post('/webhook', [OrdersController::class, 'biteshipWebhook']);
 });
 
 Route::prefix('/review')->group(function () {

@@ -838,10 +838,6 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-
-
     public function retrieveAdminOrder($bsorderId)
     {
         try {
@@ -853,30 +849,37 @@ class OrdersController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    public function updateOrderStatus(Request $request)
+
+    public function biteshipWebhook(Request $request)
     {
-        $validated = $request->validate([
-            'order_id' => 'required|exists:orders,id',
-            'status' => 'required|string|in:delivery,delivered,finished'
-        ]);
-
+        $payload = $request->all();
         try {
-            $order = Order::findOrFail($validated['order_id']);
+            if (isset($payload['order_id']) && isset($payload['status'])) {
+                $shipment = Shipment::where('bsorder_id', $payload['order_id'])->firstOrFail();
 
-            $order->status = $validated['status'];
-            $order->save();
+                $order = Order::findOrFail($shipment->order_id);
+                $newStatus = $payload['status'];
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Order status updated to ' . $validated['status'],
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update order status',
-                'error' => $e->getMessage(),
-            ], 500);
+                if ($newStatus === 'dropping_off') {
+                    $order->status = 'delivery';
+                } elseif ($newStatus === 'delivered') {
+                    $order->status = 'delivered';
+                } else {
+                    $order->status = $newStatus;
+                }
+
+                $order->save();
+
+                return response()->json(['message' => 'Webhook processed successfully'], 200);
+            } else {
+                Log::error('Invalid payload received', ['payload' => $payload]);
+                return response()->json(['message' => 'Invalid payload', 'payload' => $payload], 200);
+            }
+        } catch (Exception $e) {
+            Log::error('Error processing webhook', ['error' => $e->getMessage(), 'payload' => $payload]);
+            return response()->json(['message' => 'Error processing webhook', 'error' => $e->getMessage()], 200);
         }
     }
+
 
 }
