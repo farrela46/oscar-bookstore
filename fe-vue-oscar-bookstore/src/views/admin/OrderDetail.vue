@@ -184,16 +184,7 @@ export default {
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
 
-        if (!isFinished) {
-          const latestStatus = this.riwayat.slice(-1)[0];
-          if (latestStatus) {
-            if (latestStatus.status === 'dropping_off') {
-              await this.updateOrderStatus(this.orders.id, 'delivery');
-            } else if (latestStatus.status === 'delivered') {
-              await this.updateOrderStatus(this.orders.id, 'delivered');
-            }
-          }
-        }
+    
 
       } catch (error) {
         console.error('Error retrieving order details:', error);
