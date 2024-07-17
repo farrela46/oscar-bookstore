@@ -28,7 +28,7 @@ class Buku extends Model
 
     public function getFotoUrlAttribute()
     {
-        return $this->foto ? asset($this->foto) : null;
+        return $this->foto ? asset('storage/' . $this->foto) : null;
     }
 
     // public function getFotoAttribute($value)
