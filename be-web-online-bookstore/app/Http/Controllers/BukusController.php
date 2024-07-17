@@ -90,7 +90,7 @@ class BukusController extends Controller
 
             $file = $request->file('foto');
             $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('public/buku_photos', $fileName);
+            $filePath = $file->storeAs('buku_photos', $fileName);
 
             $buku->foto = 'storage/buku_photos/' . $fileName;
         }
