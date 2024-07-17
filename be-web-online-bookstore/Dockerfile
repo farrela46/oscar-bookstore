@@ -1,8 +1,6 @@
 FROM php:8.3.9RC1-fpm-alpine
 
-LABEL author="Yasfa Ainun Abdullah"
-
-WORKDIR /var/www/app
+LABEL author="Farrel Ahmad"
 
 RUN apk update && apk add \
     nano \
@@ -19,9 +17,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Jalankan composer install
 RUN composer install
 
+RUN php artisan storage:unlink
 RUN php artisan storage:link
 
 # Ubah hak akses direktori (opsional)
 RUN chown -R www-data:www-data /var/www/app/storage
 
-USER www-data
+USER root
