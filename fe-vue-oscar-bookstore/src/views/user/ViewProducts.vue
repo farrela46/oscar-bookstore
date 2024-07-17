@@ -119,7 +119,7 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Product added to cart',
+          text: 'Buku ditambahkan ke Keranjang',
           color: 'green'
         });
       } catch (error) {

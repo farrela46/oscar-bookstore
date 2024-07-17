@@ -206,28 +206,6 @@ export default {
         this.loadingRegist = false;
       }
     },
-    async updateOrderStatus(orderId, status) {
-      try {
-        const response = await axios.post(`${BASE_URL}/order/update-status`, {
-          order_id: orderId,
-          status: status
-        }, {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem('access_token')
-          }
-        });
-        console.log(response);
-        this.retrieveDetail();
-      } catch (error) {
-        console.error(`Error updating order status to ${status}:`, error);
-        this.$notify({
-          type: 'danger',
-          title: 'Error',
-          text: `Failed to update order status to ${status}!`,
-          color: 'red'
-        });
-      }
-    },
     getStatusBadge(status) {
       switch (status) {
         case 'pending':
