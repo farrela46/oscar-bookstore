@@ -19,7 +19,7 @@ class BannersController extends Controller
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
             $fileName = time() . '_' . Str::slug($file->getClientOriginalName(), '-') . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('public/buku_banners', $fileName);
+            $filePath = $file->storeAs('buku_banners', $fileName);
 
             $banner = Banner::create([
                 'judul' => $request->input('judul'),

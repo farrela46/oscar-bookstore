@@ -36,7 +36,7 @@ class BukusController extends Controller
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
                 $fileName = time() . '_' . Str::slug($file->getClientOriginalName(), '-') . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('public/buku_photos', $fileName);
+                $filePath = $file->storeAs('buku_photos', $fileName);
             }
 
             $buku = Buku::create([
