@@ -105,7 +105,6 @@ class BukusController extends Controller
         $buku->harga = $request->input('harga');
         $buku->save();
 
-        // Update the categories
         $categories = json_decode($request->input('categories'), true);
         $categoryIds = Category::whereIn('nama', $categories)->pluck('id')->toArray();
         $buku->categories()->sync($categoryIds);

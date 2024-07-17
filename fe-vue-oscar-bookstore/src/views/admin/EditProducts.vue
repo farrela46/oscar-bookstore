@@ -40,8 +40,7 @@ export default {
     };
   },
   mounted() {
-    this.retrieveCat(),
-      this.retrieveBuku()
+    this.fetchData();
   },
   computed: {
     formattedHarga: {
@@ -84,9 +83,7 @@ export default {
         this.buku = response.data;
         this.breadcrumbsItems[1].title = this.buku.judul;
 
-        this.selectedTags = this.categories
-          .filter(cat => this.buku.category.includes(cat.nama))
-          .map(cat => cat.nama);
+        this.selectedTags = this.buku.category.split(', ').map(cat => cat.trim());
 
       } catch (error) {
         console.error(error);
@@ -104,10 +101,10 @@ export default {
       formData.append('tahun_terbit', this.buku.tahun_terbit);
       formData.append('harga', this.buku.harga);
       formData.append('stok', this.buku.stok);
-      formData.append('categories', JSON.stringify(this.selectedTags)); 
+      formData.append('categories', JSON.stringify(this.selectedTags));
 
       if (this.$refs.fileInput.files.length > 0) {
-        formData.append('foto', this.$refs.fileInput.files[0]); 
+        formData.append('foto', this.$refs.fileInput.files[0]);
       }
 
       try {
@@ -120,11 +117,15 @@ export default {
 
         console.log('Update successful:', response.data);
         this.retrieveBuku();
-        this.$refs.fileInput.value = null; 
+        this.$refs.fileInput.value = null;
       } catch (error) {
         console.error('Error updating buku:', error);
       }
-    }
+    },
+    async fetchData() {
+      await this.retrieveCat();
+      await this.retrieveBuku();
+    },
   },
 };
 </script>
@@ -183,7 +184,7 @@ export default {
             <label for="stok">Stok Buku</label>
             <input class="form-control" type="text" v-model="buku.stok" id="stok" />
             <br>
-            <button class="btn mb-2 btn-primary text-end" type="submit" @click="saveBuku">Save</button>
+            <button class="btn mb-2 btn-primary text-end" type="submit">Save</button>
           </form>
         </div>
       </div>

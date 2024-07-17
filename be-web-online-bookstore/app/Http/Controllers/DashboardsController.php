@@ -63,17 +63,20 @@ class DashboardsController extends Controller
         }
 
         $totalTransactions = Order::whereBetween('created_at', [$startDate, $endDate])
+            ->whereNotIn('status', ['expired', 'pending'])
             ->sum('total_payment');
 
         // Total Items Sold
         $totalItemsSold = DB::table('items')
             ->join('orders', 'items.order_id', '=', 'orders.id')
             ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->whereNotIn('orders.status', ['expired', 'pending'])
             ->sum('items.quantity');
 
         // Monthly Sales Data
         $monthlySales = Order::selectRaw('MONTH(created_at) as month, SUM(total_payment) as total')
             ->whereYear('created_at', $year)
+            ->whereNotIn('status', ['expired', 'pending'])
             ->groupByRaw('MONTH(created_at)')
             ->pluck('total', 'month')
             ->toArray();
@@ -88,6 +91,7 @@ class DashboardsController extends Controller
             ->selectRaw('MONTH(orders.created_at) as month, SUM(items.quantity) as total')
             ->join('orders', 'items.order_id', '=', 'orders.id')
             ->whereYear('orders.created_at', $year)
+            ->whereNotIn('orders.status', ['expired', 'pending'])
             ->groupByRaw('MONTH(orders.created_at)')
             ->pluck('total', 'month')
             ->toArray();
