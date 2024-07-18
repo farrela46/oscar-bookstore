@@ -139,7 +139,7 @@ export default {
           this.$notify({
             type: 'success',
             title: 'Success',
-            text: 'Successfully Updated!',
+            text: 'Alamat berhasil ditambah',
             color: 'green'
           });
         this.resetForm();
@@ -243,7 +243,7 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Successfully Updated!',
+          text: 'Profil berhasil di Update',
           color: 'green'
         });
       } catch (error) {
