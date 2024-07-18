@@ -135,7 +135,6 @@ export default {
     },
     async retrieveBsOrder() {
       this.overlay = true;
-      const isFinished = this.orders.status === 'finished';
       try {
         const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
           headers: {
@@ -146,6 +145,7 @@ export default {
         this.orderDetails = response.data;
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
+
       } catch (error) {
         console.error('Error retrieving order details:', error);
         this.$notify({

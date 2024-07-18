@@ -172,7 +172,6 @@ export default {
     },
     async retrieveBsOrder() {
       this.overlay = true;
-      const isFinished = this.orders.status === 'finished';
       try {
         const response = await axios.get(`${BASE_URL}/order/bs/` + this.orders.bsorder_id, {
           headers: {
