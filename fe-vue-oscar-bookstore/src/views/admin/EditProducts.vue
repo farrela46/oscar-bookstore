@@ -92,6 +92,7 @@ export default {
       }
     },
     async saveBuku() {
+      this.overlay = true
       const formData = new FormData();
       formData.append('no_isbn', this.buku.no_isbn);
       formData.append('judul', this.buku.judul);
@@ -120,6 +121,8 @@ export default {
         this.$refs.fileInput.value = null;
       } catch (error) {
         console.error('Error updating buku:', error);
+      } finally {
+        this.overlay = false
       }
     },
     async fetchData() {
