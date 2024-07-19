@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -22,7 +23,7 @@ class AuthController extends Controller
         ]);
         return response()->json([
             'message' => 'Akun telah berhasil dibuat'
-        ], );
+        ],);
     }
     public function login(Request $request)
     {
@@ -80,5 +81,27 @@ class AuthController extends Controller
         return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
     }
 
-}
+    public function updateUserAdmin(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
 
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:6',
+            'no_telp' => 'nullable|string|max:20',
+        ]);
+
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->no_telp = $validatedData['no_telp'] ?? $user->no_telp;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validatedData['password']);
+        }
+
+        $user->save();
+
+        return response()->json(['message' => 'User updated successfully', 'user' => $user], 200);
+    }
+}

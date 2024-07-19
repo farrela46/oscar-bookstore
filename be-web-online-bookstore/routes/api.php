@@ -28,6 +28,7 @@ use App\Http\Controllers\DashboardsController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::put('/user/update', [AuthController::class, 'updateUser']);
+    Route::put('/user/admin-update/{id}', [AuthController::class, 'updateUserAdmin']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
