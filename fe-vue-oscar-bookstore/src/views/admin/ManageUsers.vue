@@ -135,6 +135,39 @@ export default {
       let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'))
       modal.show();
     },
+    async updateUser() {
+      try {
+        const response = await axios.put(`${BASE_URL}/user/admin-update/${this.users_edit.id}`, this.users_edit, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.users_edit.password = null;
+        console.log(response.data.message);
+
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Profil berhasil di Update',
+          color: 'green'
+        });
+
+        let modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editModal'));
+        modal.hide();
+
+        const index = this.users.findIndex(user => user.id === this.users_edit.id);
+        if (index !== -1) {
+          this.users.splice(index, 1, response.data.user);
+        }
+
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage);
+        }
+      }
+    }
   },
   mounted() {
     this.getAllUser();
@@ -279,10 +312,15 @@ export default {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                   id="closeModal"></button>
               </div>
-              <form role="form" @submit.prevent="userUpdate">
+              <form role="form" @submit.prevent="updateUser">
                 <div class="modal-body">
                   <argon-input type="text" placeholder="Name" v-model="users_edit.name" />
                   <argon-input type="email" placeholder="Email" v-model="users_edit.email" />
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1">+62</span>
+                    <input type="text" class="form-control" v-model="users_edit.no_telp" placeholder="Phone Number"
+                      aria-label="phone" aria-describedby="basic-addon1">
+                  </div>
                   <argon-input type="password" placeholder="Password" v-model="users_edit.password" />
                 </div>
                 <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>

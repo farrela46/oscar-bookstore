@@ -161,6 +161,7 @@ export default {
         console.error(error);
       }
     },
+    
   },
 };
 </script>
@@ -236,7 +237,7 @@ export default {
                 <h5 class="card-title">Rincian Belanja</h5>
                 <p>Ringkasan Pembayaran</p>
                 <p>Rp {{ formatPrice(totalPayment) }}</p>
-                <button class="btn btn-primary w-100" @click="proceedToCheckout">Lanjut ke Pembayaran</button>
+                <button class="btn btn-primary w-100" @click="proceedToCheckout">Membuat Pesanan</button>
               </div>
             </div>
           </div>
