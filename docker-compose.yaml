@@ -21,23 +21,25 @@ services:
       - oscar_bookstore
 
   php:
-    image: vixiloc/php-mysql-composer
+    image: farrela46/be-oscar
     container_name: php_oscarbook
     restart: unless-stopped
     tty: true
     volumes:
       - ./be-web-online-bookstore:/var/www/app
+      - ./be-web-online-bookstore/vendor:/var/www/app/vendor
     networks:
       - oscar_bookstore
       - mysql
 
   vue:
-    image: farrela46/fe-oscar:latest
+    image: farrela46/fe-oscar
     container_name: vue_oscarbook
     restart: unless-stopped
     tty: true
     volumes:
-      - ./fe-vue-oscar-bookstore:/var/www/app
+      - ./fe-vue-oscar-bookstore:/var/app
+      - ./fe-vue-oscar-bookstore/node_modules:/var/app/node_modules
     ports:
       - "8080:80"
     networks:
