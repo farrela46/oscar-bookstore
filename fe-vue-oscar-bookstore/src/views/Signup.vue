@@ -58,7 +58,7 @@ export default {
           const errorMessage = error.response.data.message;
           this.$notify({
             type: 'error',
-            title: 'Error',
+            title: 'Gagal',
             text: errorMessage,
             color: 'red'
           });

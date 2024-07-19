@@ -11,20 +11,27 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $messages = [
+            'email.unique' => 'Akun sudah terdaftar',
+        ];
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-        ]);
+        ], $messages);
+
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => bcrypt($validatedData['password']),
         ]);
+
         return response()->json([
             'message' => 'Akun telah berhasil dibuat'
-        ],);
+        ], 201);
     }
+
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
