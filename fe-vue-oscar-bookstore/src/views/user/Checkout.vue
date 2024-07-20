@@ -152,7 +152,7 @@ export default {
           this.$notify({
             type: 'success',
             title: 'Success',
-            text: 'Alamat berhasil ditambah!',
+            text: 'Alamat berhasil ditambah',
             color: 'green'
           });
         this.resetForm();

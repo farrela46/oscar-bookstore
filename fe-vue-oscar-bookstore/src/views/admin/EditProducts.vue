@@ -117,6 +117,12 @@ export default {
         });
 
         console.log('Update successful:', response.data);
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Detail buku berhasil diupdate',
+          color: 'green'
+        });
         this.retrieveBuku();
         this.$refs.fileInput.value = null;
       } catch (error) {

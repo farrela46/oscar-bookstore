@@ -220,7 +220,7 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Product berhasil dihapus',
+          text: 'Buku berhasil dihapus',
           color: 'green'
         });
         this.retrieveBuku();
