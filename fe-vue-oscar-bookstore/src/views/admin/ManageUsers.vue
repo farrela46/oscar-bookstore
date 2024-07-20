@@ -148,7 +148,7 @@ export default {
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Profil berhasil di Update',
+          text: 'Informasi user berhasil diUpdate',
           color: 'green'
         });
 

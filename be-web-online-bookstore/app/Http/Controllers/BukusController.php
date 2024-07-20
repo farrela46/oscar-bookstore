@@ -62,7 +62,7 @@ class BukusController extends Controller
             }
 
             return response()->json([
-                'message' => 'Successfully Add Buku!',
+                'message' => 'Berhasil menambah Buku!',
                 'buku' => $buku,
             ], 201);
         } catch (\Exception $e) {
