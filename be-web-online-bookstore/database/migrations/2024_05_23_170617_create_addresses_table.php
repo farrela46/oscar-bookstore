@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('selected_address_id');
             $table->string('name');
             $table->string('penerima');
-            $table->string('no_penerima');
+            $table->bigInteger('no_penerima');
             $table->string('provinsi');
             $table->string('kota');
             $table->string('kecamatan');
