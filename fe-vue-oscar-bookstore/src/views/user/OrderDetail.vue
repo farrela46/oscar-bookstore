@@ -95,14 +95,14 @@ export default {
           }
         });
 
-        if (response.status === 200) {
+        if (response.status_code === 200) {
           this.retrieveDetail();
         } else {
-          window.open(this.orders.link);
+          window.open(this.orders.payment.link,"_self");
         }
       } catch (error) {
         console.error("Error checking order status:", error);
-        window.open(this.orders.link);
+        window.open(this.orders.payment.link,"_self");
       }
     },
     async retrieveDetail() {

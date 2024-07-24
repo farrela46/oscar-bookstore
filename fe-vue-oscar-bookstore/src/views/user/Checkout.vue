@@ -36,6 +36,7 @@ export default {
         penerima: '',
         no_penerima: ''
       },
+      users: {},
       selectedAddressId: null,
       selectedAddress: {},
       shippingRates: [],
@@ -47,6 +48,7 @@ export default {
   mounted() {
     this.retrieveCart();
     this.fetchUserAddresses();
+    this.getUser()
   },
   created() {
     this.store = this.$store;
@@ -72,6 +74,23 @@ export default {
       this.store.state.showSidenav = false;
       this.store.state.showFooter = false;
       this.body.classList.remove("bg-gray-100");
+    },
+    async getUser() {
+      try {
+        const response = await axios.get(`${BASE_URL}/user`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        this.users = response.data.user;
+      } catch (error) {
+        console.error(error);
+
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage)
+        }
+      }
     },
     restorePage() {
       this.store.state.hideConfigButton = false;
@@ -198,10 +217,10 @@ export default {
             quantity: order.quantity,
             totalPrice: order.totalPrice,
           })),
-          first_name: 'Farrel',
+          first_name: this.users.name,
           last_name: '',
-          email: 'farrel@example.com',
-          phone: '085179684793',
+          email: this.users.email,
+          phone: this.users.no_telp,
         }, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('access_token'),
@@ -210,7 +229,7 @@ export default {
         });
 
         const { paymentUrl } = response.data;
-        window.open(paymentUrl);
+        window.open(paymentUrl,"_self");
         setTimeout(() => {
           this.$router.push('/orders');
         }, 1000);
