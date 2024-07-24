@@ -98,11 +98,11 @@ export default {
         if (response.status === 200) {
           this.retrieveDetail();
         } else {
-          window.open(this.orders.link, '_blank');
+          window.open(this.orders.link);
         }
       } catch (error) {
         console.error("Error checking order status:", error);
-        window.open(this.orders.link, '_blank');
+        window.open(this.orders.link);
       }
     },
     async retrieveDetail() {

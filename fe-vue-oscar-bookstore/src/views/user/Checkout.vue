@@ -210,7 +210,7 @@ export default {
         });
 
         const { paymentUrl } = response.data;
-        window.open(paymentUrl, '_blank');
+        window.open(paymentUrl);
         setTimeout(() => {
           this.$router.push('/orders');
         }, 1000);
