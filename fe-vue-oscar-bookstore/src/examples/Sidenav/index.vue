@@ -43,7 +43,7 @@ export default {
         aria-hidden="true" id="iconSidenav"></i>
 
       <router-link class="m-0 navbar-brand" to="/">
-        <img :src="require('@/assets/img/logo-ct-dark.png')" class="navbar-brand-img h-100" alt="main_logo" />
+        <img :src="require('@/assets/img/vuefavicon.png')" class="navbar-brand-img h-100" alt="main_logo" />
         <span class="ms-2 font-weight-bold me-2">Oscar Bookstore</span>
       </router-link>
 

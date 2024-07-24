@@ -259,13 +259,13 @@ export default {
             <div class="card">
               <div class="p-3 pb-0 card-header">
                 <div class="d-flex justify-content-between">
-                  <h6 class="mb-2">Sales by Book</h6>
+                  <h6 class="mb-2">Top 5 Sales by Book</h6>
                 </div>
               </div>
               <div class="table-responsive">
                 <table class="table align-items-center">
                   <tbody>
-                    <tr v-for="(sale, index) in sales" :key="index">
+                    <tr v-for="(sale, index) in sales.slice(0, 5)" :key="index" >
                       <td>
                         <div class="px-2 py-1 d-flex align-items-center">
                           <div>
