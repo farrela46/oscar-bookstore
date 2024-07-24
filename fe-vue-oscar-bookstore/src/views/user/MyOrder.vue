@@ -241,8 +241,6 @@ export default {
                     <span v-if="order.status === 'onsite'">On Site</span>
                     <span v-else>Midtrans</span>
                   </span>
-                  <button class="btn btn-sm btn-primary" @click="lihatDetail(order)"
-                    v-if="order.status === 'process'">Buat Pesanan</button>
                 </div>
               </div>
             </div>
