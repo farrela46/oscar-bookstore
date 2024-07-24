@@ -395,7 +395,12 @@ export default {
                     <div class="col-md-3 col-4">
                       <div class="row">
                         <div class="col">
-                          <img :src="order.foto" class="img-fluid" alt="Book image">
+                          <img :src="order.foto" class="img-fluid" alt="Book image" style="max-width: 140px;
+    max-height: 187px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                         </div>
                       </div>
                     </div>
@@ -404,7 +409,7 @@ export default {
                         <div class="col-md-8">
                           <h5 class="text-truncate">{{ order.judul }}</h5>
                           <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{
-        formatPrice(order.harga) }}</p>
+                            formatPrice(order.harga) }}</p>
                         </div>
                         <div class="col-md-4">
                           <div class="d-flex align-items-center">
@@ -492,7 +497,12 @@ export default {
                       <div class="col-md-3 col-4">
                         <div class="row">
                           <div class="col-9">
-                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                           </div>
                         </div>
                       </div>
@@ -544,7 +554,12 @@ export default {
                       <div class="col-md-3 col-4">
                         <div class="row">
                           <div class="col-9">
-                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                            <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                           </div>
                         </div>
                       </div>
@@ -633,6 +648,12 @@ a {
   .row img {
     width: 80px;
     margin-right: 10px;
+    max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;
   }
 }
 </style>

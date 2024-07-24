@@ -54,7 +54,7 @@ export default {
   computed: {
     formattedHarga: {
       get() {
-        return this.buku.harga.toLocaleString('id-ID');
+        return this.buku.harga ? this.buku.harga.toLocaleString('id-ID') : '';
       },
       set(value) {
         const numericValue = parseInt(value.replace(/\./g, ''), 10);
@@ -146,9 +146,10 @@ export default {
       }
     },
 
-    updateHarga() {
-      const numericValue = parseInt(this.formattedHarga.replace(/\./g, ''), 10);
-      this.buku.harga = isNaN(numericValue) ? '' : numericValue;
+    updateHarga(event) {
+      const value = event.target.value.replace(/\D/g, '');
+      this.buku.harga = parseInt(value, 10) || 0;
+      this.formattedHarga = value ? parseInt(value, 10).toLocaleString('id-ID') : '';
     },
     async addBuku() {
       try {
@@ -330,10 +331,10 @@ export default {
                       </div>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Rp.</span>
-                        <input type="number" class="form-control" v-model="formattedHarga" @input="updateHarga"
+                        <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
                           placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
                       </div>
-                      <argon-input type="number" placeholder="Stok" v-model="buku.stok" />
+                      <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
 
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                     </v-card-text>
@@ -395,7 +396,9 @@ export default {
                           </div>
                         </td>
                         <td>
-                          <img style="max-width: 100px;" :src="item.foto" class="rounded img-fluid" alt="Book Image">
+                          <img
+                            style="max-width: 100px; max-height: 134px; width: 100%; height: auto; object-fit: cover; overflow: hidden;"
+                            :src="item.foto" class="rounded img-fluid" alt="Book Image">
                         </td>
                         <td>
                           <div class="d-flex px-2 py-1">

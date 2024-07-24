@@ -189,7 +189,12 @@ export default {
                   <div class="col-md-3 col-4">
                     <div class="row">
                       <div class="col">
-                        <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;">
+                        <img :src="item.foto" class="img-fluid" alt="Book image" style="max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                       </div>
                     </div>
                   </div>
@@ -286,6 +291,12 @@ a {
   .row img {
     width: 30px;
     margin-right: 10px;
+    max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;
   }
 }
 </style>

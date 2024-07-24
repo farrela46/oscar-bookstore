@@ -19,7 +19,7 @@ class BukusController extends Controller
     public function add(Request $request)
     {
         $request->validate([
-            'foto' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'no_isbn' => 'required',
             'judul' => 'required',
             'desc' => 'required',
@@ -28,7 +28,8 @@ class BukusController extends Controller
             'tahun_terbit' => 'required',
             'stok' => 'required',
             'harga' => 'required',
-            'categoryId' => 'required',
+            'categoryId' => 'required|array',
+            'categoryId.*' => 'exists:categories,id',
         ]);
 
         try {
@@ -52,13 +53,11 @@ class BukusController extends Controller
                 'slug' => Str::slug($request->input('judul')),
             ]);
 
-            foreach ($request->input('categoryId') as $key => $category) {
-                BukuCategory::insert(
-                    [
-                        'category_id' => $category,
-                        'buku_id' => $buku->id
-                    ]
-                );
+            foreach ($request->input('categoryId') as $category) {
+                BukuCategory::create([
+                    'category_id' => $category,
+                    'buku_id' => $buku->id,
+                ]);
             }
 
             return response()->json([
@@ -72,7 +71,8 @@ class BukusController extends Controller
         }
     }
 
-   
+
+
 
     public function update(Request $request, $id)
     {
@@ -255,7 +255,4 @@ class BukusController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Buku deleted successfully'], 200);
     }
-
-
-
 }

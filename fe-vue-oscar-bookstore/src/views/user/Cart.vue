@@ -161,7 +161,7 @@ export default {
         console.error(error);
       }
     },
-    
+
   },
 };
 </script>
@@ -204,7 +204,8 @@ export default {
                           @change="updateTotalPayment" />
                       </div>
                       <div class="col">
-                        <img :src="order.foto" class="img-fluid" alt="Book image">
+                        <img :src="order.foto" class="img-fluid" alt="Book image"
+                          style="max-width: 100px; max-height: 134px; width: 100%; height: auto; object-fit: cover; overflow: hidden;">
                       </div>
                     </div>
                   </div>
@@ -302,7 +303,13 @@ a {
 
 
   .row img {
-    width: 30px;
+    width: 80px;
+    max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;
     margin-right: 10px;
   }
 }

@@ -213,7 +213,7 @@ export default {
         window.open(paymentUrl, '_blank');
         setTimeout(() => {
           this.$router.push('/orders');
-        }, 1000); 
+        }, 1000);
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
       } finally {
@@ -445,7 +445,12 @@ export default {
                     <div class="col-md-3 col-4">
                       <div class="row">
                         <div class="col">
-                          <img :src="order.buku.foto" class="img-fluid" alt="Book image">
+                          <img :src="order.buku.foto" class="img-fluid" alt="Book image" style="max-width: 140px;
+    max-height: 187px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                         </div>
                       </div>
                     </div>
@@ -454,7 +459,7 @@ export default {
                         <div class="col-12">
                           <h5 class="text-truncate">{{ order.buku.judul }}</h5>
                           <p class="d-inline"><span class="mx-2">{{ order.quantity }} barang</span> X Rp {{
-        formatPrice(order.buku.harga) }}</p>
+                            formatPrice(order.buku.harga) }}</p>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
                           <span><strong>Rp {{ formatPrice(order.quantity * order.buku.harga) }}</strong></span>
@@ -547,7 +552,8 @@ export default {
                   </div>
                   <div class="mb-3">
                     <label for="postal code" class="form-label">Alamat Lengkap</label>
-                    <textarea type="text" class="form-control" id="district" v-model="address.alamat_lengkap"></textarea>
+                    <textarea type="text" class="form-control" id="district"
+                      v-model="address.alamat_lengkap"></textarea>
                   </div>
                   <hr class="horizontal dark" />
                   <div class="mb-3">
@@ -626,6 +632,12 @@ a {
   .row img {
     width: 80px;
     margin-right: 10px;
+    max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;
   }
 
   .large-checkbox {
@@ -653,6 +665,12 @@ a {
   .row img {
     width: 80px;
     margin-right: 10px;
+    max-width: 100px;
+    max-height: 134px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;
   }
 
   .large-checkbox {
