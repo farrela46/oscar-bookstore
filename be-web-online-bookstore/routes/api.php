@@ -86,6 +86,7 @@ Route::prefix('/order')->group(function () {
         Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);
     });
     Route::post('/webhook', [OrdersController::class, 'biteshipWebhook']);
+    Route::post('/mdwebhook', [OrdersController::class, 'midtransWebhook']);
 });
 
 Route::prefix('/review')->group(function () {

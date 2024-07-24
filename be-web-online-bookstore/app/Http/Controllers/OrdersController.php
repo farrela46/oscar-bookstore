@@ -112,7 +112,6 @@ class OrdersController extends Controller
             DB::commit();
 
             return response()->json(['paymentUrl' => $paymentUrl]);
-
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 400);
@@ -220,7 +219,6 @@ class OrdersController extends Controller
             ];
 
             return response()->json($response, 200);
-
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -880,6 +878,51 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Error processing webhook', 'error' => $e->getMessage()], 200);
         }
     }
+    public function midtransWebhook(Request $request)
+    {
+        $payload = $request->all();
+        try {
+            if (isset($payload['order_id'])) {
+                $orderId = $payload['order_id'];
+                $transactionStatus = $payload['transaction_status'];
 
+                $payment = Payment::where('transaction_id', $orderId)->firstOrFail();
 
+                if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
+                    // Update payment data
+                    $payment->update([
+                        'masked_card' => $payload['masked_card'] ?? $payment->masked_card,
+                        'payment_type' => $payload['payment_type'] ?? $payment->payment_type,
+                        'transaction_time' => $payload['transaction_time'] ?? $payment->transaction_time,
+                        'bank' => $payload['bank'] ?? $payment->bank,
+                        'gross_amount' => $payload['gross_amount'] ?? $payment->gross_amount,
+                        'card_type' => $payload['card_type'] ?? $payment->card_type,
+                        'mdtransaction_id' => $payload['transaction_id'] ?? $payment->mdtransaction_id,
+                    ]);
+
+                    // Update order status
+                    $order = Order::find($payment->order_id);
+                    if ($order) {
+                        $order->status = 'process';
+                        $order->save();
+                    }
+                } else if (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+                    // Handle other transaction statuses
+                    $order = Order::find($payment->order_id);
+                    if ($order) {
+                        $order->status = 'failed';
+                        $order->save();
+                    }
+                }
+
+                return response()->json(['message' => 'Webhook processed successfully'], 200);
+            } else {
+                Log::error('Invalid payload received', ['payload' => $payload]);
+                return response()->json(['message' => 'Invalid payload', 'payload' => $payload], 200);
+            }
+        } catch (Exception $e) {
+            Log::error('Error processing webhook', ['error' => $e->getMessage(), 'payload' => $payload]);
+            return response()->json(['message' => 'Error processing webhook', 'error' => $e->getMessage()], 200);
+        }
+    }
 }
