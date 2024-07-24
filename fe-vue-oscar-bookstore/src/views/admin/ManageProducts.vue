@@ -309,7 +309,7 @@ export default {
 
                   <v-form @submit.prevent="addBuku">
                     <v-card-text>
-                      <argon-input type="text" placeholder="No ISBN" v-model="buku.no_isbn" />
+                      <argon-input type="number" placeholder="No ISBN" v-model="buku.no_isbn" />
                       <argon-input type="text" placeholder="Judul Buku" v-model="buku.judul" />
                       <div class="form-floating mb-3">
                         <textarea class="form-control" v-model="buku.desc" placeholder="Deskripsi Buku"
@@ -330,10 +330,10 @@ export default {
                       </div>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1">Rp.</span>
-                        <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
+                        <input type="number" class="form-control" v-model="formattedHarga" @input="updateHarga"
                           placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
                       </div>
-                      <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
+                      <argon-input type="number" placeholder="Stok" v-model="buku.stok" />
 
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                     </v-card-text>

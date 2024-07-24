@@ -332,7 +332,7 @@ export default {
                   <label for="example-text-input" class="form-control-label">Nomor Telepon</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">+62</span>
-                    <input type="text" class="form-control" v-model="users.no_telp" placeholder="Phone Number"
+                    <input type="number" class="form-control" v-model="users.no_telp" placeholder="Phone Number"
                       aria-label="phone" aria-describedby="basic-addon1">
                   </div>
                 </div>
