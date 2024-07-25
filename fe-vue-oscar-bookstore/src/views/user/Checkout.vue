@@ -235,6 +235,13 @@ export default {
         }, 1000);
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
+        const errorMessage = error.response.data.error;
+          this.$notify({
+            type: 'error',
+            title: 'Gagal',
+            text: errorMessage,
+            color: 'red'
+          });
       } finally {
         this.overlay = false;
       }

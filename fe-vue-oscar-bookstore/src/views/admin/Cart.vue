@@ -129,13 +129,12 @@ export default {
             Authorization: "Bearer " + token
           }
         });
-
-        console.log("Product added to cart:", response.data);
+        console.log(response)
         this.retrieveCart();
         this.$notify({
           type: 'success',
           title: 'Success',
-          text: 'Product added to cart',
+          text: 'Buku ditambahkan ke Keranjang',
           color: 'green'
         });
       } catch (error) {
