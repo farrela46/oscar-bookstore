@@ -134,7 +134,7 @@ export default {
             </a>
           </li>
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <span v-if="hasAccessToken" style="font-size: 1rem;" class="mx-2 text-black justify-content-end">
+            <span v-if="hasAccessToken && role === 'USER'" style="font-size: 1rem;" class="mx-2 text-black justify-content-end">
               <span style="cursor: pointer" @click="goCarts">
                 <i class="fas fa-shopping-cart"></i>
               </span>
