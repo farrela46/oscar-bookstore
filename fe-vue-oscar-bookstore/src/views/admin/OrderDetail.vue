@@ -183,7 +183,7 @@ export default {
         this.riwayat = response.data.courier.history
         this.courierTrack = response.data.courier
 
-    
+
 
       } catch (error) {
         console.error('Error retrieving order details:', error);
@@ -217,6 +217,8 @@ export default {
           return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
+        case 'cancelled':
+          return 'badge-danger';
         default:
           return 'badge-secondary';
       }
@@ -237,6 +239,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'cancelled':
+          return 'Dibatalkan oleh Pelanggan';
         case 'onsite':
           return 'On Site';
         case 'failed':
@@ -403,7 +407,7 @@ export default {
                             <div class="row">
                               <a class="d-block d-sm-inline" style="
                         color: black;">{{ courier.courier_name }} {{
-        courier.courier_service_name }}</a>
+                          courier.courier_service_name }}</a>
                             </div>
                           </div>
                           <div class="col-4">
@@ -458,9 +462,9 @@ export default {
                           </div>
                           <div class="row">
                             <a class="d-inline" style="font-size: 12px; color: black"><span class="mx-2">{{
-        item.quantity }}
+                              item.quantity }}
                                 barang</span> X Rp {{
-        formatPrice(item.buku.harga) }}</a>
+                                  formatPrice(item.buku.harga) }}</a>
                           </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end align-items-center mt-2">
@@ -534,7 +538,7 @@ export default {
                 <div class="row ring-bayar mb-2">
                   <div class="col-12">
                     <p><strong>Payment Type </strong><a class="text-uppercase"> {{ orders.payment.bank }}</a> {{
-        formattedPaymentType }}</p>
+                      formattedPaymentType }}</p>
                   </div>
                 </div>
                 <p>Ringkasan Pembayaran</p>
@@ -567,7 +571,7 @@ export default {
                   Proses Pesanan
                 </button>
                 <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"
-                  v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"><i
+                  v-if="orders.status == 'packing' && orders.status == 'delivery' && orders.status == 'delivered' && orders.status == 'finished'"><i
                     class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
               </div>

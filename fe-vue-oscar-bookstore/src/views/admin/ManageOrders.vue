@@ -148,6 +148,8 @@ export default {
           return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
+        case 'cancelled':
+          return 'badge-danger';
         default:
           return 'badge-secondary';
       }
@@ -168,6 +170,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'cancelled':
+          return 'Dibatalkan oleh Pelanggan';
         case 'onsite':
           return 'On Site';
         case 'failed':
@@ -212,7 +216,7 @@ export default {
                 <div>
                   <span><a style="font-size: 12px;"> {{ formatDate(order.created_at) }} </a></span>
                   <p class="text-bold" style="font-size: 14px; color: black;"> <i class="fas fa-user"></i> {{
-        order.user.name }}</p>
+                    order.user.name }}</p>
                 </div>
                 <div>
                   <span>No. Pemesanan {{ order.id }}</span>

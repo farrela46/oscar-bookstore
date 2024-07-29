@@ -145,6 +145,8 @@ export default {
           return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
+        case 'cancelled':
+          return 'badge-danger';
         default:
           return 'badge-secondary';
       }
@@ -165,6 +167,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+        case 'cancelled':
+          return 'Dibatalkan';
         case 'onsite':
           return 'On Site';
         case 'failed':

@@ -81,6 +81,7 @@ Route::prefix('/order')->group(function () {
         Route::get('/getadmin', [OrdersController::class, 'getAdminOrders']);
         Route::get('/status', [OrdersController::class, 'getOrderStatus']);
         Route::post('/create', [OrdersController::class, 'makeOrder']);
+        Route::put('/cancel/{id}', [OrdersController::class, 'cancelOrder']);
         Route::post('/update-status', [OrdersController::class, 'UpdateOrderStatus']);
         Route::get('/{transaction_id}', [OrdersController::class, 'getOrderDetail']);
         Route::get('/bs/{bsorderId}', [OrdersController::class, 'retrieveAdminOrder']);

@@ -98,11 +98,11 @@ export default {
         if (response.status_code === 200) {
           this.retrieveDetail();
         } else {
-          window.open(this.orders.payment.link,"_self");
+          window.open(this.orders.payment.link, "_self");
         }
       } catch (error) {
         console.error("Error checking order status:", error);
-        window.open(this.orders.payment.link,"_self");
+        window.open(this.orders.payment.link, "_self");
       }
     },
     async retrieveDetail() {
@@ -156,6 +156,36 @@ export default {
         });
       } finally {
         this.overlay = false;
+      }
+    },
+
+    async cancelOrder() {
+      try {
+        const response = await axios.put(`${BASE_URL}/order/cancel/` + this.orders.id, {}, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem('access_token')
+          }
+        });
+        console.log(response.data.message);
+        this.$notify({
+          type: 'success',
+          title: 'Success',
+          text: 'Pesanan berhasil dibatalkan',
+          color: 'green'
+        });
+        this.retrieveDetail();
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.data.message) {
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage);
+          this.$notify({
+            type: 'error',
+            title: 'Error',
+            text: errorMessage,
+            color: 'red'
+          });
+        }
       }
     },
     async submitReviews() {
@@ -214,6 +244,8 @@ export default {
           return 'badge-success text-dark';
         case 'expired':
           return 'badge-danger';
+        case 'cancelled':
+          return 'badge-danger';
         default:
           return 'badge-secondary';
       }
@@ -234,6 +266,8 @@ export default {
           return 'Pesanan Selesai';
         case 'expired':
           return 'Expired';
+          case 'cancelled':
+          return 'Dibatalkan oleh Pelanggan';
         case 'onsite':
           return 'On Site';
         case 'failed':
@@ -569,12 +603,12 @@ export default {
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
                   Ulas & Konfirmasi </button>
-                  <button v-if="orders.status == 'pending'"
-                  class="btn btn-danger btn-sm w-100" @click="dialogTrack = true"><i
+                <button v-if="orders.status == 'pending'" class="btn btn-danger btn-sm w-100" @click="cancelOrder"><i
                     class="fas fa-times mx-2"></i>
                   Batalkan Pesanan </button>
-                <button v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"
-                  class="btn btn-primary btn-sm w-100" ><i
+                <button
+                  v-if="orders.status == 'packing' && orders.status == 'delivery' && orders.status == 'delivered' && orders.status == 'finished'"
+                  class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
                     class="fas fa-info-circle mx-2"></i>
                   Lacak Pengiriman </button>
               </div>

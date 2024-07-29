@@ -848,6 +848,31 @@ class OrdersController extends Controller
         }
     }
 
+    public function cancelOrder(Request $request, $orderId)
+    {
+        try {
+            $order = Order::findOrFail($orderId);
+
+            if ($order->status != 'pending') {
+                return response()->json(['message' => 'Order cannot be cancelled'], 400);
+            }
+
+            $order->status = 'cancelled';
+            $order->save();
+
+            $payment = Payment::where('order_id', $orderId)->first();
+
+            if ($payment) {
+                $payment->link = null;
+                $payment->save();
+            }
+
+            return response()->json(['message' => 'Order cancelled successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error cancelling order', 'error' => $e->getMessage()], 500);
+        }
+    }
+
     public function biteshipWebhook(Request $request)
     {
         $payload = $request->all();
