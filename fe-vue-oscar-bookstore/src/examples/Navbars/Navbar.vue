@@ -134,14 +134,14 @@ export default {
             </a>
           </li>
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
-            <span style="font-size: 1rem;" class="mx-2 text-black justify-content-end">
+            <span v-if="hasAccessToken" style="font-size: 1rem;" class="mx-2 text-black justify-content-end">
               <span style="cursor: pointer" @click="goCarts">
                 <i class="fas fa-shopping-cart"></i>
               </span>
             </span>
             <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
-              <a href="#" class="p-0 nav-link text-black">
+              <a href="#" style="max-width: 100px" class="p-0 nav-link text-black text-truncate">
                 <i class="cursor-pointer fa fa-user"></i>&nbsp;<b> {{ userName }} </b>
               </a>
             </div>

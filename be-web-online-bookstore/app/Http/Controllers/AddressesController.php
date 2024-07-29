@@ -22,7 +22,7 @@ class AddressesController extends Controller
             'selected_address_id' => 'required|string',
             'name' => 'required|string',
             'penerima' => 'required|string',
-            'no_penerima' => 'required|string',
+            'no_penerima' => 'required|numeric',
             'provinsi' => 'required|string',
             'kota' => 'required|string',
             'kecamatan' => 'required|string',

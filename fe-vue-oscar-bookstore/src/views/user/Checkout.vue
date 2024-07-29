@@ -42,6 +42,7 @@ export default {
       shippingRates: [],
       dialog: false,
       selectedCourier: null,
+      loading: false
     };
   },
 
@@ -148,6 +149,7 @@ export default {
       }
     },
     async saveAddress() {
+      this.loading = true;
       const addressData = {
         selected_address_id: this.selectedAddresses.id,
         name: this.selectedAddresses.name,
@@ -229,19 +231,19 @@ export default {
         });
 
         const { paymentUrl } = response.data;
-        window.open(paymentUrl,"_self");
+        window.open(paymentUrl, "_self");
         setTimeout(() => {
           this.$router.push('/orders');
         }, 1000);
       } catch (error) {
         console.error('Error proceeding to checkout:', error);
         const errorMessage = error.response.data.error;
-          this.$notify({
-            type: 'error',
-            title: 'Gagal',
-            text: errorMessage,
-            color: 'red'
-          });
+        this.$notify({
+          type: 'error',
+          title: 'Gagal',
+          text: errorMessage,
+          color: 'red'
+        });
       } finally {
         this.overlay = false;
       }
@@ -590,8 +592,10 @@ export default {
                     <label for="recipientPhone" class="form-label">Nomor Telepon Penerima</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">+62</span>
-                      <input type="text" class="form-control" v-model="address.no_penerima" placeholder="Phone Number"
-                        aria-label="phone" aria-describedby="basic-addon1">
+                      <input
+                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                        type="number" maxlength="12" class="form-control" v-model="address.no_penerima"
+                        placeholder="Phone Number" aria-label="phone" aria-describedby="basic-addon1">
                     </div>
                   </div>
                   <div class="mb-3">
@@ -606,7 +610,11 @@ export default {
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="dialog = false">Batal</v-btn>
-              <v-btn color="blue darken-1" text @click="saveAddress">Simpan</v-btn>
+              <div class="div">
+                <v-btn color="blue darken-1" v-if="!loading" text @click="saveAddress">Simpan</v-btn>
+                <v-btn color="blue darken-1" v-else text readonly><v-progress-circular
+                  indeterminate></v-progress-circular>Simpan</v-btn>
+              </div>
             </v-card-actions>
           </v-card>
         </v-dialog>

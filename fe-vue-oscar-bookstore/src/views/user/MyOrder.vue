@@ -217,8 +217,13 @@ export default {
               </div>
               <div class="card-body px-4 py-0">
                 <div v-for="item in order.items" :key="item.id" class="d-flex mb-3">
-                  <img :src="item.buku.foto" alt="Product Image" class="img-fluid"
-                    style="width: 50px; margin-right: 20px;">
+                  <img :src="item.buku.foto" alt="Product Image" class="img-fluid" style="
+    max-width: 80px;
+    max-height: 106px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    overflow: hidden;">
                   <div>
                     <h6>{{ item.buku.judul }}</h6>
                     <p>{{ item.quantity }} Barang x Rp {{ formatPrice(item.buku.harga) }}</p>
