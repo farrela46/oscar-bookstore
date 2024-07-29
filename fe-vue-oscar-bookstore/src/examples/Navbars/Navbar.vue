@@ -117,11 +117,12 @@ export default {
   <nav class="navbar navbar-main navbar-expand-lg px-0 mx-2 shadow border-radius-md z-999" v-bind="$attrs"
     id="navbarBlur" data-scroll="true">
     <div class="px-3 py-1 container-fluid">
-      <router-link  class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
+      <router-link class="navbar-brand font-weight-bolder ms-lg-0 ms-3" :class="darkMode ? 'text-black' : 'text-black'"
         to="/">OSCAR BOOKSTORE</router-link>
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" :class="'px-0 me-sm-4'" id="navbar">
         <div class="pe-md-3 d-flex align-items-center" :class="'me-md-auto ms-md-auto'">
         </div>
+
         <ul class="navbar-nav justify-content-end">
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center" v-if="role === 'ADMIN'">
             <a @click="minimizeSidebar" class="p-0 nav-link text-black" id="iconNavbarSidenav">
@@ -133,6 +134,11 @@ export default {
             </a>
           </li>
           <li class="nav-item dropdown d-flex align-items-center" :class="'ps-2 pe-2'">
+            <span style="font-size: 1rem;" class="mx-2 text-black justify-content-end">
+              <span style="cursor: pointer" @click="goCarts">
+                <i class="fas fa-shopping-cart"></i>
+              </span>
+            </span>
             <div v-if="hasAccessToken" class="div" :class="[showMenu ? 'show' : '']" id="dropdownMenuButton"
               data-bs-toggle="dropdown" aria-expanded="false" @click="showMenu = !showMenu" @blur="closeMenu">
               <a href="#" class="p-0 nav-link text-black">

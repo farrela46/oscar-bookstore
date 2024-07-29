@@ -43,7 +43,7 @@ export default {
       alamat: [],
       selectedAddressId: null,
       confirmdeletion: false,
-      overlay : false
+      overlay: false
     };
   },
   created() {
@@ -165,7 +165,7 @@ export default {
     },
     cancelAlamat() {
       this.dialog = false,
-      this.resetForm();
+        this.resetForm();
     },
     async fetchUserAddresses() {
       this.overlay = true
@@ -332,8 +332,10 @@ export default {
                   <label for="example-text-input" class="form-control-label">Nomor Telepon</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1">+62</span>
-                    <input type="number" class="form-control" v-model="users.no_telp" placeholder="Phone Number"
-                      aria-label="phone" aria-describedby="basic-addon1">
+                    <input
+                      oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                      type="number" maxlength="13" class="form-control" v-model="users.no_telp"
+                      placeholder="Phone Number" aria-label="phone" aria-describedby="basic-addon1">
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -366,7 +368,7 @@ export default {
               <hr class="horizontal dark" />
               <div class="row">
                 <div v-for="item in alamat" :key="item.id" class="col-md-12 mb-3">
-                  <div class="border p-2 rounded-lg" >
+                  <div class="border p-2 rounded-lg">
                     <div class="row">
                       <div class="col">
                         <v-chip color="green" variant="elevated">
@@ -376,7 +378,7 @@ export default {
                     </div>
                     <div class="row">
                       <div class="col-md-9 col-9">
-                        <div class="mt-2" >
+                        <div class="mt-2">
                           <a class="card-alamat" style="color: grey;">{{ item.penerima }}</a>
                           <br>
                           <a class="card-alamat" style="color: grey;">{{ item.alamat_lengkap }}</a>
@@ -421,7 +423,7 @@ export default {
                 input kode pos!</a></div>
             <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
             <div class="wrap" v-if="selectedAddress">
-              <form >
+              <form>
                 <div class="mb-3">
                   <label for="Province" class="form-label">Provinsi</label>
                   <input type="text" class="form-control" id="province" v-model="address.provinsi">

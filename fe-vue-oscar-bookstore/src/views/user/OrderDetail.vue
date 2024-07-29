@@ -569,9 +569,13 @@ export default {
                   class="btn btn-outline-light btn-sm text-dark w-100" @click="dialogReview = true"><i
                     class="fas fa-star"></i><a> </a>
                   Ulas & Konfirmasi </button>
+                  <button v-if="orders.status == 'pending'"
+                  class="btn btn-danger btn-sm w-100" @click="dialogTrack = true"><i
+                    class="fas fa-info-circle mx-2"></i>
+                  Batalkan Pesanan </button>
                 <button v-if="orders.status != 'pending' && orders.status != 'process' && orders.status != 'onsite'"
                   class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"><i
-                    class="fas fa-info-circle mx-2"></i>
+                    class="fas fa-times mx-2"></i>
                   Lacak Pengiriman </button>
               </div>
             </div>
