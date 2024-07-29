@@ -195,15 +195,14 @@ export default {
             </div>
             <div v-for="(order, index) in orders" :key="index" class="mb-4 card">
               <div class="card-body">
-                <h5 class="card-title">Pesanan {{ index + 1 }}</h5>
-                <div class="row">
-                  <div class="col-3">
-                    <div class="row">
-                      <div class="col-1 align-items-center d-flex">
+                <div class="row ">
+                  <div class="col-md-3">
+                    <div class="row align-items-center d-flex">
+                      <div class="col-3">
                         <input type="checkbox" class="large-checkbox" v-model="order.selected"
                           @change="updateTotalPayment" />
                       </div>
-                      <div class="col">
+                      <div class="col-9 text-center">
                         <img :src="order.foto" class="img-fluid" alt="Book image"
                           style="max-width: 100px; max-height: 134px; width: 100%; height: auto; object-fit: cover; overflow: hidden;">
                       </div>
@@ -212,7 +211,7 @@ export default {
                   <div class="col-md-9">
                     <div class="row">
                       <div class="col">
-                        <h6>{{ order.judul }}</h6>
+                        <h6 class="text-truncate">{{ order.judul }}</h6>
                         <p>Rp {{ formatPrice(order.harga) }}</p>
                       </div>
                       <div class="col">
@@ -287,8 +286,8 @@ a {
 }
 
 .large-checkbox {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .sticky-menu {
@@ -300,7 +299,10 @@ a {
 
 
 @media (max-width: 576px) {
-
+  .large-checkbox {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
 
   .row img {
     width: 80px;
