@@ -26,8 +26,8 @@ class BukusController extends Controller
             'pengarang' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required',
-            'stok' => 'required|numeric',
-            'harga' => 'required|numeric',
+            'stok' => 'required|numeric|min:0', 
+            'harga' => 'required|numeric|min:0', 
             'categoryId' => 'required|array',
             'categoryId.*' => 'exists:categories,id',
         ]);

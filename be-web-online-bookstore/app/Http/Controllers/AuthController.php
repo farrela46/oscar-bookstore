@@ -72,7 +72,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
-            'no_telp' => 'nullable|numeric',
+            'no_telp' => 'required|numeric|min:0',
         ]);
 
         $user->name = $validatedData['name'];
