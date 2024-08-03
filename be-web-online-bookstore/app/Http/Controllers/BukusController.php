@@ -20,7 +20,7 @@ class BukusController extends Controller
     {
         $request->validate([
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'no_isbn' => 'required|array',
+            'no_isbn' => 'required|numeric|min:0',
             'judul' => 'required',
             'desc' => 'required',
             'pengarang' => 'required',
