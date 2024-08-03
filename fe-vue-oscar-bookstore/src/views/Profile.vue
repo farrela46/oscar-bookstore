@@ -334,7 +334,7 @@ export default {
                     <span class="input-group-text" id="basic-addon1">+62</span>
                     <input
                       oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                      type="number" maxlength="13" class="form-control" v-model="users.no_telp"
+                      type="number" maxlength="12" class="form-control" v-model="users.no_telp"
                       placeholder="Phone Number" aria-label="phone" aria-describedby="basic-addon1">
                   </div>
                 </div>

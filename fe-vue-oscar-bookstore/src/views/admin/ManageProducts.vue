@@ -334,7 +334,7 @@ export default {
                         <input type="text" class="form-control" v-model="formattedHarga" @input="updateHarga"
                           placeholder="Harga" aria-label="phone" aria-describedby="basic-addon1">
                       </div>
-                      <argon-input type="text" placeholder="Stok" v-model="buku.stok" />
+                      <argon-input type="number" placeholder="Stok" v-model="buku.stok" />
 
                       <v-progress-linear v-if="loadingRegist" indeterminate></v-progress-linear>
                     </v-card-text>
