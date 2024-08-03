@@ -47,11 +47,9 @@ export default {
     this.restorePage();
   },
   mounted() {
-    this.$nextTick(() => {
-      this.checkAvailableYears();
-      this.retrieveDashboard();
-      this.retrieveBookStatistics();
-    });
+    this.checkAvailableYears();
+    this.retrieveDashboard();
+    this.retrieveBookStatistics();
   },
   methods: {
     // updateChartData(newData) {
@@ -104,7 +102,7 @@ export default {
 
         this.dashboardData = response.data;
 
-
+        
 
         const selectedMonthName = this.selectedMonth
           ? this.monthNames[this.selectedMonth - 1]
@@ -222,37 +220,37 @@ export default {
           <div class="col-lg-6 mb-lg">
             <div class="card card-chart p-2" style="height: 100%; border-radius: 10px;">
               <CanvasJSChart :options="{
-                animationEnabled: true,
-                theme: 'light2',
-                title: {
-                  text: 'Pendapatan Bulanan'
-                },
-                axisY: {
-                  title: 'Pendapatan'
-                },
-                data: [{
-                  type: 'spline',
-                  dataPoints: this.dashboardData.monthly_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
-                }]
-              }" />
+      animationEnabled: true,
+      theme: 'light2',
+      title: {
+        text: 'Pendapatan Bulanan'
+      },
+      axisY: {
+        title: 'Pendapatan'
+      },
+      data: [{
+        type: 'spline',
+        dataPoints: this.dashboardData.monthly_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
+      }]
+    }" />
             </div>
           </div>
           <div class="col-lg-6">
             <div class="card card-chart p-2 " style="height: 100%; border-radius: 10px;">
               <CanvasJSChart :options="{
-                animationEnabled: true,
-                theme: 'light2',
-                title: {
-                  text: 'Penjualan Buku Bulanan'
-                },
-                axisY: {
-                  title: 'Books Terjual'
-                },
-                data: [{
-                  type: 'column',
-                  dataPoints: this.dashboardData.monthly_book_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
-                }]
-              }" />
+      animationEnabled: true,
+      theme: 'light2',
+      title: {
+        text: 'Penjualan Buku Bulanan'
+      },
+      axisY: {
+        title: 'Books Terjual'
+      },
+      data: [{
+        type: 'column',
+        dataPoints: this.dashboardData.monthly_book_sales.map((value, index) => ({ label: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][index], y: parseInt(value) })),
+      }]
+    }" />
             </div>
           </div>
         </div>
@@ -261,13 +259,13 @@ export default {
             <div class="card">
               <div class="p-3 pb-0 card-header">
                 <div class="d-flex justify-content-between">
-                  <h6 class="mb-2">Top 5 Sales by Book</h6>
+                  <h6 class="mb-2">Sales by Book</h6>
                 </div>
               </div>
               <div class="table-responsive">
                 <table class="table align-items-center">
                   <tbody>
-                    <tr v-for="(sale, index) in sales.slice(0, 5)" :key="index">
+                    <tr v-for="(sale, index) in sales" :key="index">
                       <td>
                         <div class="px-2 py-1 d-flex align-items-center">
                           <div>
