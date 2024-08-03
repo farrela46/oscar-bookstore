@@ -191,7 +191,6 @@ export default {
 
 <template>
   <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
-
   <div class="py-4 container">
     <div class="row mt-2">
       <v-overlay :model-value="overlay" class="d-flex align-items-center justify-content-center">

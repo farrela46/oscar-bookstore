@@ -20,14 +20,14 @@ class BukusController extends Controller
     {
         $request->validate([
             'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'no_isbn' => 'required',
+            'no_isbn' => 'required|array',
             'judul' => 'required',
             'desc' => 'required',
             'pengarang' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required',
-            'stok' => 'required',
-            'harga' => 'required',
+            'stok' => 'required|numeric',
+            'harga' => 'required|numeric',
             'categoryId' => 'required|array',
             'categoryId.*' => 'exists:categories,id',
         ]);
