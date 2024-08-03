@@ -265,7 +265,7 @@ export default {
               <div class="table-responsive">
                 <table class="table align-items-center">
                   <tbody>
-                    <tr v-for="(sale, index) in sales" :key="index">
+                    <tr v-for="(sale, index) in sales.slice(0, 5)" :key="index">
                       <td>
                         <div class="px-2 py-1 d-flex align-items-center">
                           <div>

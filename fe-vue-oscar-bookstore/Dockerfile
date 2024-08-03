@@ -5,7 +5,7 @@ WORKDIR /app
 # Copy the working directory in the container
 COPY package*.json .
 # Install the project dependencies
-RUN yarn install
+RUN npm install
 # Copy the rest of the project files to the container
 COPY . .
 # Build the Vue.js application to the production mode to dist folder
