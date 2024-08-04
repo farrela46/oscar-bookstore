@@ -571,9 +571,10 @@ export default {
                   Proses Pesanan
                 </button>
                 <button class="btn btn-primary btn-sm w-100" @click="dialogTrack = true"
-                  v-if="orders.status == 'packing' && orders.status == 'delivery' && orders.status == 'delivered' && orders.status == 'finished'"><i
-                    class="fas fa-info-circle mx-2"></i>
-                  Lacak Pengiriman </button>
+                  v-if="['packing', 'delivery', 'delivered', 'finished'].includes(orders.status)">
+                  <i class="fas fa-info-circle mx-2"></i>
+                  Lacak Pengiriman
+                </button>
               </div>
             </div>
             <v-dialog v-model="dialogTrack" max-width="788px">
