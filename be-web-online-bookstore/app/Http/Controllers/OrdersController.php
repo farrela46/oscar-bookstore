@@ -913,21 +913,19 @@ class OrdersController extends Controller
                 $order = Order::findOrFail($shipment->order_id);
                 $newStatus = $payload['status'];
 
-                // Define status mappings
+            
                 $packingStatuses = [
                     'confirmed',
                     'allocated',
-                    'pickingUp',
+                    'picking_up',
                     'picked'
                 ];
 
                 $deliveryStatuses = [
-                    'droppingOff',
-                    'returnInTransit',
-                    'onHold'
+                    'dropping_off',
+                    'return_in_transit',
+                    'on_hold'
                 ];
-
-                // Update order status based on new status
                 if (in_array($newStatus, $packingStatuses)) {
                     $order->status = 'packing';
                 } elseif (in_array($newStatus, $deliveryStatuses)) {
