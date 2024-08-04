@@ -265,7 +265,7 @@ export default {
                         <td class="align-middle">
                           <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editCat(item.id)">
                             <span style="color: green;">
-                              <i class="fa fa-pencil-square-o"></i>
+                              <i class="fas fa-edit"></i>
                             </span>
                           </span>
                           <span style="font-size: 1rem; cursor: pointer;" @click="openDeleteConfirmation(item.id)">
