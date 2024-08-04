@@ -136,6 +136,7 @@ export default {
       modal.show();
     },
     async updateUser() {
+      this.loadingRegist = true
       try {
         const response = await axios.put(`${BASE_URL}/user/admin-update/${this.users_edit.id}`, this.users_edit, {
           headers: {
@@ -166,6 +167,8 @@ export default {
           const errorMessage = error.response.data.message;
           console.log(errorMessage);
         }
+      } finally {
+        this.loadingRegist = false
       }
     }
   },
@@ -269,7 +272,7 @@ export default {
                         <td class="align-middle">
                           <span class="mx-3" style="font-size: 1rem; cursor: pointer;" @click="editUser(user.id)">
                             <span style="color: green;">
-                              <i class="fa fa-pencil-square-o"></i>
+                              <i class="fas fa-edit"></i>
                             </span>
                           </span>
                           <!-- <span style="font-size: 1rem; cursor: pointer;" @click="openDeleteConfirmation(user.id)">
