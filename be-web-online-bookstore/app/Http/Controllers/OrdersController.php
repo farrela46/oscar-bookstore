@@ -873,20 +873,67 @@ class OrdersController extends Controller
         }
     }
 
+    // public function biteshipWebhook(Request $request)
+    // {
+    //     $payload = $request->all();
+    //     try {
+    //         if (isset($payload['order_id']) && isset($payload['status'])) {
+    //             $shipment = Shipment::where('bsorder_id', $payload['order_id'])->firstOrFail();
+
+    //             $order = Order::findOrFail($shipment->order_id);
+    //             $newStatus = $payload['status'];
+
+    //             if ($newStatus === 'dropping_off') {
+    //                 $order->status = 'delivery';
+    //             } elseif ($newStatus === 'delivered') {
+    //                 $order->status = 'delivered';
+    //             } else {
+    //                 $order->status = $newStatus;
+    //             }
+
+    //             $order->save();
+
+    //             return response()->json(['message' => 'Webhook processed successfully'], 200);
+    //         } else {
+    //             Log::error('Invalid payload received', ['payload' => $payload]);
+    //             return response()->json(['message' => 'Invalid payload', 'payload' => $payload], 200);
+    //         }
+    //     } catch (Exception $e) {
+    //         Log::error('Error processing webhook', ['error' => $e->getMessage(), 'payload' => $payload]);
+    //         return response()->json(['message' => 'Error processing webhook', 'error' => $e->getMessage()], 200);
+    //     }
+    // }
+
     public function biteshipWebhook(Request $request)
     {
         $payload = $request->all();
         try {
             if (isset($payload['order_id']) && isset($payload['status'])) {
                 $shipment = Shipment::where('bsorder_id', $payload['order_id'])->firstOrFail();
-
                 $order = Order::findOrFail($shipment->order_id);
                 $newStatus = $payload['status'];
 
-                if ($newStatus === 'dropping_off') {
+                // Define status mappings
+                $packingStatuses = [
+                    'confirmed',
+                    'allocated',
+                    'pickingUp',
+                    'picked'
+                ];
+
+                $deliveryStatuses = [
+                    'droppingOff',
+                    'returnInTransit',
+                    'onHold'
+                ];
+
+                // Update order status based on new status
+                if (in_array($newStatus, $packingStatuses)) {
+                    $order->status = 'packing';
+                } elseif (in_array($newStatus, $deliveryStatuses)) {
                     $order->status = 'delivery';
                 } elseif ($newStatus === 'delivered') {
-                    $order->status = 'delivered';
+                    $order->status = 'delivery';
                 } else {
                     $order->status = $newStatus;
                 }
@@ -903,6 +950,7 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Error processing webhook', 'error' => $e->getMessage()], 200);
         }
     }
+
     public function midtransWebhook(Request $request)
     {
         $payload = $request->all();
