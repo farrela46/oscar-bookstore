@@ -24,7 +24,8 @@ export default {
       password: '',
       store: null,
       body: null,
-      loading: false
+      loading: false,
+      showPasswordError: false,
     };
   },
   created() {
@@ -37,6 +38,13 @@ export default {
   },
   methods: {
     async onSubmit() {
+      if (this.password !== this.confirmPassword) {
+        this.showPasswordError = true;
+        return; // Prevent form submission if passwords do not match
+      } else {
+        this.showPasswordError = false;
+      }
+
       this.loading = true;
       try {
         const response = await axios.post(`${BASE_URL}/register`, {
@@ -67,7 +75,6 @@ export default {
         this.loading = false;
       }
     },
-
     setupPage() {
       this.store.state.hideConfigButton = true;
       this.store.state.showNavbar = false;
@@ -120,14 +127,13 @@ export default {
               <form role="form" @submit.prevent="onSubmit">
                 <argon-input v-model="name" id="name" type="text" placeholder="Name" aria-label="Name" />
                 <argon-input v-model="email" id="email" type="email" placeholder="Email" aria-label="Email" />
+
                 <argon-input v-model="password" id="password" type="password" placeholder="Password"
                   aria-label="Password" />
-                <!-- <argon-checkbox checked>
-                  <label class="form-check-label" for="flexCheckDefault">
-                    I agree the
-                    <a href="javascript:;" class="text-dark font-weight-bolder">Terms and Conditions</a>
-                  </label>
-                </argon-checkbox> -->
+                <argon-input v-model="confirmPassword" id="password" type="password" placeholder="Confirm Password"
+                  aria-label="Password" />
+                <a v-if="showPasswordError" style="font-size: 12px; color:red;"><i class="fas fa-info-circle"
+                    style="color: #ff0000;"></i>&nbsp;Password tidak sesuai!</a>
                 <div class="text-center">
                   <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient"
                     class="my-4 mb-2">Sign up</argon-button>
