@@ -241,6 +241,19 @@ class OrdersController extends Controller
         $statusFilter = $request->query('status');
 
         $query = "
+    SELECT orders.*, items.*, bukus.*, payments.*, shipments.*, 
+           orders.id as order_id, items.id as item_id, bukus.id as buku_id, payments.id as payment_id, shipments.id as shipment_id
+    FROM orders
+    LEFT JOIN items ON items.order_id = orders.id
+    LEFT JOIN bukus ON bukus.id = items.buku_id
+    LEFT JOIN payments ON payments.order_id = orders.id
+    LEFT JOIN shipments ON shipments.order_id = orders.id
+    WHERE orders.user_id = ?
+    ORDER BY orders.created_at DESC
+    ";
+
+        if ($statusFilter) {
+            $query = "
         SELECT orders.*, items.*, bukus.*, payments.*, shipments.*, 
                orders.id as order_id, items.id as item_id, bukus.id as buku_id, payments.id as payment_id, shipments.id as shipment_id
         FROM orders
@@ -248,21 +261,8 @@ class OrdersController extends Controller
         LEFT JOIN bukus ON bukus.id = items.buku_id
         LEFT JOIN payments ON payments.order_id = orders.id
         LEFT JOIN shipments ON shipments.order_id = orders.id
-        WHERE orders.user_id = ?
+        WHERE orders.user_id = ? AND orders.status = ?
         ORDER BY orders.created_at DESC
-    ";
-
-        if ($statusFilter) {
-            $query = "
-            SELECT orders.*, items.*, bukus.*, payments.*, shipments.*, 
-                   orders.id as order_id, items.id as item_id, bukus.id as buku_id, payments.id as payment_id, shipments.id as shipment_id
-            FROM orders
-            LEFT JOIN items ON items.order_id = orders.id
-            LEFT JOIN bukus ON bukus.id = items.buku_id
-            LEFT JOIN payments ON payments.order_id = orders.id
-            LEFT JOIN shipments ON shipments.order_id = orders.id
-            WHERE orders.user_id = ? AND orders.status = ?
-            ORDER BY orders.created_at DESC
         ";
             $orders = DB::select($query, [$userId, $statusFilter]);
         } else {
@@ -277,7 +277,7 @@ class OrdersController extends Controller
                     'order_id' => $item->order_id,
                     'buku_id' => $item->buku_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->price,
+                    'price' => $item->price, 
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
                     'buku' => [
@@ -291,7 +291,7 @@ class OrdersController extends Controller
                         'foto' => asset('storage/buku_photos/' . basename($item->foto)),
                         'stok' => $item->stok,
                         'sold' => $item->sold,
-                        'harga' => $item->harga,
+                        'harga' => $item->price / $item->quantity,
                         'slug' => $item->slug,
                         'created_at' => $item->created_at,
                         'updated_at' => $item->updated_at
@@ -344,6 +344,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
 
@@ -567,73 +568,73 @@ class OrdersController extends Controller
         $userId = auth()->id();
 
         $query = "
-        SELECT 
-            orders.id AS order_id,
-            orders.user_id,
-            orders.address_id,
-            orders.status,
-            orders.total_payment,
-            orders.created_at AS order_created_at,
-            orders.updated_at AS order_updated_at,
-            items.id AS item_id,
-            items.order_id,
-            items.buku_id,
-            items.quantity,
-            items.price AS item_price,
-            items.created_at AS item_created_at,
-            items.updated_at AS item_updated_at,
-            bukus.id AS buku_id,
-            bukus.no_isbn,
-            bukus.judul,
-            bukus.desc,
-            bukus.pengarang,
-            bukus.penerbit,
-            bukus.tahun_terbit,
-            bukus.foto,
-            bukus.stok,
-            bukus.sold,
-            bukus.harga,
-            bukus.slug,
-            bukus.created_at AS buku_created_at,
-            bukus.updated_at AS buku_updated_at,
-            addresses.id AS address_id,
-            addresses.user_id AS address_user_id,
-            addresses.selected_address_id,
-            addresses.name AS address_name,
-            addresses.penerima,
-            addresses.no_penerima,
-            addresses.provinsi,
-            addresses.kota,
-            addresses.kecamatan,
-            addresses.alamat_lengkap,
-            addresses.postal_code,
-            addresses.label,
-            addresses.created_at AS address_created_at,
-            addresses.updated_at AS address_updated_at,
-            payments.transaction_id AS payment_transaction_id,
-            payments.mdtransaction_id AS payment_mdtransaction_id,
-            payments.masked_card AS payment_masked_card,
-            payments.payment_type AS payment_payment_type,
-            payments.transaction_time AS payment_transaction_time,
-            payments.bank AS payment_bank,
-            payments.gross_amount AS payment_gross_amount,
-            payments.card_type AS payment_card_type,
-            payments.payment_option_type AS payment_option_type,
-            payments.shopeepay_reference_number AS payment_shopeepay_reference_number,
-            payments.reference_id AS payment_reference_id,
-            payments.link AS payment_link,
-            shipments.bsorder_id AS shipment_bsorder_id,
-            shipments.shipping_cost AS shipment_shipping_cost,
-            shipments.waybill_id AS shipment_waybill_id,
-            shipments.courier_details AS shipment_courier_details
-        FROM orders
-        LEFT JOIN items ON items.order_id = orders.id
-        LEFT JOIN bukus ON bukus.id = items.buku_id
-        LEFT JOIN addresses ON orders.address_id = addresses.id
-        LEFT JOIN payments ON payments.order_id = orders.id
-        LEFT JOIN shipments ON shipments.order_id = orders.id
-        WHERE payments.transaction_id = :transactionId
-    ";
+    SELECT 
+        orders.id AS order_id,
+        orders.user_id,
+        orders.address_id,
+        orders.status,
+        orders.total_payment,
+        orders.created_at AS order_created_at,
+        orders.updated_at AS order_updated_at,
+        items.id AS item_id,
+        items.order_id,
+        items.buku_id,
+        items.quantity,
+        items.price AS item_price,
+        items.created_at AS item_created_at,
+        items.updated_at AS item_updated_at,
+        bukus.id AS buku_id,
+        bukus.no_isbn,
+        bukus.judul,
+        bukus.desc,
+        bukus.pengarang,
+        bukus.penerbit,
+        bukus.tahun_terbit,
+        bukus.foto,
+        bukus.stok,
+        bukus.sold,
+        bukus.harga,
+        bukus.slug,
+        bukus.created_at AS buku_created_at,
+        bukus.updated_at AS buku_updated_at,
+        addresses.id AS address_id,
+        addresses.user_id AS address_user_id,
+        addresses.selected_address_id,
+        addresses.name AS address_name,
+        addresses.penerima,
+        addresses.no_penerima,
+        addresses.provinsi,
+        addresses.kota,
+        addresses.kecamatan,
+        addresses.alamat_lengkap,
+        addresses.postal_code,
+        addresses.label,
+        addresses.created_at AS address_created_at,
+        addresses.updated_at AS address_updated_at,
+        payments.transaction_id AS payment_transaction_id,
+        payments.mdtransaction_id AS payment_mdtransaction_id,
+        payments.masked_card AS payment_masked_card,
+        payments.payment_type AS payment_payment_type,
+        payments.transaction_time AS payment_transaction_time,
+        payments.bank AS payment_bank,
+        payments.gross_amount AS payment_gross_amount,
+        payments.card_type AS payment_card_type,
+        payments.payment_option_type AS payment_option_type,
+        payments.shopeepay_reference_number AS payment_shopeepay_reference_number,
+        payments.reference_id AS payment_reference_id,
+        payments.link AS payment_link,
+        shipments.bsorder_id AS shipment_bsorder_id,
+        shipments.shipping_cost AS shipment_shipping_cost,
+        shipments.waybill_id AS shipment_waybill_id,
+        shipments.courier_details AS shipment_courier_details
+    FROM orders
+    LEFT JOIN items ON items.order_id = orders.id
+    LEFT JOIN bukus ON bukus.id = items.buku_id
+    LEFT JOIN addresses ON orders.address_id = addresses.id
+    LEFT JOIN payments ON payments.order_id = orders.id
+    LEFT JOIN shipments ON shipments.order_id = orders.id
+    WHERE payments.transaction_id = :transactionId
+";
 
         $results = DB::select($query, ['transactionId' => $transaction_id]);
 
@@ -729,7 +730,7 @@ class OrdersController extends Controller
                     'foto' => asset('storage/buku_photos/' . basename($row->foto)),
                     'stok' => $row->stok,
                     'sold' => $row->sold,
-                    'harga' => $row->harga,
+                    'harga' => $row->item_price / $row->quantity, 
                     'slug' => $row->slug,
                     'created_at' => $row->buku_created_at,
                     'updated_at' => $row->buku_updated_at,
@@ -740,6 +741,8 @@ class OrdersController extends Controller
 
         return response()->json($order);
     }
+
+
 
 
 
@@ -913,7 +916,7 @@ class OrdersController extends Controller
                 $order = Order::findOrFail($shipment->order_id);
                 $newStatus = $payload['status'];
 
-            
+
                 $packingStatuses = [
                     'confirmed',
                     'allocated',
