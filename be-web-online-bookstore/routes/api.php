@@ -39,13 +39,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/email/verify', function () {
         return response()->json(['message' => 'Please verify your email address.'], 403);
-    });
+    })->name('verification.notice');
 
     Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])
-        ->middleware(['signed']);
+        ->middleware(['signed'])
+        ->name('verification.verify');
 
     Route::post('/email/resend', [VerificationsController::class, 'resend'])
-        ->middleware(['throttle:6,1']);
+        ->middleware(['throttle:6,1'])
+        ->name('verification.resend');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
