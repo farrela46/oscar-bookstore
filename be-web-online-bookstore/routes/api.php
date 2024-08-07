@@ -13,6 +13,7 @@ use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DashboardsController;
+use App\Http\Controllers\VerificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,18 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/email/verify', function () {
+        return response()->json(['message' => 'Please verify your email address.'], 403);
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])
+        ->middleware(['signed']);
+
+    Route::post('/email/resend', [VerificationsController::class, 'resend'])
+        ->middleware(['throttle:6,1'])
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getUser', [UsersController::class, 'getAllUsers']);
@@ -105,7 +118,6 @@ Route::prefix('/midtrans')->middleware('auth:sanctum')->group(function () {
 
 Route::prefix('/loc')->group(function () {
     Route::get('/areas', [AddressesController::class, 'getAreas']);
-
 });
 
 

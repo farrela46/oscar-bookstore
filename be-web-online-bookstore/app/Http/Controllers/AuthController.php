@@ -9,6 +9,29 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // public function register(Request $request)
+    // {
+    //     $messages = [
+    //         'email.unique' => 'Akun sudah terdaftar',
+    //     ];
+
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|max:255|unique:users',
+    //         'password' => 'required|string|min:8',
+    //     ], $messages);
+
+    //     $user = User::create([
+    //         'name' => $validatedData['name'],
+    //         'email' => $validatedData['email'],
+    //         'password' => bcrypt($validatedData['password']),
+    //     ]);
+
+    //     return response()->json([
+    //         'message' => 'Akun telah berhasil dibuat'
+    //     ], 201);
+    // }
+
     public function register(Request $request)
     {
         $messages = [
@@ -24,11 +47,13 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
+            'password' => Hash::make($validatedData['password']),
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         return response()->json([
-            'message' => 'Akun telah berhasil dibuat'
+            'message' => 'Akun telah berhasil dibuat. Silakan cek email Anda untuk verifikasi akun.'
         ], 201);
     }
 
