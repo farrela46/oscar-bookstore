@@ -39,7 +39,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/email/verify', function () {
         return response()->json(['message' => 'Please verify your email address.'], 403);
-    })->name('verification.notice');
+    });
 
     Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])
         ->middleware(['signed']);
