@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware(['signed']);
 
     Route::post('/email/resend', [VerificationsController::class, 'resend'])
-        ->middleware(['throttle:6,1'])
+        ->middleware(['throttle:6,1']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

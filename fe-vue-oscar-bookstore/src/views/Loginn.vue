@@ -4,7 +4,7 @@ import BASE_URL from '@/api/config-api';
 // import Navbar from "@/examples/PageLayout/HomeNavbar.vue";
 // import Navbar from "@/examples/Navbars/Navbar.vue";
 import AppFooter from "@/examples/PageLayout/Footer.vue";
-import ArgonInput from "@/components/ArgonInput.vue";
+// import ArgonInput from "@/components/ArgonInput.vue";
 // import ArgonCheckbox from "@/components/ArgonCheckbox.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 import Navbar from "@/examples/Navbars/Navbar.vue";
@@ -14,7 +14,7 @@ export default {
   components: {
     Navbar,
     AppFooter,
-    ArgonInput,
+    // ArgonInput,
     // ArgonCheckbox,
     ArgonButton
   },
@@ -24,7 +24,8 @@ export default {
       password: '',
       store: null,
       body: null,
-      loading: false
+      loading: false,
+      showPassword: false,
     };
   },
   created() {
@@ -36,6 +37,9 @@ export default {
     this.restorePage();
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
     async onSubmit() {
       this.loading = true;
       try {
@@ -76,7 +80,7 @@ export default {
           });
         }
       } finally {
-        this.loading = false; 
+        this.loading = false;
       }
     },
 
@@ -110,12 +114,12 @@ export default {
   <main class="main-content mt-0">
     <navbar class="position-sticky bg-white left-auto top-2 z-index-sticky" />
     <div class="mx-3 mt-2 position-relative" :style="{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ) ,url(' + require('@/assets/img/library.png') + ')',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '65vh',
-          borderRadius: '30px 30px 0 0'
-        }">
+      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ) ,url(' + require('@/assets/img/library.png') + ')',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '65vh',
+      borderRadius: '30px 30px 0 0'
+    }">
       <div class="container-fluid h-100">
         <div class="row h-100 justify-content-center align-items-center">
           <div class="col-auto text-left mb-5">
@@ -136,14 +140,15 @@ export default {
             </div>
             <div class="card-body">
               <form role="form" @submit.prevent="onSubmit">
-                <argon-input v-model="username" id="email" type="email" placeholder="Email" aria-label="Email" />
-                <argon-input v-model="password" id="password" type="password" placeholder="Password"
-                  aria-label="Password" />
+                <v-text-field v-model="username" label="E-mail" variant="underlined"></v-text-field>
+                <v-text-field v-model="password" label="Password" :type="showPassword ? 'text' : 'password'"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" required
+                  @click:append="togglePasswordVisibility"></v-text-field>
                 <div class="text-center">
                   <argon-button v-if="!loading" fullWidth color="dark" type="submit" variant="gradient"
                     class="my-4 mb-2">Login</argon-button>
-                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2" disabled><v-progress-circular
-                      indeterminate></v-progress-circular></argon-button>
+                  <argon-button v-else fullWidth color="dark" variant="gradient" class="my-4 mb-2"
+                    disabled><v-progress-circular indeterminate></v-progress-circular></argon-button>
                 </div>
                 <p class="text-sm mt-3 mb-0">
                   Tidak punya akun?

@@ -275,11 +275,11 @@ export default {
                               <i class="fas fa-edit"></i>
                             </span>
                           </span>
-                          <!-- <span style="font-size: 1rem; cursor: pointer;" @click="openDeleteConfirmation(user.id)">
+                          <span style="font-size: 1rem; cursor: pointer;" @click="openDeleteConfirmation(user.id)">
                             <span style="color: red;">
                               <i class="fa fa-trash"></i>
                             </span>
-                          </span> -->
+                          </span>
                         </td>
                       </tr>
                     </tbody>
