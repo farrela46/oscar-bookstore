@@ -26,8 +26,8 @@ class BukusController extends Controller
             'pengarang' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required',
-            'stok' => 'required|numeric|min:0', 
-            'harga' => 'required|numeric|min:0', 
+            'stok' => 'required|numeric|min:0',
+            'harga' => 'required|numeric|min:0',
             'categoryId' => 'required|array',
             'categoryId.*' => 'exists:categories,id',
         ]);
@@ -118,6 +118,8 @@ class BukusController extends Controller
     {
         $search = $request->input('search', '');
         $sortBy = $request->input('sortBy', '');
+        $perPage = $request->input('perPage', 18); // Number of items per page
+        $page = $request->input('page', 1); // Current page
 
         $buku = Buku::with('categories')
             ->when($search, function ($query, $search) {
@@ -139,8 +141,8 @@ class BukusController extends Controller
             }, function ($query) {
                 $query->orderBy('sold', 'desc');
             })
-            ->get()
-            ->map(function ($item) {
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->through(function ($item) {
                 $averageRating = DB::table('reviews')
                     ->where('buku_id', $item->id)
                     ->avg('rating');
@@ -169,6 +171,7 @@ class BukusController extends Controller
 
         return response()->json($buku);
     }
+
 
     /**
      * Round a number to the nearest half (0.5).

@@ -5,18 +5,25 @@ import BASE_URL from '@/api/config-api';
 import Navbar from "@/examples/Navbars/Navbar.vue";
 import ArgonButton from "@/components/ArgonButton.vue";
 import ArgonInput from "@/components/ArgonInput.vue";
+import ArgonPagination from "@/components/ArgonPagination.vue";
+import ArgonPaginationItem from "@/components/ArgonPaginationItem.vue";
 
 
 export default {
   components: {
     Navbar,
     ArgonButton,
-    ArgonInput
+    ArgonInput,
+    ArgonPagination,
+    ArgonPaginationItem,
   },
   data() {
     return {
       products: [],
       overlay: false,
+      currentPage: 1,
+      perPage: 12,
+      totalPages: 1,
       items: [
         {
           title: 'Dashboard',
@@ -120,8 +127,9 @@ export default {
       }
     },
     searchProduct() {
-      this.retrieveBuku(this.searchQuery);
+      this.retrieveBuku(1, this.searchQuery);
     },
+
     async getBanner() {
       this.overlay = true;
       try {
@@ -142,11 +150,16 @@ export default {
       }
     },
 
-    async retrieveBuku(searchQuery = '') {
+    async retrieveBuku(page = 1, searchQuery = '') {
       this.overlay = true;
+      this.currentPage = page;
+      this.searchQuery = searchQuery;
       try {
-        const params = {};
-        if (searchQuery) params.search = searchQuery;
+        const params = {
+          page: this.currentPage,
+          perPage: this.perPage,
+        };
+        if (this.searchQuery) params.search = this.searchQuery;
 
         const response = await axios.get(`${BASE_URL}/buku/get`, {
           headers: {
@@ -155,20 +168,19 @@ export default {
           params
         });
 
-        this.products = response.data;
-        if (response.data.length > 0) {
-          this.fotoUrl = response.data[0].foto;
+        this.products = response.data.data;
+        this.totalPages = response.data.last_page;
+        if (this.products.length > 0) {
+          this.fotoUrl = this.products[0].foto;
         }
-
-        setTimeout(() => {
-          this.overlay = false;
-        }, 3000);
 
       } catch (error) {
         console.error(error);
+      } finally {
         this.overlay = false;
       }
     },
+
 
 
     setupPage() {
@@ -255,8 +267,9 @@ export default {
                 &#x2022; {{ item.sold }} Terjual</a> -->
               <a class="text-muted text-truncate" style="display: block;">
                 <div style="display: flex; align-items: center;">
-                  <i class="fas fa-star" style="color: #FFEB3B; margin-right: 4px;"></i>{{ item.average_rating }} ({{ item.sold
-                    }})
+                  <i class="fas fa-star" style="color: #FFEB3B; margin-right: 4px;"></i>{{ item.average_rating }} ({{
+                    item.sold
+                  }})
                 </div>
                 <div style="margin-top: 4px;">
                   <span>{{ item.stok }} Tersedia</span>
@@ -267,11 +280,16 @@ export default {
               <a class="text-bold" style="color: blue; font-size: 18px">Rp. {{ formatPrice(item.harga) }}</a>
             </div>
           </div>
-          <!-- <div class="px-2 pb-1">
-            <argon-button>Buy</argon-button>
-          </div> -->
         </div>
       </router-link>
+      <div class="row mt-2" v-if="!overlay">
+        <argon-pagination :current="currentPage" :total="totalPages" @change="retrieveBuku">
+          <argon-pagination-item prev @click="retrieveBuku(currentPage - 1)" :disabled="currentPage === 1" />
+          <argon-pagination-item v-for="page in totalPages" :key="page" :label="page" :active="currentPage === page"
+            @click="retrieveBuku(page)" />
+          <argon-pagination-item next @click="retrieveBuku(currentPage + 1)" :disabled="currentPage === totalPages" />
+        </argon-pagination>
+      </div>
     </div>
     <div class="fixed-plugin">
       <a class="p-3 py-2 fixed-plugin-button text-dark position-fixed" @click="toggleWhatsapp">
