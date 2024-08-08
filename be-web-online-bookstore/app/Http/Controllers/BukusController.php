@@ -122,6 +122,7 @@ class BukusController extends Controller
         $page = $request->input('page', 1); // Current page
 
         $buku = Buku::with('categories')
+            ->selectRaw('*, coalesce(sold, 0) as sold')
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('judul', 'like', "%{$search}%")
@@ -161,7 +162,7 @@ class BukusController extends Controller
                     'tahun_terbit' => $item->tahun_terbit,
                     'foto' => asset('storage/buku_photos/' . basename($item->foto)),
                     'stok' => $item->stok,
-                    'sold' => $item->sold,
+                    'sold' => $item->sold ?? 0, // Ensure sold is 0 if null
                     'harga' => $item->harga,
                     'slug' => $item->slug,
                     'category' => $categoryNames,
@@ -171,6 +172,7 @@ class BukusController extends Controller
 
         return response()->json($buku);
     }
+
 
 
     /**
