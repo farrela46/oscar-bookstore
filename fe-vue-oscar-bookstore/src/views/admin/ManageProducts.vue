@@ -125,7 +125,7 @@ export default {
     async retrieveBuku() {
       this.loading = true;
       try {
-        const response = await axios.get(`${BASE_URL}/buku/get`, {
+        const response = await axios.get(`${BASE_URL}/buku/getAdmin`, {
           params: {
             sortBy: 'lowstock'
           },
