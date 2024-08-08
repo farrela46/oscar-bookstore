@@ -16,6 +16,31 @@ class CartsController extends Controller
     {
         $this->biteshipService = $biteshipService;
     }
+    // public function addToCart(Request $request)
+    // {
+    //     $request->validate([
+    //         'buku_id' => 'required|exists:bukus,id'
+    //     ]);
+
+    //     $user = Auth::user();
+    //     $buku = Buku::findOrFail($request->buku_id);
+
+    //     $cart = Cart::where('user_id', $user->id)->where('buku_id', $buku->id)->first();
+
+    //     if ($cart) {
+    //         $cart->quantity += 1;
+    //         $cart->save();
+    //     } else {
+    //         Cart::create([
+    //             'user_id' => $user->id,
+    //             'buku_id' => $buku->id,
+    //             'quantity' => 1
+    //         ]);
+    //     }
+
+    //     return response()->json(['message' => 'Buku berhasil ditambahkan ke keranjang!'], 200);
+    // }
+
     public function addToCart(Request $request)
     {
         $request->validate([
@@ -25,9 +50,17 @@ class CartsController extends Controller
         $user = Auth::user();
         $buku = Buku::findOrFail($request->buku_id);
 
+        if ($buku->stok <= 0) {
+            return response()->json(['message' => 'Stok tidak tersedia!'], 400);
+        }
+
         $cart = Cart::where('user_id', $user->id)->where('buku_id', $buku->id)->first();
 
         if ($cart) {
+            if ($cart->quantity + 1 > $buku->stok) {
+                return response()->json(['message' => 'Jumlah melebihi stok yang tersedia!'], 400);
+            }
+
             $cart->quantity += 1;
             $cart->save();
         } else {
@@ -40,6 +73,7 @@ class CartsController extends Controller
 
         return response()->json(['message' => 'Buku berhasil ditambahkan ke keranjang!'], 200);
     }
+
 
 
     public function viewCart()
@@ -95,18 +129,46 @@ class CartsController extends Controller
             return response()->json(['error' => 'Cart item not found'], 404);
         }
     }
+    // public function updateSelected(Request $request)
+    // {
+    //     $userId = Auth::id();
+
+    //     Cart::where('user_id', $userId)->update(['selected' => false]);
+
+    //     Cart::whereIn('id', $request->selected_ids)
+    //         ->where('user_id', $userId)
+    //         ->update(['selected' => true]);
+
+    //     return response()->json(['message' => 'Selected items updated successfully']);
+    // }
+
     public function updateSelected(Request $request)
     {
         $userId = Auth::id();
+        $selectedIds = $request->selected_ids;
+
+        $carts = Cart::whereIn('id', $selectedIds)
+            ->where('user_id', $userId)
+            ->with('buku')
+            ->get();
+
+        foreach ($carts as $cart) {
+            if ($cart->quantity > $cart->buku->stok) {
+                return response()->json([
+                    'message' => "Stok tidak tersedia untuk buku: {$cart->buku->judul}"
+                ], 400);
+            }
+        }
 
         Cart::where('user_id', $userId)->update(['selected' => false]);
 
-        Cart::whereIn('id', $request->selected_ids)
+        Cart::whereIn('id', $selectedIds)
             ->where('user_id', $userId)
             ->update(['selected' => true]);
 
         return response()->json(['message' => 'Selected items updated successfully']);
     }
+
 
     public function removeFromCart($id)
     {
@@ -192,5 +254,4 @@ class CartsController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
 }
