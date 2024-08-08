@@ -173,6 +173,63 @@ class BukusController extends Controller
         return response()->json($buku);
     }
 
+    public function getBukuAdmin(Request $request)
+    {
+        $search = $request->input('search', '');
+        $sortBy = $request->input('sortBy', '');
+
+        $buku = Buku::with('categories')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('judul', 'like', "%{$search}%")
+                        ->orWhere('pengarang', 'like', "%{$search}%")
+                        ->orWhere('penerbit', 'like', "%{$search}%")
+                        ->orWhereHas('categories', function ($query) use ($search) {
+                            $query->where('nama', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($sortBy, function ($query, $sortBy) {
+                if ($sortBy === 'lowstock') {
+                    $query->orderBy('stok', 'asc');
+                } elseif ($sortBy === 'mostsold') {
+                    $query->orderBy('sold', 'desc');
+                }
+            }, function ($query) {
+                $query->orderBy('sold', 'desc');
+            })
+            ->get()
+            ->map(function ($item) {
+                $averageRating = DB::table('reviews')
+                    ->where('buku_id', $item->id)
+                    ->avg('rating');
+
+                $roundedRating = $averageRating ? $this->roundToHalf($averageRating) : 0;
+
+                $categoryNames = $item->categories->pluck('nama')->toArray();
+
+                return [
+                    'id' => $item->id,
+                    'no_isbn' => $item->no_isbn,
+                    'judul' => $item->judul,
+                    'desc' => $item->desc,
+                    'pengarang' => $item->pengarang,
+                    'penerbit' => $item->penerbit,
+                    'tahun_terbit' => $item->tahun_terbit,
+                    'foto' => asset('storage/buku_photos/' . basename($item->foto)),
+                    'stok' => $item->stok,
+                    'sold' => $item->sold,
+                    'harga' => $item->harga,
+                    'slug' => $item->slug,
+                    'category' => $categoryNames,
+                    'average_rating' => $roundedRating
+                ];
+            });
+
+        return response()->json($buku);
+    }
+
+
 
 
     /**

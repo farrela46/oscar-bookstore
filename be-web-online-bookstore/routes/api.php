@@ -62,6 +62,7 @@ Route::prefix('/buku')->group(function () {
         Route::delete('/delete/{id}', [BukusController::class, 'delete']);
     });
     Route::get('/get', [BukusController::class, 'getBuku']);
+    Route::get('/getAdmin', [BukusController::class, 'getBukuAdmin']);
     Route::get('/detail/{slug}', [BukusController::class, 'getDetailBuku']);
 });
 
