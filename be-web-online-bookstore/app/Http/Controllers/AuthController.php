@@ -53,7 +53,7 @@ class AuthController extends Controller
         $user->sendEmailVerificationNotification();
 
         return response()->json([
-            'message' => 'Akun telah berhasil dibuat. Silakan cek email Anda untuk verifikasi akun.'
+            'message' => 'Akun telah berhasil dibuat'
         ], 201);
     }
 
