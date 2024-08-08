@@ -277,7 +277,7 @@ class OrdersController extends Controller
                     'order_id' => $item->order_id,
                     'buku_id' => $item->buku_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->price, 
+                    'price' => $item->price,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
                     'buku' => [
@@ -354,22 +354,6 @@ class OrdersController extends Controller
         $statusFilter = $request->query('status');
 
         $query = "
-    SELECT orders.*, 
-           users.name, users.email, users.role, users.no_telp, users.email_verified_at,
-           payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
-           payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
-           payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
-           payments.link, -- Tambahkan ini untuk mengambil link dari payments
-           shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
-    FROM orders
-    LEFT JOIN users ON users.id = orders.user_id
-    LEFT JOIN payments ON payments.order_id = orders.id
-    LEFT JOIN shipments ON shipments.order_id = orders.id
-    ORDER BY orders.created_at DESC
-    ";
-
-        if ($statusFilter) {
-            $query = "
         SELECT orders.*, 
                users.name, users.email, users.role, users.no_telp, users.email_verified_at,
                payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
@@ -381,8 +365,24 @@ class OrdersController extends Controller
         LEFT JOIN users ON users.id = orders.user_id
         LEFT JOIN payments ON payments.order_id = orders.id
         LEFT JOIN shipments ON shipments.order_id = orders.id
-        WHERE orders.status = ?
         ORDER BY orders.created_at DESC
+    ";
+
+        if ($statusFilter) {
+            $query = "
+            SELECT orders.*, 
+                   users.name, users.email, users.role, users.no_telp, users.email_verified_at,
+                   payments.transaction_id, payments.mdtransaction_id, payments.masked_card, payments.payment_type, 
+                   payments.transaction_time, payments.bank, payments.gross_amount, payments.card_type, 
+                   payments.payment_option_type, payments.shopeepay_reference_number, payments.reference_id,
+                   payments.link, -- Tambahkan ini untuk mengambil link dari payments
+                   shipments.bsorder_id, shipments.shipping_cost, shipments.waybill_id, shipments.courier_details
+            FROM orders
+            LEFT JOIN users ON users.id = orders.user_id
+            LEFT JOIN payments ON payments.order_id = orders.id
+            LEFT JOIN shipments ON shipments.order_id = orders.id
+            WHERE orders.status = ?
+            ORDER BY orders.created_at DESC
         ";
             $orders = DB::select($query, [$statusFilter]);
         } else {
@@ -437,7 +437,7 @@ class OrdersController extends Controller
                             'foto' => asset('storage/buku_photos/' . basename($item->foto)),
                             'stok' => $item->stok,
                             'sold' => $item->sold,
-                            'harga' => $item->harga,
+                            'harga' => $item->price / $item->quantity,
                             'slug' => $item->slug,
                             'created_at' => $item->created_at,
                             'updated_at' => $item->updated_at
@@ -475,6 +475,7 @@ class OrdersController extends Controller
 
         return response()->json($formattedOrders);
     }
+
 
 
 
@@ -730,7 +731,7 @@ class OrdersController extends Controller
                     'foto' => asset('storage/buku_photos/' . basename($row->foto)),
                     'stok' => $row->stok,
                     'sold' => $row->sold,
-                    'harga' => $row->item_price / $row->quantity, 
+                    'harga' => $row->item_price / $row->quantity,
                     'slug' => $row->slug,
                     'created_at' => $row->buku_created_at,
                     'updated_at' => $row->buku_updated_at,
