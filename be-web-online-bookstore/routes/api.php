@@ -37,30 +37,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/email/verify', function () {
-//         return response()->json(['message' => 'Please verify your email address.'], 403);
-//     })->name('verification.notice');
-
-//     Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])
-//         ->middleware(['signed'])
-//         ->name('verification.verify');
-
-//     Route::post('/email/resend', [VerificationsController::class, 'resend'])
-//         ->middleware(['throttle:6,1'])
-//         ->name('verification.resend');
+//     Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])->name('verification.verify');
+//     Route::post('/email/resend', [VerificationsController::class, 'resend'])->name('verification.resend');
 // });
 
-Route::get('/email/verify', function () {
-    return response()->json(['message' => 'Please verify your email address.'], 403);
-})->name('verification.notice');
-
-Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])
-    ->middleware(['signed'])
-    ->name('verification.verify');
-
-Route::post('/email/resend', [VerificationsController::class, 'resend'])
-    ->middleware(['throttle:6,1'])
-    ->name('verification.resend');
+Route::get('/email/verify/{id}/{hash}', [VerificationsController::class, 'verify'])->name('verification.verify');
+Route::post('/email/resend', [VerificationsController::class, 'resend'])->name('verification.resend');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getUser', [UsersController::class, 'getAllUsers']);

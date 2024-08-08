@@ -57,6 +57,23 @@ class AuthController extends Controller
         ], 201);
     }
 
+    // public function login(Request $request)
+    // {
+    //     if (!Auth::attempt($request->only('email', 'password'))) {
+    //         return response()->json([
+    //             'message' => 'Email atau Password salah!'
+    //         ], 401);
+    //     }
+    //     $user = User::where('email', $request['email'])->firstOrFail();
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+    //     return response()->json([
+    //         'access_token' => $token,
+    //         'token_type' => 'Bearer',
+    //         'message' => 'Login Berhasil',
+    //         'user' => $user
+    //     ]);
+    // }
+
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
@@ -64,8 +81,17 @@ class AuthController extends Controller
                 'message' => 'Email atau Password salah!'
             ], 401);
         }
+
         $user = User::where('email', $request['email'])->firstOrFail();
+
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'message' => 'Verifikasi email terlebih dahulu.'
+            ], 403); 
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
@@ -73,6 +99,7 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
+
 
     function logout(Request $request)
     {

@@ -2,32 +2,49 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-
+use Illuminate\Auth\Events\Verified;
+// use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\User;
 
 use Illuminate\Http\Request;
 
 class VerificationsController extends Controller
 {
-    public function verify(EmailVerificationRequest $request)
+    public function verify(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect('/login')->with('message', 'Your email is already verified.');
+        $user = User::findOrFail($request->route('id'));
+
+        if (!hash_equals((string) $request->route('id'), (string) $user->getKey())) {
+            throw new AuthorizationException;
         }
 
-        $request->user()->markEmailAsVerified();
+        if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            throw new AuthorizationException;
+        }
 
-        return redirect('/login')->with('message', 'Your email has been verified.');
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email sudah diverifikasi.',
+            ], 200);
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return response()->json([
+            'message' => 'Email berhasil diverifikasi.',
+        ], 200);
     }
 
     public function resend(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.'], 200);
-        }
-
         $request->user()->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'Verification link sent.']);
+        return response()->json([
+            'message' => 'Tautan verifikasi telah dikirim ke email Anda.',
+        ]);
     }
 }
