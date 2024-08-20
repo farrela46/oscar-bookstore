@@ -97,7 +97,7 @@ export default {
           params
         });
 
-        this.products = response.data;
+        this.products = response.data.data;
 
         if (response.data.length > 0) {
           this.fotoUrl = response.data[0].foto;
